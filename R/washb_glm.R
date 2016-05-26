@@ -2,7 +2,7 @@
 
 
 
-#' Title
+#' washb_glm
 #'
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
 #' @param tr Binary treatment group variable (ideally a factor), comparison group first
@@ -11,12 +11,15 @@
 #' @param forcedW Optional vector of variable names to force as adjustment covariates (no screening)
 #' @param id ID variable for independent units (cluster ID)
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
-#' @param family GLM model family (gaussian, binomial, poisson). Negative binomial will be added in the near future.
+#' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "neg.binom" for Negative binomial.
 #'
-#' @return
+#' @return returns the fit of the glm model. Future versions will format and convert the coefficients if needed.
 #' @export
 #'
 #' @examples
+
+
+
 washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussian) {
   # Y     : outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
   # tr    : binary treatment group variable, comparison group first
@@ -24,9 +27,10 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
   # W     : (optional) data frame that includes adjustment covariates
   # id    : id variable for independent units (e.g., cluster)
   # contrast : vector of length 2 that includes the tr groups to contrast
-  # family : glm family (gaussian,binomial,poisson)
+  # family : glm family (gaussian,binomial,poisson, or "neg.binom" for negative binomial)
   require(sandwich)
   require(lmtest)
+  require(MASS)
 
   if(!is.null(W)){
     glmdat <- data.frame(
@@ -71,7 +75,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     # pre-screen the covariates
     # see Wprescreen() in the base functions
     cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
-    Wscreen <- Wprescreen(Y=glmdat$Y,Ws=screenW,family=family)
+    Wscreen <- washb_prescreen(Y=glmdat$Y,Ws=screenW,family=family)
 
     if(!is.null(forcedW)){
       dmat <- subset(glmdat,select=c("Y","tr",Wscreen,forcedW,"pair"))
@@ -81,11 +85,38 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
   } else {
     dmat <- subset(glmdat,select=c("Y","tr","pair"))
   }
-  fit <- glm(Y~.,family=family,data=dmat)
-  vcovCL <- cl(dmat,fm=fit,cluster=glmdat$id)
-  rfit <- coeftest(fit, vcovCL)
-  cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
-  print(round(rfit[2,],5))
-  return(rfit)
+
+  if(family!="neg.binom"){
+    fit <- glm(Y~.,family=family,data=dmat)
+    vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+    rfit <- coeftest(fit, vcovCL)
+    cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+    print(round(rfit[2,],5))
+    return(rfit)
+  }else{
+    if (!requireNamespace("MASS", quietly = TRUE)) {
+      stop("Pkg needed for this function to work. Please install it.",
+           call. = FALSE)
+    }else{
+      fit<- glm.nb(Y ~., data = dmat)
+      vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+      rfit <- coeftest(fit, vcovCL)
+      cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+      print(round(rfit[2,],5))
+      #return(rfit)
+      #assess whether conditional mean is equal to conditional variance
+      pois <- glm(Y ~ ., family = "poisson", data = dmat)
+      #X2 <- 2 * (logLik(fit) - logLik(pois))
+      #print(pchisq(X2, df = 1, lower.tail=FALSE))
+
+      #get confidence intervals
+      (est <- cbind(Estimate = coef(fit), confint(fit)))
+      #get IRRs
+      print(exp(est))
+      return(rfit)
+
+    }
+  }
+
 }
 
