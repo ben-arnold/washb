@@ -2,8 +2,12 @@
 % Please edit documentation in R/washb_permute.R
 \name{washb_permute}
 \alias{washb_permute}
+<<<<<<< HEAD
 \title{WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
 washb_permute}
+=======
+\title{washb_permute}
+>>>>>>> ad784f1a15d88f88351ea24f45f9ef11ca46bb47
 \usage{
 washb_permute(Y, tr, pair, contrast, nreps = 1e+05, seed = NULL)
 }
@@ -20,6 +24,7 @@ washb_permute(Y, tr, pair, contrast, nreps = 1e+05, seed = NULL)
 
 \item{seed}{Number for psuedo-random number generation in R}
 }
+<<<<<<< HEAD
 \value{
 to be written
 }
@@ -30,4 +35,9 @@ washb_permute
 \examples{
 to be written
 }
+=======
+\description{
+washb_permute
+}
+>>>>>>> ad784f1a15d88f88351ea24f45f9ef11ca46bb47
 

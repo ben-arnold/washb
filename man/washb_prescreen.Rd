@@ -13,6 +13,7 @@ washb_prescreen(Y, Ws, family = "gaussian")
 
 \item{family}{GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.}
 }
+<<<<<<< HEAD
 \value{
 to be written
 }
@@ -22,4 +23,9 @@ washb_prescreen
 \examples{
 to be written
 }
+=======
+\description{
+washb_prescreen
+}
+>>>>>>> ad784f1a15d88f88351ea24f45f9ef11ca46bb47
 

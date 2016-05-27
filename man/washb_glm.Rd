@@ -2,8 +2,12 @@
 % Please edit documentation in R/washb_glm.R
 \name{washb_glm}
 \alias{washb_glm}
+<<<<<<< HEAD
 \title{Generalized linear model function for WASH Benefits study.
 washb_glm}
+=======
+\title{washb_glm}
+>>>>>>> ad784f1a15d88f88351ea24f45f9ef11ca46bb47
 \usage{
 washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, id, contrast,
   family = gaussian)
@@ -29,10 +33,14 @@ washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, id, contrast,
 returns the fit of the glm model. Future versions will format and convert the coefficients if needed.
 }
 \description{
+<<<<<<< HEAD
 Generalized linear model function for WASH Benefits study.
 washb_glm
 }
 \examples{
 to be written
+=======
+washb_glm
+>>>>>>> ad784f1a15d88f88351ea24f45f9ef11ca46bb47
 }
 
