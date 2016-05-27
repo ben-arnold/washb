@@ -1,11 +1,22 @@
 Package: washb
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Interal WASH Benefits Function Package
 Version: 0.1
 Date: 2016-05-18
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author@R: c(
+    person("Arnold", "ben", email = "benarnold@berkeley.edu", role = "aut"),
+    person("Winston", "Chang", email = "amertens@berkeley.edu", role = "cre","aut"))
+Maintainer: benarnold@berkeley.edu and amertens@berkeley.edu
+Description: Internal package for analysis associated with the WASH Benefits trial. Contains several
+    useful functions documented in detail in the accompanying vignette.
+License: Private
 LazyData: TRUE
 RoxygenNote: 5.0.1
+Imports:
+    sandwich,
+    lmtest
+    coin
+    plyr
+Suggests:
+    MASS,
+
