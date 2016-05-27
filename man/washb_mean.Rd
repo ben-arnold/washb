@@ -2,21 +2,27 @@
 % Please edit documentation in R/washb_mean.R
 \name{washb_mean}
 \alias{washb_mean}
-\title{washb_mean}
+\title{Means estimated with robust standard errors for the WASH Benefits trials}
 \usage{
-washb_mean(Y, id, print = FALSE)
+washb_mean(Y, id, print = TRUE)
 }
 \arguments{
 \item{Y}{Outcome variable}
 
 \item{id}{ID variable for independent units (in WASH Benefits: cluster ID)}
 
-\item{print}{Logical. If equal to 'TRUE' it will print the results.}
+\item{print}{Logical. If \code{print=TRUE} (default) the function will print the results.}
 }
 \value{
-Returns a 1x5 matrix that includes the number of observation, outcome mean, robust SE, lower 95\% CI, upper 95\% CI
+Returns a 1x6 matrix that includes the number of observations, outcome mean, standard deviation, robust SE for the mean, lower 95\% CI, upper 95\% CI
 }
 \description{
 Calculate means for a variable along with robust sandwich SEs and 95\% confidence intervals that account for clustering within id
+}
+\details{
+This function is most useful for calculating variable means and confidence intervals -- for example, calculating average compliance (uptake) within a given intervention arm, or calculating the average LAZ by arm or measurement round. In the WASH Benefits trials, the independent unit is typically the cluster, so the \code{id} argument should identify the cluster ID.  If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use \code{\link[washb]{washb_glm}}, washb_ttest(TBA for continuous outcomes), or washb_mh (TBA for binary outcomes).
+}
+\examples{
+TBD
 }
 
