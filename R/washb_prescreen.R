@@ -5,10 +5,10 @@
 #' @param Ws data frame that includes candidate adjustment covariates to screen
 #' @param family GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.
 #'
-#' @return
-#' @export
+#' @return to be written
 #'
 #' @examples
+#' to be written
 
 
 

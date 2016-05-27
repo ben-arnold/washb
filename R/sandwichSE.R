@@ -5,10 +5,10 @@
 #' @param fm Model fit (object)
 #' @param cluster Vector of cluster ID's
 #'
-#' @return
-#' @export
+#' @return to be written
 #'
 #' @examples
+#'  to be written
 #'
 
 

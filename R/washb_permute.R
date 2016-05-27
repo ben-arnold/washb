@@ -1,4 +1,5 @@
 
+#' WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
 #' washb_permute
 #'
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
@@ -8,10 +9,10 @@
 #' @param nreps Number of permutations to run.
 #' @param seed Number for psuedo-random number generation in R
 #'
-#' @return
-#' @export
+#' @return to be written
 #'
 #' @examples
+#' to be written
 
 
 washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL) {

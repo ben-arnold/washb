@@ -2,9 +2,11 @@
 % Please edit documentation in R/washb_glm.R
 \name{washb_glm}
 \alias{washb_glm}
-\title{Title}
+\title{Generalized linear model function for WASH Benefits study.
+washb_glm}
 \usage{
-washb_glm(Y, tr, pair, W = NULL, id, contrast, family = gaussian)
+washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, id, contrast,
+  family = gaussian)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
@@ -15,13 +17,22 @@ washb_glm(Y, tr, pair, W = NULL, id, contrast, family = gaussian)
 
 \item{W}{Optional data frame that includes adjustment covariates (for adjusted estimates)}
 
+\item{forcedW}{Optional vector of variable names to force as adjustment covariates (no screening)}
+
 \item{id}{ID variable for independent units (cluster ID)}
 
 \item{contrast}{Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")}
 
-\item{family}{GLM model family (gaussian, binomial, poisson). Negative binomial will be added in the near future.}
+\item{family}{GLM model family (gaussian, binomial, poisson, and negative binomial). Use "neg.binom" for Negative binomial.}
+}
+\value{
+returns the fit of the glm model. Future versions will format and convert the coefficients if needed.
 }
 \description{
-Title
+Generalized linear model function for WASH Benefits study.
+washb_glm
+}
+\examples{
+to be written
 }
 

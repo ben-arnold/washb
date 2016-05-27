@@ -1,22 +1,22 @@
 Package: washb
-Type: Package
 Title: Interal WASH Benefits Function Package
 Version: 0.1
 Date: 2016-05-18
 Author@R: c(
     person("Arnold", "ben", email = "benarnold@berkeley.edu", role = "aut"),
     person("Winston", "Chang", email = "amertens@berkeley.edu", role = "cre","aut"))
-Maintainer: benarnold@berkeley.edu and amertens@berkeley.edu
 Description: Internal package for analysis associated with the WASH Benefits trial. Contains several
     useful functions documented in detail in the accompanying vignette.
-License: Private
 LazyData: TRUE
 RoxygenNote: 5.0.1
+VignetteBuilder: ,
+    knitr
 Imports:
     sandwich,
-    lmtest
-    coin
-    plyr
+    lmtest,
+    coin,
+    plyr,
 Suggests:
     MASS,
-
+    knitr,
+    rmarkdown,

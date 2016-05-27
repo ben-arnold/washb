@@ -1,7 +1,7 @@
 
 
 
-
+#' Generalized linear model function for WASH Benefits study.
 #' washb_glm
 #'
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
@@ -14,9 +14,9 @@
 #' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "neg.binom" for Negative binomial.
 #'
 #' @return returns the fit of the glm model. Future versions will format and convert the coefficients if needed.
-#' @export
 #'
 #' @examples
+#' to be written
 
 
 
@@ -95,7 +95,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     return(rfit)
   }else{
     if (!requireNamespace("MASS", quietly = TRUE)) {
-      stop("Pkg needed for this function to work. Please install it.",
+      stop("MASS needed for this function to work. Please install it.",
            call. = FALSE)
     }else{
       fit<- glm.nb(Y ~., data = dmat)
