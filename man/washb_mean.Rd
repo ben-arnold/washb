@@ -12,15 +12,11 @@ washb_mean(Y, id, print = FALSE)
 \item{id}{ID variable for independent units (in WASH Benefits: cluster ID)}
 
 \item{print}{Logical. If equal to 'TRUE' it will print the results.}
-
-\item{tr}{Variable that includes intervention group assignments (typically a factor)}
-
-\item{group}{String. The arm within the tr variable within which the mean should be computed}
 }
 \value{
-Returns a 1x4 matrix that includes the mean, robust SE, lower 95\% CI, upper 95\% CI
+Returns a 1x5 matrix that includes the number of observation, outcome mean, robust SE, lower 95\% CI, upper 95\% CI
 }
 \description{
-Calculate means for a variable along with robust sandwich SEs and 95\% confidence intervals that account for clustering within \texttt{id}
+Calculate means for a variable along with robust sandwich SEs and 95\% confidence intervals that account for clustering within id
 }
 
