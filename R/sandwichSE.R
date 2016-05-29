@@ -6,6 +6,7 @@
 #' @param cluster Vector of cluster ID's
 #'
 #' @return to be written
+#' @export
 #'
 #' @examples
 #'  to be written

@@ -14,6 +14,7 @@
 #' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "neg.binom" for Negative binomial.
 #'
 #' @return returns the fit of the glm model. Future versions will format and convert the coefficients if needed.
+#' @export
 #'
 #' @examples
 #' to be written

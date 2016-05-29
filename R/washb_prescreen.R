@@ -6,6 +6,7 @@
 #' @param family GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.
 #'
 #' @return to be written
+#' @export
 #'
 #' @examples
 #' to be written

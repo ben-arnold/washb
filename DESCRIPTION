@@ -9,13 +9,13 @@ Description: Internal package for analysis associated with the WASH Benefits tri
     useful functions documented in detail in the accompanying vignette.
 LazyData: TRUE
 RoxygenNote: 5.0.1
-VignetteBuilder: ,
-    knitr
+VignetteBuilder: knitr
 Imports:
     sandwich,
     lmtest,
     coin,
     plyr,
+    metafor,
 Suggests:
     MASS,
     knitr,
