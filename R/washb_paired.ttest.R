@@ -1,9 +1,8 @@
 #' washb_paired.ttest
 #'
-#' Estimate paired t-tests for differences in means at the randomization block level
 #'
-#' Function to call the paired t-test for two different arms of the study
-#' Estimate the paired t-test for differences in means paired within randomization blocks.
+#' Function to call the paired t-test for two different arms of the study.
+#' Estimates the paired t-test for differences in means paired within randomization blocks.
 #' The arguments Y,tr,strat, below need to be from the same dataset:
 #'
 #' @param Y quantitative outcome variable (e.g. LAZ)

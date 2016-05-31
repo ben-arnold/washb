@@ -41,5 +41,4 @@
 "washb_bd_diar"
 
 
-library(foreign)
-read
+

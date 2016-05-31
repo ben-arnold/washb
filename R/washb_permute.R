@@ -1,6 +1,10 @@
 
-#' WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
 #' washb_permute
+#'
+#' WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
+#' Conducts a permutation test of the indepdence of Y and tr, conditional on randomization block
+#' using the Wilcoxon rank-sum test statistic
+#'
 #'
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
 #' @param tr Binary treatment group variable (ideally a factor), comparison group first
@@ -9,6 +13,9 @@
 #' @param nreps Number of permutations to run.
 #' @param seed Number for psuedo-random number generation in R
 #'
+#' @references  (Gail 1996, Feng 2001, Rosenbaum 2002)
+#' Ben: Add full citations
+#'
 #' @return to be written
 #'
 #' @examples
@@ -16,14 +23,7 @@
 
 
 washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL) {
-  # conduct a permutation test of the indepdence of Y and tr, conditional on randomization block
-  # using the Wilcoxon rank-sum test statistic
-  # Y  : outcome variable
-  # tr : treatment assignment, factor
-  # pair : randomization block, factor
-  # contrast : string with 2 levels of tr that should be compared in the permutation test
-  # nreps : number of permutations to run to approximate the null (default=100,000)
-  # seed : a seed for pseudo-random number generation (for reproducible results)
+
   require(coin)
   require(plyr)
   pd <- data.frame(Y=Y,tr=tr,block=pair)

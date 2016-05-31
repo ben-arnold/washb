@@ -13,20 +13,14 @@ sandwichSE(dat, fm, cluster)
 
 \item{cluster}{Vector of cluster ID's}
 }
-<<<<<<< HEAD
 \value{
 to be written
 }
-=======
->>>>>>> ad784f1a15d88f88351ea24f45f9ef11ca46bb47
 \description{
 sandwichSE
 }
 \examples{
-<<<<<<< HEAD
  to be written
-=======
->>>>>>> ad784f1a15d88f88351ea24f45f9ef11ca46bb47
 
 }
 

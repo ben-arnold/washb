@@ -28,11 +28,11 @@ difference (PD) using randomization block as the stratification variable.
 Function to call the M-H estimator for two different arms of the study this relies on
 teh rma.mh() function in the metafor package.
 
-The arguments Y,tr,strat, below need to be from the same dataset:
 
-Estimate the Mantel-Haenszel prevalence ratio note: strata with no outcomes (i.e., missing PR) are dropped
-this is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates
-the arguments Y,tr,strat, below need to be from the same dataset
+
+Estimate the Mantel-Haenszel prevalence ratio note: strata with no outcomes (i.e., missing PR) are dropped.
+This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates.
+The arguments Y,tr,strat, below need to be from the same dataset:
 }
 \examples{
  to be written

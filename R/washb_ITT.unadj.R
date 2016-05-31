@@ -24,7 +24,7 @@
 
 
 
-ITT.unadj <- function(Y,tr,strat,contrast,binomial=FALSE,measure="RR") {
+washb_ITT.unadj <- function(Y,tr,strat,contrast,binomial=FALSE,measure="RR") {
 
   if(binomial==TRUE) {
     est <- mh.pool(Y=Y,tr=tr,strat=strat,contrast=contrast,measure=measure)

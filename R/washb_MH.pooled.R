@@ -7,11 +7,10 @@
 #' teh rma.mh() function in the metafor package.
 #'
 #'
-#' The arguments Y,tr,strat, below need to be from the same dataset:
 #'
-#' Estimate the Mantel-Haenszel prevalence ratio note: strata with no outcomes (i.e., missing PR) are dropped
-#' this is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates
-#' the arguments Y,tr,strat, below need to be from the same dataset
+#' Estimate the Mantel-Haenszel prevalence ratio note: strata with no outcomes (i.e., missing PR) are dropped.
+#' This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates.
+#' The arguments Y,tr,strat, below need to be from the same dataset:
 #'
 #'
 #' @param Y binary outcome variable (here: diar7d)

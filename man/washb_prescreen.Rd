@@ -13,7 +13,6 @@ washb_prescreen(Y, Ws, family = "gaussian")
 
 \item{family}{GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.}
 }
-<<<<<<< HEAD
 \value{
 to be written
 }
@@ -21,11 +20,43 @@ to be written
 washb_prescreen
 }
 \examples{
-to be written
+
+ Stochastically generated dataset:
+ n <- 250
+ set.seed(12345)
+ Cov <- matrix(rnorm(n*3), ncol=3)
+ colnames(Cov) <- paste("W",1:3, sep="")
+ Outcome <- rbinom(n,1, plogis(0.2*Cov[,1] + 0.1*Cov[,2] + 0.2*Cov[,3]^2 ))
+
+ #Call function:
+ washb_prescreen(Y=Outcome,Ws=Covariates,family="binomial")
+
+ #Output:
+ Likelihood Ratio Test P-values:
+     [,1]
+ [1,] "P = 0.948"
+ [2,] "P = 0.770"
+ [3,] "P = 0.958"
+
+
+Covariates selected (P<0.20):
+     [,1]
+ [1,] "P = "
+
+
+ #Continuous outcome:
+ Outcome <- rnorm(n)
+ washb_prescreen(Y=Outcome,Ws=Cov,family="gaussian")
+
+ Likelihood Ratio Test P-values:
+     [,1]
+ [1,] "P = 0.139"
+ [2,] "P = 0.756"
+ [3,] "P = 0.619"
+
+ Covariates selected (P<0.20):
+     [,1]
+ [1,] "P = 0.139"
+
 }
-=======
-\description{
-washb_prescreen
-}
->>>>>>> ad784f1a15d88f88351ea24f45f9ef11ca46bb47
 
