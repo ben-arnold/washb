@@ -15,7 +15,7 @@ rm(list=ls())
  load(file.path(extPath, "washb_bd_enrol.Rdata"))  
  load(file.path(extPath, "washb_bd_diar.Rdata"))  
 
-## ---- results = "hide", tidy=TRUE---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- tidy=TRUE---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # drop svydate and month because they are superceded in the child level diarrhea data
   washb_bd_enrol$svydate <- NULL
   washb_bd_enrol$month <- NULL
@@ -60,7 +60,6 @@ Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","mo
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 washb_prescreen(Y=ad$diar7d,Ws,family="poisson")
 
-
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 h1.contrasts <- list(
   c("Control","Water"),
@@ -71,7 +70,114 @@ h1.contrasts <- list(
   c("Control","Nutrition + WSH")
 )
 
-# unadjusted estimates (mantel-haenszel)
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
 rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+
+## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  ##Need to fix so code runs
+#  permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+#  rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+
+## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  # adjusted estimates (tmle)
+#  cwfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.67,0.33),contrast=c("Control","Water"),seed=3902288)
+#  csfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.67,0.33),contrast=c("Control","Sanitation"),seed=6125274)
+#  chfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.67,0.33),contrast=c("Control","Handwashing"),seed=4499261)
+#  cwshfit  <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.67,0.33),contrast=c("Control","WSH"),seed=4545085)
+#  cnfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.67,0.33),contrast=c("Control","Nutrition"),seed=1964134)
+#  cwshnfit <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.67,0.33),contrast=c("Control","Nutrition + WSH"),seed=4397157)
+#  
+#  # pull out the estimates from the tmle objects and summarize them in a matrix
+#  tmle.summary.rd <- function(x) {
+#    res <- c(x$estimates$ATE$psi,x$estimates$ATE$CI[1],x$estimates$ATE$CI[2],x$estimates$ATE$pvalue)
+#    names(res) <- c("rd","ci.lb","ci.ub","p")
+#    return(res)
+#  }
+#  tmle.summary.pr <- function(x) {
+#    res <- c(x$estimates$RR$psi,x$estimates$RR$CI[1],x$estimates$RR$CI[2],x$estimates$RR$pvalue)
+#    names(res) <- c("pr","ci.lb","ci.ub","p")
+#    return(res)
+#  }
+#  
+#  tmle.h1 <- list(cwfit,csfit,chfit,cwshfit,cnfit,cwshnfit)
+#  rd.tmle.h1 <- t(sapply(tmle.h1,tmle.summary.rd))
+#  pr.tmle.h1 <- t(sapply(tmle.h1,tmle.summary.pr))
+#  rownames(rd.tmle.h1) <- rownames(pr.tmle.h1) <- rownames(diff.h1)
+#  
+#  # print results
+#  round(diff.h1,4)
+#  round(rd.tmle.h1,4)
+#  round(pr.tmle.h1,4)
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+h2.contrasts <- list(
+  c("Water","WSH"),
+  c("Sanitation","WSH"),
+  c("Handwashing","WSH")
+)
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# unadjusted estimates (paired t-test)
+diff.h2 <- t(sapply(h2.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
+rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+
+## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  
+#  # adjusted estimates (tmle)
+#  wshwfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("Water","WSH"),seed=8440041)
+#  wshhfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("Handwashing","WSH"),seed=1948434)
+#  wshsfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("Sanitation","WSH"),seed=1289364)
+#  
+#  tmle.h2 <- list(wshwfit,wshsfit,wshhfit)
+#  rd.tmle.h2 <- t(sapply(tmle.h2,tmle.summary.rd))
+#  pr.tmle.h2 <- t(sapply(tmle.h2,tmle.summary.pr))
+#  rownames(rd.tmle.h2) <- rownames(pr.tmle.h2) <- rownames(diff.h2)
+#  
+#  # print results
+#  round(diff.h2,4)
+#  round(rd.tmle.h2,4)
+#  round(pr.tmle.h2,4)
+
+## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  
+#   h3.contrasts <- list(
+#     c("WSH","Nutrition + WSH"),
+#     c("Nutrition","Nutrition + WSH")
+#   )
+#  
+#   # unadjusted estimates (paired t-test)
+#   diff.h3 <- t(sapply(h3.contrasts,ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block))
+#   rownames(diff.h3) <- c("Nutrition + WSH v Nutrition","Nutrition + WSH v WSH")
+#  
+#   # adjusted estimates (tmle)
+#   set.seed(792348)
+#   wshwshnfit <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("WSH","Nutrition + WSH"))
+#   nwshnfit   <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("Nutrition","Nutrition + WSH"))
+#  
+#   tmle.h3 <- list(nwshnfit,wshwshnfit)
+#   rd.tmle.h3 <- t(sapply(tmle.h3,tmle.summary.rd))
+#   rownames(rd.tmle.h3) <- rownames(diff.h3)
+
+## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  
+#  diar_h1_rd_adj <- rd.tmle.h1
+#  diar_h2_rd_adj <- rd.tmle.h2
+#  # diar_h3_rd_adj <- rd.tmle.h3
+#  
+#  diar_h1_pr_adj <- pr.tmle.h1
+#  diar_h2_pr_adj <- pr.tmle.h2
+#  # diar_h3_pr_adj <- pr.tmle.h3
+
+## ----  eval = FALSE, tidy=TRUE------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  
+#  diar_h1_rd_adj
+#  
+#  diar_h2_rd_adj
+#  
+#  diar_h1_pr_adj
+#  
+#  diar_h2_pr_adj
 

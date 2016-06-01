@@ -18,24 +18,35 @@ options(width = 200)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## WASH Benefits diarrheal disease outcome analysis using R package functions  
-#### Calculate adjusted differences in diarrheal disease between treatment arms for H1 and H2  
+# WASH Benefits diarrheal disease outcome analysis using R package functions  
+### Calculate adjusted differences in diarrheal disease between treatment arms for H1 and H2  
   
 ###Input file:
  * washb-bangladesh-diar.csv  
  
-##List and description of the functions documented in this vignette:  
- * washb_prescreen  
- * washb_permute 
- * washb_glm  
- * washb_means  
- * sandwichSE 
- * washb_ttest  
- * washb_mh
- * washb_prescreen  
+###List and description of the functions documented in this vignette:  
+ * __washb_prescreen:__ Function to pre-screen adjustment covariates -- restrict to those with a LR test P<0.2.  
+ * __washb_permute:__ Conducts a permutation test of the indepdence of Y and tr, conditional on randomization block using the Wilcoxon rank-sum test statistic.
+ * __washb_glm:__ Convenience wrapper function to run glm models with robust standard errors for unadjusted and adjusted estimates.
+ * __washb_means:__  Means estimated with robust standard errors for the WASH Benefits trials. Calculate means for a variable along with robust sandwich SEs and 95\% confidence intervals that account for clustering within id.
+ * __sandwichSE__ 
+ * __washb_ttest:__ Wrapper function to call the paired t-test for two different arms of the study.  
+ * __washb_mh.pool:__ Estimates the Mantel-Haenszel prevalence ratio. Note: strata with no outcomes (i.e., missing PR) are dropped. This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates. The arguments Y,tr,strat, below need to be from the same dataset.
+ * __washb_prescreen__ 
+ * __washb_ITT.unadj:__ Unadjusted ITT estimates of differences between arms, calculated with either a paired T-test (continuous outcomes) or a Mantel-Haenszel pooled estimator (binary outcomes). The arguments Y,tr,strat, below need to be from the same dataset.
+
  
+###Relationships among functions:
+__washb\_glm__ calls __washb_prescreen__, and then only covariates with a p-value>0.2 are included in the adjustment set.  
+__washb\_glm__ uses __sandwichSE__ to estimate sandwich-based robust standard errors to account for clustering.  
+  
+__washb\_ITT.unadj__ uses __washb_mh.pool__ to estimate Mantel-Haenszel pooled estimates if the outcome is binomial
+__washb\_ITT.unadj__ uses __washb_ttest__ to estimate paired t-test if the outcome is continious 
+  
+__washb_means__ uses __sandwichSE__ to estimate sandwich-based robust standard errors to account for clustering.
+
  
-## Load in necessary packages:
+### Load in necessary packages:
 To be filled in
 
 ```{r echo=FALSE, results = "hide"}
@@ -54,13 +65,13 @@ rm(list=ls())
 
 
 
-##Clean data  
+###Clean data  
 The data in this vignette is contained in 2 files, included in the package:  
 1.  __washb_bd_enrol.Rdata__, an R file of enrollment characteristics  
 1.  __washb_bd_diar.Rdata__, an R file of diarrheal disease data  
 
-
-```{r, results = "hide", tidy=TRUE}
+, results = "hide"
+```{r, tidy=TRUE}
 # drop svydate and month because they are superceded in the child level diarrhea data
   washb_bd_enrol$svydate <- NULL
   washb_bd_enrol$month <- NULL
@@ -104,21 +115,21 @@ Select covariates with univariate associations with the outcome of P<0.2 based o
  * (Excluded because only measured in target children: birthord)  
  * (Dropped due to too many missing values: asset_clock, momheight)  
 
-####First, subset the desired variables
+###First, subset the desired variables
 ```{r  echo=FALSE}
 
 Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 ```
 
-####Run the washb_prescreen function
+###Run the washb_prescreen function
 ```{r}
 washb_prescreen(Y=ad$diar7d,Ws,family="poisson")
-
 ```
 
-#### Estimate adjusted mean differences
+###Estimate adjusted mean differences
 
-#### H1: Each intervention arm vs. Control
+#H1: Each intervention arm vs. Control  
+###Create vector of contrasts
 ```{r}
 h1.contrasts <- list(
   c("Control","Water"),
@@ -128,11 +139,24 @@ h1.contrasts <- list(
   c("Control","Nutrition"),
   c("Control","Nutrition + WSH")
 )
-
-# unadjusted estimates (mantel-haenszel)
+```
+### Unadjusted estimates (Mantel-Haenszel)
+```{r}
 diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
 rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
 ```
+### Non-parametric unadjusted estimates (Wilcoxon Signed Rank permutation test)
+```{r, eval = FALSE, tidy=TRUE}
+##Need to fix so code runs
+permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+```
+
+
+#Adjusted TMLE Estimates
+###(Not Run)
+
+```{r, eval = FALSE, tidy=TRUE}
 # adjusted estimates (tmle)
 cwfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.67,0.33),contrast=c("Control","Water"),seed=3902288)
 csfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.67,0.33),contrast=c("Control","Sanitation"),seed=6125274)
@@ -162,20 +186,26 @@ rownames(rd.tmle.h1) <- rownames(pr.tmle.h1) <- rownames(diff.h1)
 round(diff.h1,4)
 round(rd.tmle.h1,4)
 round(pr.tmle.h1,4)
+```
 
-
-#---------------------------------------
 # H2: Combined WSH versus single interventions
-#---------------------------------------
+```{r}
+
 h2.contrasts <- list(
   c("Water","WSH"),
   c("Sanitation","WSH"),
   c("Handwashing","WSH")
 )
+```
+
+```{r}
 
 # unadjusted estimates (paired t-test)
-diff.h2 <- t(sapply(h2.contrasts,ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
+diff.h2 <- t(sapply(h2.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
 rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+```
+
+```{r, eval = FALSE, tidy=TRUE}
 
 # adjusted estimates (tmle)
 wshwfit    <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("Water","WSH"),seed=8440041)
@@ -191,34 +221,33 @@ rownames(rd.tmle.h2) <- rownames(pr.tmle.h2) <- rownames(diff.h2)
 round(diff.h2,4)
 round(rd.tmle.h2,4)
 round(pr.tmle.h2,4)
+```
 
-#---------------------------------------
 # H3: WSH+Nutrition vs. WSH or Nutrition alone
-# CURRENTLY COMMENTED OUT TO SAVE COMPUTING
-# TIME B/C NOT PRE-SPECIFIED for diarrhea
-#---------------------------------------
-# h3.contrasts <- list(
-#   c("WSH","Nutrition + WSH"),
-#   c("Nutrition","Nutrition + WSH")
-# )
-# 
-# # unadjusted estimates (paired t-test)
-# diff.h3 <- t(sapply(h3.contrasts,ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block))
-# rownames(diff.h3) <- c("Nutrition + WSH v Nutrition","Nutrition + WSH v WSH")
-# 
-# # adjusted estimates (tmle)
-# set.seed(792348)
-# wshwshnfit <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("WSH","Nutrition + WSH"))
-# nwshnfit   <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("Nutrition","Nutrition + WSH"))
-# 
-# tmle.h3 <- list(nwshnfit,wshwshnfit)
-# rd.tmle.h3 <- t(sapply(tmle.h3,tmle.summary.rd))
-# rownames(rd.tmle.h3) <- rownames(diff.h3)
+## Currently not run to save computing time B/C Not Pre-specified for diarrhea
+```{r, eval = FALSE, tidy=TRUE}
 
+ h3.contrasts <- list(
+   c("WSH","Nutrition + WSH"),
+   c("Nutrition","Nutrition + WSH")
+ )
+ 
+ # unadjusted estimates (paired t-test)
+ diff.h3 <- t(sapply(h3.contrasts,ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block))
+ rownames(diff.h3) <- c("Nutrition + WSH v Nutrition","Nutrition + WSH v WSH")
+ 
+ # adjusted estimates (tmle)
+ set.seed(792348)
+ wshwshnfit <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("WSH","Nutrition + WSH"))
+ nwshnfit   <- ITT.tmle(Y=ad$diar7d,tr=ad$tr,strat=ad$block,W=Ws,id=ad$clusterid,family="binomial",prtr=c(0.5,0.5),contrast=c("Nutrition","Nutrition + WSH"))
+ 
+ tmle.h3 <- list(nwshnfit,wshwshnfit)
+ rd.tmle.h3 <- t(sapply(tmle.h3,tmle.summary.rd))
+ rownames(rd.tmle.h3) <- rownames(diff.h3)
+```
 
-#---------------------------------------
-# re-name into pre-specified objects
-#---------------------------------------
+### Re-name into pre-specified objects
+```{r, eval = FALSE, tidy=TRUE}
 
 diar_h1_rd_adj <- rd.tmle.h1
 diar_h2_rd_adj <- rd.tmle.h2
@@ -227,10 +256,11 @@ diar_h2_rd_adj <- rd.tmle.h2
 diar_h1_pr_adj <- pr.tmle.h1
 diar_h2_pr_adj <- pr.tmle.h2
 # diar_h3_pr_adj <- pr.tmle.h3
+```
 
-#---------------------------------------
 # Print and save results
-#---------------------------------------
+```{r,  eval = FALSE, tidy=TRUE}
+
 diar_h1_rd_adj
 
 diar_h2_rd_adj
@@ -238,15 +268,9 @@ diar_h2_rd_adj
 diar_h1_pr_adj
 
 diar_h2_pr_adj
+```
 
 
-
-# add 'b' suffix for comparison with jade
-diar_h1_rd_adj_b <- diar_h1_rd_adj
-diar_h2_rd_adj_b <- diar_h2_rd_adj
-diar_h1_pr_adj_b <- diar_h1_pr_adj
-diar_h2_pr_adj_b <- diar_h2_pr_adj
-rm(diar_h1_rd_adj,diar_h2_rd_adj,diar_h1_pr_adj,diar_h2_pr_adj)
 
 # save everything except the datasets themselves
 # that way we have all of the block-specific estimates if needed for plotting or additional stats
@@ -254,6 +278,4 @@ rm(list=c("d","ad"))
 save.image(file="~/dropbox/wbb-primary-analysis/results/raw/ben/bangladesh-diar-adj-ben.RData")
 
 
-
-```
 
