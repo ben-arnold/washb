@@ -32,6 +32,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
   require(sandwich)
   require(lmtest)
   require(MASS)
+  options(scipen=999)
+
 
   if(!is.null(W)){
     glmdat <- data.frame(
@@ -91,8 +93,23 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     fit <- glm(Y~.,family=family,data=dmat)
     vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
     rfit <- coeftest(fit, vcovCL)
+
+    RR<-round(exp(rfit[,1]),4)
+    out<-data.frame(RR, round(exp(confint.default(fit,level=0.95)),4))
+    #out<-out[2:(length(X)-(length(unique(pair))-1)),]
+    colnames(out)<-c("RR","2.5%","97.5%")
+
     cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
-    print(round(rfit[2,],5))
+    #print(round(rfit[2,],5))
+    print(out[2,])
+
+    print("\n RR of covariates")
+
+    print(out[2:(length(X)-(length(unique(pair))-1)),])
+
+    cat("\n Type \"rfit\" to return full glm output.")
+    cat("\n Type \"rfit$pairs\" to glm fit of pairs.")
+
     return(rfit)
   }else{
     if (!requireNamespace("MASS", quietly = TRUE)) {
