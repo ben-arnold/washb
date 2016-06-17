@@ -66,6 +66,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
       screenW<-subset(glmdat, select=colnames(W))
       toexclude <- names(screenW) %in% forcedW
       screenW=screenW[!toexclude]
+      cat("\n-----------------------------------------\nInclude the following adjustment covariates:\n-----------------------------------------\n")
+      cat(forcedW, sep="\n")
     }else{
       screenW<-subset(glmdat, select=colnames(W))
     }
@@ -103,14 +105,14 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     #print(round(rfit[2,],5))
     print(out[2,])
 
-    print("\n RR of covariates")
+    cat("\n RR of covariates\n")
 
-    print(out[2:(length(X)-(length(unique(pair))-1)),])
+    print(out[2:(length(RR)-(length(unique(pair))-1)),])
 
     cat("\n Type \"rfit\" to return full glm output.")
     cat("\n Type \"rfit$pairs\" to glm fit of pairs.")
 
-    return(rfit)
+    invisible(rfit)
   }else{
     if (!requireNamespace("MASS", quietly = TRUE)) {
       stop("MASS needed for this function to work. Please install it.",
@@ -119,22 +121,37 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
       fit<- glm.nb(Y ~., data = dmat)
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
+      RR<-round(exp(rfit[,1]),4)
+      out<-data.frame(RR, round(exp(confint.default(fit,level=0.95)),4))
+      #out<-out[2:(length(X)-(length(unique(pair))-1)),]
+      colnames(out)<-c("RR","2.5%","97.5%")
+
       cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
-      print(round(rfit[2,],5))
-      #return(rfit)
-      #assess whether conditional mean is equal to conditional variance
+      #print(round(rfit[2,],5))
+      print(out[2,])
+
+      cat("\n RR of covariates\n")
+
+      print(out[2:(length(RR)-(length(unique(pair))-1)),])
+
+
+      cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
+
       pois <- glm(Y ~ ., family = "poisson", data = dmat)
-      #X2 <- 2 * (logLik(fit) - logLik(pois))
-      #print(pchisq(X2, df = 1, lower.tail=FALSE))
+      X2 <- 2 * (logLik(fit) - logLik(pois))
+      cat("\nLog-likelihood ratio test P-value:\n")
+      print(pchisq(X2, df = 1, lower.tail=FALSE))
+
+      cat("\n Type \"rfit\" to return full glm output.")
+      cat("\n Type \"rfit$pairs\" to glm fit of pairs.")
 
       #get confidence intervals
-      (est <- cbind(Estimate = coef(fit), confint(fit)))
+      #(est <- cbind(Estimate = coef(fit), confint.default(fit)))
       #get IRRs
-      print(exp(est))
-      return(rfit)
+      #print(exp(est))
+      invisible(rfit)
 
     }
   }
-
 }
 
