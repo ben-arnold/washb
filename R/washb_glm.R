@@ -91,7 +91,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     dmat <- subset(glmdat,select=c("Y","tr","pair"))
   }
 
-  if(family!="neg.binom"){
+  if(family=="binomial"){
     fit <- glm(Y~.,family=family,data=dmat)
     vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
     rfit <- coeftest(fit, vcovCL)
@@ -113,7 +113,53 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     cat("\n Type \"rfit$pairs\" to glm fit of pairs.")
 
     invisible(rfit)
-  }else{
+  } else{
+    if(family=="poisson"){
+      fit <- glm(Y~.,family=family,data=dmat)
+      vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+      rfit <- coeftest(fit, vcovCL)
+
+      IRR<-round(exp(rfit[,1]),4)
+      out<-data.frame(IRR, round(exp(confint.default(fit,level=0.95)),4))
+      #out<-out[2:(length(X)-(length(unique(pair))-1)),]
+      colnames(out)<-c("IRR","2.5%","97.5%")
+
+      cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+      #print(round(rfit[2,],5))
+      print(out[2,])
+
+      cat("\n IRR of covariates\n")
+
+      print(out[2:(length(IRR)-(length(unique(pair))-1)),])
+
+      cat("\n Type \"rfit\" to return full glm output.")
+      cat("\n Type \"rfit$pairs\" to glm fit of pairs.")
+
+      invisible(rfit)
+    }else{
+      if(family=="gaussian"){
+        fit <- glm(Y~.,family=family,data=dmat)
+        vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+        rfit <- coeftest(fit, vcovCL)
+
+        coef<-round(exp(rfit[,1]),4)
+        out<-data.frame(coef, round((confint.default(fit,level=0.95)),4))
+        #out<-out[2:(length(X)-(length(unique(pair))-1)),]
+        colnames(out)<-c("Coef.","2.5%","97.5%")
+
+        cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+        #print(round(rfit[2,],5))
+        print(out[2,])
+
+        cat("\n coefficients and 95% Confidence Intervals of covariates\n")
+
+        print(out[2:(length(coef)-(length(unique(pair))-1)),])
+
+        cat("\n Type \"rfit\" to return full glm output.")
+        cat("\n Type \"rfit$pairs\" to glm fit of pairs.")
+
+        invisible(rfit)
+      }else{
     if (!requireNamespace("MASS", quietly = TRUE)) {
       stop("MASS needed for this function to work. Please install it.",
            call. = FALSE)
@@ -121,18 +167,18 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
       fit<- glm.nb(Y ~., data = dmat)
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
-      RR<-round(exp(rfit[,1]),4)
-      out<-data.frame(RR, round(exp(confint.default(fit,level=0.95)),4))
+      IRR<-round(exp(rfit[,1]),4)
+      out<-data.frame(IRR, round(exp(confint.default(fit,level=0.95)),4))
       #out<-out[2:(length(X)-(length(unique(pair))-1)),]
-      colnames(out)<-c("RR","2.5%","97.5%")
+      colnames(out)<-c("IRR","2.5%","97.5%")
 
       cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
       #print(round(rfit[2,],5))
       print(out[2,])
 
-      cat("\n RR of covariates\n")
+      cat("\n IRR of covariates\n")
 
-      print(out[2:(length(RR)-(length(unique(pair))-1)),])
+      print(out[2:(length(IRR)-(length(unique(pair))-1)),])
 
 
       cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
@@ -151,7 +197,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
       #print(exp(est))
       invisible(rfit)
 
-    }
+    }}}
   }
 }
 

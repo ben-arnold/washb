@@ -58,7 +58,7 @@ ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-washb_prescreen(Y=ad$diar7d,Ws,family="poisson")
+washb_prescreen(Y=ad$diar7d,Ws,family="binomial")
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 h1.contrasts <- list(
@@ -71,8 +71,9 @@ h1.contrasts <- list(
 )
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
+diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RR"))
 rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+print(exp(diff.h1))
 
 ## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  ##Need to fix so code runs
@@ -121,8 +122,9 @@ h2.contrasts <- list(
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # unadjusted estimates (paired t-test)
-diff.h2 <- t(sapply(h2.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
+diff.h2 <- t(sapply(h2.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RR"))
 rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+print(exp(diff.h2))
 
 ## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  
@@ -180,4 +182,151 @@ rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
 #  diar_h1_pr_adj
 #  
 #  diar_h2_pr_adj
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#print((diff.h1))
+print(exp(diff.h1))
+
+#print((diff.h2))
+print(exp(diff.h2))
+
+
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Sanitation"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Handwashing"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","WSH"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition + WSH"), family="binomial"))
+
+#diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
+#rownames(glm.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+#print(diff.h1)
+
+
+#Need to fix/debug
+#glm.h1<-washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=h1.contrasts, family="binomial")
+#rownames(glm.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+#print(glm.h1)
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Sanitation"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Handwashing"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","WSH"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition"), family="binomial"))
+
+print(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition + WSH"), family="binomial"))
+
+## ----  results="hide"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+load(file.path(extPath, "washb_bd_enrol.Rdata"))  
+load(file.path(extPath, "washb_bd_anthro.Rdata"))  
+
+# drop svydate and month because they are superceded in the child level diarrhea data
+  washb_bd_enrol$svydate <- NULL
+  washb_bd_enrol$month <- NULL
+
+# merge the baseline dataset to the follow-up dataset
+ad <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+dim(washb_bd_anthro)
+dim(ad)
+
+#---------------------------------------
+# subset to the relevant measurement
+# Year 1 or Year 2
+#---------------------------------------
+table(ad$svy)
+ad <- subset(ad,svy==2)
+dim(ad)
+
+# subset the anthropometry to target children (excluding siblings)
+dim(ad)
+ad <- subset(ad,tchild=="Target child")
+dim(ad)
+
+# Drop children with extreme LAZ values
+table(ad$laz_x)
+ad <- subset(ad,laz_x!=1)
+
+
+# Exclude children with missing data (none)
+table(is.na(ad$laz))
+
+# re-order the tr factor for convenience
+ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
+
+# ensure that month is coded as a factor
+ad$month <- factor(ad$month)
+
+# sort the data for perfect replication with jade on the V-fold cross-validation
+ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
+
+#---------------------------------------
+# Select covariates with univariate
+# associations with the outcome of
+# P<0.2 based on a liklihood ratio test
+#---------------------------------------
+
+# drop due to so many missing values?
+# asset_clock
+
+Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+
+
+#---------------------------------------
+# Estimate adjusted mean differences
+#---------------------------------------
+#---------------------------------------
+# H1: Each intervention arm vs. Control
+#---------------------------------------
+h1.contrasts <- list(
+  c("Control","Water"),
+  c("Control","Sanitation"),
+  c("Control","Handwashing"),
+  c("Control","WSH"),
+  c("Control","Nutrition"),
+  c("Control","Nutrition + WSH")
+)
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$laz,tr=ad$tr,strat=ad$block,measure="RD"))
+rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+print(diff.h1)
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Sanitation"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Handwashing"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","WSH"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition + WSH"), family="gaussian")))
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Sanitation"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Handwashing"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","WSH"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition"), family="gaussian")))
+
+print((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition + WSH"), family="gaussian")))
 
