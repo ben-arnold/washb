@@ -54,11 +54,17 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
   glmdat$tr    <- factor(glmdat$tr,levels=contrast[1:2])
   glmdat$pair <- factor(glmdat$pair)
 
-  # restrict to complete cases
+  # restrict to complete cases and save a vector indexing observations dropped
   n.orig <- dim(glmdat)[1]
+  rowdropped<-rep(1,nrow(glmdat))
+  rowdropped[which(complete.cases(glmdat))]<-0
   glmdat <- glmdat[complete.cases(glmdat),]
   n.sub  <- dim(glmdat)[1]
   if(n.orig>n.sub) cat("\n-----------------------------------------\nDropping",n.orig-n.sub,"observations due to missing values in 1 or more variables\n","Final sample size:",n.sub,"\n-----------------------------------------\n")
+
+  #Get complete cases that will be used in the glm fit
+
+
 
   #split W into screened and forced adjustment covariates
   if(!is.null(W)){
@@ -74,7 +80,6 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
   }else{
     screenW<-NULL
   }
-  #forceWdata<-subset(glmdat, select=forcedW)
 
   if(!is.null(screenW)){
     # pre-screen the covariates
@@ -83,9 +88,17 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     Wscreen <- washb_prescreen(Y=glmdat$Y,Ws=screenW,family=family)
 
     if(!is.null(forcedW)){
-      dmat <- subset(glmdat,select=c("Y","tr",Wscreen,forcedW,"pair"))
+      if(!is.null(Wscreen)){
+        dmat <- subset(glmdat,select=c("Y","tr",Wscreen,forcedW,"pair"))
+        }else{
+        dmat <- subset(glmdat,select=c("Y","tr",forcedW,"pair"))
+        }
     } else {
-      dmat <- subset(glmdat,select=c("Y","tr",Wscreen,"pair"))
+      if(!is.null(Wscreen)){
+        dmat <- subset(glmdat,select=c("Y","tr",Wscreen,"pair"))
+      }else{
+        dmat <- subset(glmdat,select=c("Y","tr","pair"))
+      }
     }
   } else {
     dmat <- subset(glmdat,select=c("Y","tr","pair"))
@@ -98,7 +111,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
 
     cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
 
-    washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, pair=pair, vcovCL=vcovCL, family=family)
+    #washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, pair=pair, vcovCL=vcovCL, family=family)
     return(fit)
   } else{
       if(family=="gaussian"){
@@ -113,8 +126,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
 
         cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
 
-        washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, pair=pair, vcovCL=vcovCL, family=family)
-        return(rfit)
+        modelfit<-washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family)
+        return(modelfit)
       }else{
     if (!requireNamespace("MASS", quietly = TRUE)) {
       stop("MASS needed for this function to work. Please install it.",
@@ -125,21 +138,17 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
       rfit <- coeftest(fit, vcovCL)
 
       cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
-      washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, pair=pair, vcovCL=vcovCL, family=family)
+      modelfit<-washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family)
 
       cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
 
       pois <- glm(Y ~ ., family = "poisson", data = dmat)
       X2 <- 2 * (logLik(fit) - logLik(pois))
       cat("\nLog-likelihood ratio test P-value:\n")
+      cat("\nIf <0.05, negative binomial model is more appropriate than a Poisson model.\n\n")
       print(pchisq(X2, df = 1, lower.tail=FALSE))
 
-
-      #get confidence intervals
-      #(est <- cbind(Estimate = coef(fit), confint.default(fit)))
-      #get IRRs
-      #print(exp(est))
-      return(rfit)
+      return(modelfit)
       }
     }
   }

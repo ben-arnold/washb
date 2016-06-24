@@ -6,6 +6,7 @@
 #' @param fit glm fit object to be formatted
 #' @param rfit output from coeftest with fit and sandwich SE
 #' @param dmat dataframe used within the washb_glm function to fit data
+#' @param rowdropped dummy vector indexing rows of data dropped because a var contained missing data, to be read through the function and added to the formatted output.
 #' @param pair Pair-matched randomization ID variable (in WASH Benefits: block)
 #' @param vcovCL sandwichSE function output
 #' @param family GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.
@@ -20,11 +21,8 @@
 
 
 
-washb_glmFormat <- function(fit, rfit, dmat, pair, vcovCL, family="gaussian") {
+washb_glmFormat <- function(fit, rfit, dmat, rowdropped, pair, vcovCL, family="gaussian") {
 
-    #Get complete cases that will be used in the glm fit
-    rowdropped<-rep(1,nrow(dmat))
-    rowdropped[which(complete.cases(dmat))]<-0
 
     if(family=="binomial"|family=="poisson"|family=="neg.binom"){
     expcoef<-round(exp(rfit[,1]),4)
@@ -33,20 +31,42 @@ washb_glmFormat <- function(fit, rfit, dmat, pair, vcovCL, family="gaussian") {
       RR<-data.frame(round(rfit[,1],4), round(confint.default(fit,level=0.95),4))
     }
     #out<-out[2:(length(X)-(length(unique(pair))-1)),]
-    colnames(RR)<-c("RR","2.5%","97.5%")
 
-    #print(round(rfit[2,],5))
+    if(family=="binomial") {
+      colnames(RR)<-c("PR","2.5%","97.5%")
+    } else{
+      if(family=="poisson") {
+        colnames(RR)<-c("CIR","2.5%","97.5%")
+      }
+      if(family=="neg.binom") {
+        colnames(RR)<-c("IRR","2.5%","97.5%")
+      }
+      else{
+        colnames(RR)<-c("Coef.","2.5%","97.5%")
+    }
+
+      if(family!="gaussian"){
     print(RR[2,])
-
     cat("\n RR of covariates\n")
 
-    print(RR[3:(length(expcoef)-(length(unique(pair))-1)),])
+    print(RR[3:(nrow(RR)-(length(unique(pair))-1)),])
 
-    cat("\n Type \"fit$fit\" to return full glm output.")
-    cat("\n Type \"fit$RR\" to return the relative risk of the full model, including pair-matched blocks.")
-    cat("\n Type \"fit$cov\" to return the variance-covariance matrix.")
-    cat("\n Type \"fit$rowdropped\" to return the vector list of observations included in the model fit")
+    cat("\n Type \"`modelname'$fit\" to return full glm output.")
+    cat("\n Type \"`modelname'$coef\" to return the relative risk of the full model, including pair-matched blocks.")
+    cat("\n Type \"`modelname'$cov\" to return the variance-covariance matrix.")
+    cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
+      }else{
+        print(RR[2,])
+        cat("\n Coef of covariates\n")
 
-    fit=list(RR=RR, rfit=rfit, cov=vcovCL, rowdropped=rowdropped)
-    return(fit)
+        print(RR[3:(nrow(RR)-(length(unique(pair))-1)),])
+
+        cat("\n Type \"`modelname'$fit\" to return full glm output.")
+        cat("\n Type \"`modelname'$coef\" to return the coefficients and 95% CI's of the full model, including pair-matched blocks.")
+        cat("\n Type \"`modelname'$cov\" to return the variance-covariance matrix.")
+        cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
+      }
+    modelfit=list(coef=RR, rfit=rfit, cov=vcovCL, rowdropped=rowdropped)
+    return(modelfit)
+  }
 }
