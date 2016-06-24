@@ -12,14 +12,12 @@ output:
       smooth_scroll: true
     theme: united
     highlight: pygments
-    code_folding: hide
 vignette: >
   %\VignetteIndexEntry{washb-package-vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-output: rmarkdown::html_vignette
 
 
 ```{r set-options, echo=FALSE, cache=FALSE}
@@ -30,13 +28,16 @@ options(width = 200)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# WASH Benefits diarrheal disease outcome analysis using R package functions  
-### Calculate adjusted differences in diarrheal disease between treatment arms for H1 and H2  
+#Vignette overview
+#### WASH Benefits Bangladesh primary outcome analysis using the washb R package functions  
+#### Calculate unadjusted and adjusted differences in diarrheal disease and length-for-age z-score between treatment arms for hypothesis 1 and hypothesis 2.  
   
-###Input file:
- * washb-bangladesh-diar.csv  
+####Input files:
+ * washb-bangladesh-diar.csv
+ * washb-bangladesh-enrol.csv  
+
  
-###List and description of the functions documented in this vignette:  
+####List and description of the functions documented in this vignette:  
  * __washb_prescreen:__ Function to pre-screen adjustment covariates -- restrict to those with a LR test P<0.2.  
  * __washb_permute:__ Conducts a permutation test of the indepdence of Y and tr, conditional on randomization block using the Wilcoxon rank-sum test statistic.
  * __washb_glm:__ Convenience wrapper function to run glm models with robust standard errors for unadjusted and adjusted estimates.
@@ -45,29 +46,40 @@ knitr::opts_chunk$set(echo = TRUE)
  * __washb_ttest:__ Wrapper function to call the paired t-test for two different arms of the study.  
  * __washb_mh.pool:__ Estimates the Mantel-Haenszel prevalence ratio. Note: strata with no outcomes (i.e., missing PR) are dropped. This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates. The arguments Y,tr,strat, below need to be from the same dataset.
  * __washb_prescreen__ 
- * __washb_ITT.unadj:__ Unadjusted ITT estimates of differences between arms, calculated with either a paired T-test (continuous outcomes) or a Mantel-Haenszel pooled estimator (binary outcomes). The arguments Y,tr,strat, below need to be from the same dataset.
 
  
-###Relationships among functions:
+####Relationships among functions:
 __washb\_glm__ calls __washb_prescreen__, and then only covariates with a p-value>0.2 are included in the adjustment set.  
 __washb\_glm__ uses __sandwichSE__ to estimate sandwich-based robust standard errors to account for clustering.  
-  
-__washb\_ITT.unadj__ uses __washb_mh.pool__ to estimate Mantel-Haenszel pooled estimates if the outcome is binomial
-__washb\_ITT.unadj__ uses __washb_ttest__ to estimate paired t-test if the outcome is continious 
+__washb\_glm__ uses __washb\_glmFormat__ to format model output, convert coefficients to risk ratios, and return the variance/covariance matrix and a vestor of dropped observations.
   
 __washb_means__ uses __sandwichSE__ to estimate sandwich-based robust standard errors to account for clustering.
 
- 
-### Load in necessary packages:
-To be filled in
+#R resources
+For new users of R, the following sources are helpful learning resources:
+(To be added)
+  
+  
+#Package and Data Loading
+#### Load in required packages:
+If you are installing the packages for the first time:
+```{r, eval = FALSE, tidy=TRUE}
+    install.packages("sandwich")
+    install.packages("lmtest")
+    install.packages("coin")
+    install.packages("plyr")
+    install.packages("metafor")
+```
+  
+Once packages are installed for the first time, they will be loaded along with the "washb" package when the following code is run:
 
-```{r echo=FALSE, results = "hide"}
+```{r , results = "hide"}
 library(washb)
-rm(list=ls())
 ```
 
 
-```{r echo=FALSE, results = "hide"}  
+```{r, include=FALSE}  
+ rm(list=ls())
  baseLoc<- system.file(package="washb")  
  extPath<- file.path(baseLoc, "data")
 
@@ -77,38 +89,39 @@ rm(list=ls())
 
 
 
-###Clean data  
+####Clean data  
 The data in this vignette is contained in 2 files, included in the package:  
 1.  __washb_bd_enrol.Rdata__, an R file of enrollment characteristics  
 1.  __washb_bd_diar.Rdata__, an R file of diarrheal disease data  
 
-```{r, echo=FALSE, tidy=TRUE}
+These datasets are included in the washb package and can be loaded with the data() command
+Load here:
+```{r, eval=FALSE}
+data(washb_bd_enrol)
+data(washb_bd_diar)
+
+```
+  
+
+The following code cleans and merges the enrolment and diarrhea data:
+```{r, results="hide"}
 # drop svydate and month because they are superceded in the child level diarrhea data
   washb_bd_enrol$svydate <- NULL
   washb_bd_enrol$month <- NULL
 
 # merge the baseline dataset to the follow-up dataset
 ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
-dim(washb_bd_diar)
-dim(ad)
 
 # subset to the relevant measurement
 # Year 1 or Year 2
-table(ad$svy)
 ad <- subset(ad,svy==1|svy==2)
-dim(ad)
 
 #subset the diarrhea to children <36 mos at enrollment
 ### (exlude new births that are not target children)
-dim(ad)
-table(ad$sibnewbirth)
 ad <- subset(ad,sibnewbirth==0)
-dim(ad)
-table(ad$gt36mos)
 ad <- subset(ad,gt36mos==0)
 
 # Exclude children with missing data
-table(ad$tchild,is.na(ad$diar7d),ad$svy)
 ad <- subset(ad,!is.na(ad$diar7d))
 
 #Re-order the tr factor for convenience
@@ -120,30 +133,32 @@ ad$month <- factor(ad$month)
 #Sort the data for perfect replication when using V-fold cross-validation
 ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 ```
-
+  
+Now that the dataset is cleaned and merged, the washb package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis. (With the exception that the primary outcome analysis used TMLE, targeted maximum likelihood estimation, rather than GLM models in estimating the adjusted treatment effects.)  
+  
+  
 #Function: wasb_prescreen  
 Select covariates with univariate associations with the outcome of P<0.2 based on a likelihood ratio test.
  * (Excluded because only measured in target children: birthord)  
  * (Dropped due to too many missing values: asset_clock, momheight)  
 
-###First, subset the desired variables
+###Subset to a new dataframe the variables to be screened:
 ```{r  echo=FALSE}
 
 Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
-#Temp check
-#Ws <- subset(ad,select=c("month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 ```
 
 ###Run the washb_prescreen function
-```{r, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 washb_prescreen(Y=ad$diar7d,Ws,family="binomial")
 ```
 
-###Estimate adjusted mean differences
 
-#H1: Each intervention arm vs. Control  
-###Create vector of contrasts
+
+###Create vector of contrasts for each hypothesis
+Hypothesis 1: Each intervention arm vs. Control  
+Hypothesis 2: Combined WSH versus single interventions 
 ```{r}
 h1.contrasts <- list(
   c("Control","Water"),
@@ -153,26 +168,6 @@ h1.contrasts <- list(
   c("Control","Nutrition"),
   c("Control","Nutrition + WSH")
 )
-```
-### Unadjusted estimates (Mantel-Haenszel)
-```{r}
-diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RR"))
-rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-print(exp(diff.h1))
-```
-
-### Non-parametric unadjusted estimates (Wilcoxon Signed Rank permutation test)
-```{r, eval = FALSE, tidy=TRUE}
-##Need to fix so code runs
-permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
-rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-```
-
-
-
-# H2: Combined WSH versus single interventions
-```{r}
-
 h2.contrasts <- list(
   c("Water","WSH"),
   c("Sanitation","WSH"),
@@ -180,64 +175,66 @@ h2.contrasts <- list(
 )
 ```
 
-```{r}
 
-# unadjusted estimates (paired t-test)
-diff.h2 <- t(sapply(h2.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RR"))
+#Function: washb_MH.pooled
+### Unadjusted Mantel-Haenszel estimates 
+Y=binary outcome (here, 7-day diarrheal disease recall "ad$diar7d")
+tr=binary treatment group variable, 
+
+Apply washb_MH.pooled to the water vs. control arm contrast. 
+```{r, warning=FALSE, message=FALSE}
+CvW<-washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
+#Exponentiate coefficients to calculate the prevalence ratio:
+print(exp(CvW))
+```
+Use sapply command to efficiently apply the function to all the treatment arm contrasts
+```{r, warning=FALSE, message=FALSE}
+#Hypothesis 1
+diff.h1 <- t(sapply(h1.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
+rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+print(exp(diff.h1))
+
+#Hypothesis 2
+diff.h2 <- t(sapply(h2.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
 rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
 print(exp(diff.h2))
 ```
 
+#Function: washb_permute
+#### Non-parametric unadjusted estimates (Wilcoxon Signed Rank permutation test)
+```{r, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE}
+permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+rownames(permute.diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+permute.diff.h1
 
-
-#Unadjusted GLM
-```{r}
-#print((diff.h1))
-#print(exp(diff.h1))
-
-#print((diff.h2))
-#print(exp(diff.h2))
-
-
-
-
-unadj.CvW<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="binomial"))
-
-unadj.CvS<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Sanitation"), family="binomial"))
-
-unadj.CvH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Handwashing"), family="binomial"))
-
-unadj.CvWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","WSH"), family="binomial"))
-
-unadj.CvN<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition"), family="binomial"))
-
-unadj.CvNWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition + WSH"), family="binomial"))
-
-#diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
-#rownames(glm.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-#print(diff.h1)
-
-
-#Need to fix/debug
-#glm.h1<-washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=h1.contrasts, family="binomial")
-#rownames(glm.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-#print(glm.h1)
+permute.diff.h2<-t(sapply(h2.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+rownames(permute.diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+permute.diff.h2
 ```
 
-#Adjusted GLM
+#Function: washb_mean
+####Estimate adjusted mean differences
+
+
+
+
+#Function: washb_glm 
+####Unadjusted GLM
+```{r, warning=FALSE, message=FALSE}
+
+unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="binomial"))
+
+unadj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="binomial"))
+
+```
+
+####Adjusted GLM
 ```{r}
 
-adj.CvW<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="binomial"))
+adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family="binomial"))
 
-adj.CvS<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Sanitation"), family="binomial"))
+adj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family="binomial"))
 
-adj.CvH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Handwashing"), family="binomial"))
-
-adj.CvWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","WSH"), family="binomial"))
-
-adj.CvN<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition"), family="binomial"))
-
-adj.CvNWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition + WSH"), family="binomial"))
 ```
 
 
@@ -247,8 +244,8 @@ adj.CvNWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id
 
 
 
-# Load the analysis dataset,
-# the baseline covariate dataset
+ Load the analysis dataset,
+ the baseline covariate dataset
 
 ```{r, eval=FALSE,  results="hide"}
 load(file.path(extPath, "washb_bd_enrol.Rdata"))  
@@ -321,14 +318,15 @@ h1.contrasts <- list(
 )
 ```
 
-# unadjusted estimates (paired t-test)
+#Function:paired.ttest
+#### unadjusted estimates (paired t-test)
 ```{r, eval=FALSE}
 diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$laz,tr=ad$tr,strat=ad$block,measure="RD"))
 rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
 print(diff.h1)
 ```
 
-#Unadjusted GLM
+####Unadjusted GLM
 ```{r, eval=FALSE}
 ((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="gaussian")))
 
@@ -344,7 +342,7 @@ print(diff.h1)
 ```
 
 
-#Adjusted GLM
+####Adjusted GLM
 ```{r, eval=FALSE}
 #print
 ((washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="gaussian")))

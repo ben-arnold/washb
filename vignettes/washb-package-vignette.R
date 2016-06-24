@@ -4,44 +4,47 @@ options(width = 200)
 ## ----setup, include=FALSE-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 
-## ----echo=FALSE, results = "hide"---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-library(washb)
-rm(list=ls())
+## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#      install.packages("sandwich")
+#      install.packages("lmtest")
+#      install.packages("coin")
+#      install.packages("plyr")
+#      install.packages("metafor")
 
-## ----echo=FALSE, results = "hide"---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- results = "hide"--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+library(washb)
+
+## ---- include=FALSE-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ rm(list=ls())
  baseLoc<- system.file(package="washb")  
  extPath<- file.path(baseLoc, "data")
 
  load(file.path(extPath, "washb_bd_enrol.Rdata"))  
  load(file.path(extPath, "washb_bd_diar.Rdata"))  
 
-## ---- echo=FALSE, tidy=TRUE---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  data(washb_bd_enrol)
+#  data(washb_bd_diar)
+#  
+
+## ---- results="hide"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # drop svydate and month because they are superceded in the child level diarrhea data
   washb_bd_enrol$svydate <- NULL
   washb_bd_enrol$month <- NULL
 
 # merge the baseline dataset to the follow-up dataset
 ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
-dim(washb_bd_diar)
-dim(ad)
 
 # subset to the relevant measurement
 # Year 1 or Year 2
-table(ad$svy)
 ad <- subset(ad,svy==1|svy==2)
-dim(ad)
 
 #subset the diarrhea to children <36 mos at enrollment
 ### (exlude new births that are not target children)
-dim(ad)
-table(ad$sibnewbirth)
 ad <- subset(ad,sibnewbirth==0)
-dim(ad)
-table(ad$gt36mos)
 ad <- subset(ad,gt36mos==0)
 
 # Exclude children with missing data
-table(ad$tchild,is.na(ad$diar7d),ad$svy)
 ad <- subset(ad,!is.na(ad$diar7d))
 
 #Re-order the tr factor for convenience
@@ -57,8 +60,6 @@ ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 
 Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
-#Temp check
-#Ws <- subset(ad,select=c("month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
 ## ---- message=FALSE-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 washb_prescreen(Y=ad$diar7d,Ws,family="binomial")
@@ -72,19 +73,6 @@ h1.contrasts <- list(
   c("Control","Nutrition"),
   c("Control","Nutrition + WSH")
 )
-
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RR"))
-rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-print(exp(diff.h1))
-
-## ---- eval = FALSE, tidy=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#  ##Need to fix so code runs
-#  permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
-#  rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 h2.contrasts <- list(
   c("Water","WSH"),
   c("Sanitation","WSH"),
@@ -92,57 +80,43 @@ h2.contrasts <- list(
 )
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CvW<-washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
+#Exponentiate coefficients to calculate the prevalence ratio:
+print(exp(CvW))
 
-# unadjusted estimates (paired t-test)
-diff.h2 <- t(sapply(h2.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RR"))
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Hypothesis 1
+diff.h1 <- t(sapply(h1.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
+rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+print(exp(diff.h1))
+
+#Hypothesis 2
+diff.h2 <- t(sapply(h2.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
 rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
 print(exp(diff.h2))
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#print((diff.h1))
-#print(exp(diff.h1))
-
-#print((diff.h2))
-#print(exp(diff.h2))
-
-
-
-
-unadj.CvW<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="binomial"))
-
-unadj.CvS<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Sanitation"), family="binomial"))
-
-unadj.CvH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Handwashing"), family="binomial"))
-
-unadj.CvWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","WSH"), family="binomial"))
-
-unadj.CvN<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition"), family="binomial"))
-
-unadj.CvNWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition + WSH"), family="binomial"))
-
-#diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$diar7d,tr=ad$tr,strat=ad$block,binomial=TRUE,measure="RD"))
-#rownames(glm.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-#print(diff.h1)
-
-
-#Need to fix/debug
-#glm.h1<-washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=h1.contrasts, family="binomial")
-#rownames(glm.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-#print(glm.h1)
+## ---- eval=FALSE ,tidy=TRUE---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+#  rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+#  permute.diff.h1
+#  
+#  permute.diff.h2<-t(sapply(h2.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+#  rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+#  permute.diff.h2
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-adj.CvW<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family="binomial"))
+unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="binomial"))
 
-adj.CvS<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Sanitation"), family="binomial"))
+unadj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="binomial"))
 
-adj.CvH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Handwashing"), family="binomial"))
 
-adj.CvWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","WSH"), family="binomial"))
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-adj.CvN<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition"), family="binomial"))
+adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family="binomial"))
 
-adj.CvNWSH<-(washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Nutrition + WSH"), family="binomial"))
+adj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family="binomial"))
+
 
 ## ---- eval=FALSE,  results="hide"---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  load(file.path(extPath, "washb_bd_enrol.Rdata"))
