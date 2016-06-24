@@ -62,8 +62,6 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
   n.sub  <- dim(glmdat)[1]
   if(n.orig>n.sub) cat("\n-----------------------------------------\nDropping",n.orig-n.sub,"observations due to missing values in 1 or more variables\n","Final sample size:",n.sub,"\n-----------------------------------------\n")
 
-  #Get complete cases that will be used in the glm fit
-
 
 
   #split W into screened and forced adjustment covariates
@@ -111,8 +109,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
 
     cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
 
-    #washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, pair=pair, vcovCL=vcovCL, family=family)
-    return(fit)
+    modelfit<-washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family)
+    return(modelfit)
   } else{
       if(family=="gaussian"){
         fit <- glm(Y~.,family=family,data=dmat)
@@ -128,6 +126,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
 
         modelfit<-washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family)
         return(modelfit)
+
       }else{
     if (!requireNamespace("MASS", quietly = TRUE)) {
       stop("MASS needed for this function to work. Please install it.",

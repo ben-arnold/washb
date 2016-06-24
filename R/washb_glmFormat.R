@@ -30,7 +30,6 @@ washb_glmFormat <- function(fit, rfit, dmat, rowdropped, pair, vcovCL, family="g
     }else{
       RR<-data.frame(round(rfit[,1],4), round(confint.default(fit,level=0.95),4))
     }
-    #out<-out[2:(length(X)-(length(unique(pair))-1)),]
 
     if(family=="binomial") {
       colnames(RR)<-c("PR","2.5%","97.5%")
@@ -43,13 +42,15 @@ washb_glmFormat <- function(fit, rfit, dmat, rowdropped, pair, vcovCL, family="g
       }
       else{
         colnames(RR)<-c("Coef.","2.5%","97.5%")
-    }
+    }}
 
       if(family!="gaussian"){
     print(RR[2,])
-    cat("\n RR of covariates\n")
 
+    if(ncol(dmat)>3){
+    cat("\n RR of covariates\n")
     print(RR[3:(nrow(RR)-(length(unique(pair))-1)),])
+    }
 
     cat("\n Type \"`modelname'$fit\" to return full glm output.")
     cat("\n Type \"`modelname'$coef\" to return the relative risk of the full model, including pair-matched blocks.")
@@ -57,16 +58,17 @@ washb_glmFormat <- function(fit, rfit, dmat, rowdropped, pair, vcovCL, family="g
     cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
       }else{
         print(RR[2,])
-        cat("\n Coef of covariates\n")
 
+        if(ncol(dmat)>3){
+        cat("\n Coef of covariates\n")
         print(RR[3:(nrow(RR)-(length(unique(pair))-1)),])
+        }
 
         cat("\n Type \"`modelname'$fit\" to return full glm output.")
         cat("\n Type \"`modelname'$coef\" to return the coefficients and 95% CI's of the full model, including pair-matched blocks.")
         cat("\n Type \"`modelname'$cov\" to return the variance-covariance matrix.")
         cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
       }
-    modelfit=list(coef=RR, rfit=rfit, cov=vcovCL, rowdropped=rowdropped)
-    return(modelfit)
-  }
+  modelfit=list(coef=RR, rfit=rfit, cov=vcovCL, rowdropped=rowdropped)
+  return(modelfit)
 }
