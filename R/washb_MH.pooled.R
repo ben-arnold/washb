@@ -27,7 +27,7 @@
 #'
 
 
-mh.pool <- function(Y,tr,strat,contrast,measure="RR") {
+washb_MH.pooled <- function(Y,tr,strat,contrast,measure="RR") {
   require(metafor)
   mhdat <- data.frame(Y=Y[tr==contrast[1]|tr==contrast[2]],
                       tr=tr[tr==contrast[1]|tr==contrast[2]],
