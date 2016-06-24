@@ -4,7 +4,8 @@
 \alias{washb_glmFormat}
 \title{washb_glmFormat}
 \usage{
-washb_glmFormat(fit, rfit, dmat, pair, vcovCL, family = "gaussian")
+washb_glmFormat(fit, rfit, dmat, rowdropped, pair, vcovCL,
+  family = "gaussian")
 }
 \arguments{
 \item{fit}{glm fit object to be formatted}
@@ -12,6 +13,8 @@ washb_glmFormat(fit, rfit, dmat, pair, vcovCL, family = "gaussian")
 \item{rfit}{output from coeftest with fit and sandwich SE}
 
 \item{dmat}{dataframe used within the washb_glm function to fit data}
+
+\item{rowdropped}{dummy vector indexing rows of data dropped because a var contained missing data, to be read through the function and added to the formatted output.}
 
 \item{pair}{Pair-matched randomization ID variable (in WASH Benefits: block)}
 

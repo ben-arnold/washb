@@ -2,7 +2,7 @@
 #' washb_permute
 #'
 #' WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
-#' Conducts a permutation test of the indepdence of Y and tr, conditional on randomization block
+#' Conducts a permutation test of the independence of Y and tr, conditional on randomization block
 #' using the Wilcoxon rank-sum test statistic
 #'
 #'
@@ -17,6 +17,7 @@
 #' Ben: Add full citations
 #'
 #' @return to be written
+#' @export
 #'
 #' @examples
 #' to be written
@@ -24,14 +25,18 @@
 
 washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL) {
 
+  #Handle missing data?
+
   require(coin)
   require(plyr)
-  pd <- data.frame(Y=Y,tr=tr,block=pair)
+  pd <- data.frame(Y=Y,tr=tr,pair=pair)
   pd <- subset(pd,tr==contrast[1]|tr==contrast[2])
   pd$tr <- factor(pd$tr,levels=contrast[1:2])
-  pd <- ddply(pd,c("block","tr"),summarise,Y=mean(Y))
+  pd <- ddply(pd,c("pair","tr"),summarise,Y=mean(Y))
   if(!is.null(seed)) set.seed(seed)
-  W <- wilcoxsign_test(Y~tr|block,data=pd,distribution = approximate(B=nreps),zero.method="Pratt" )
+  W <- wilcoxsign_test(Y~tr|pair,data=pd,distribution = approximate(B=nreps),zero.method="Pratt" )
+  #W <- wilcoxsign_test(Y~tr,data=pd,distribution = approximate(B=nreps),zero.method="Pratt" )
+
   show(W)
 
   # now pull out some of the useful information, for convenience since coin() uses S4
