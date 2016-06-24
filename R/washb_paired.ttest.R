@@ -19,7 +19,7 @@
 
 
 
-paired.ttest <- function(Y,tr,strat,contrast) {
+washb_paired.ttest <- function(Y,tr,strat,contrast) {
   ttdat <- data.frame(Y=Y[tr==contrast[1]|tr==contrast[2]],
                       tr=tr[tr==contrast[1]|tr==contrast[2]],
                       strat=strat[tr==contrast[1]|tr==contrast[2]])
