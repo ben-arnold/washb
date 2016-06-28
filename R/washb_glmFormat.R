@@ -49,7 +49,7 @@ washb_glmFormat <- function(fit, rfit, dmat, rowdropped, pair, vcovCL, family="g
 
     if(ncol(dmat)>3){
     cat("\n RR of covariates\n")
-    print(RR[3:(nrow(RR)-(length(unique(pair))-1)),])
+    print(RR[3:(nrow(RR)-(length(unique(pair))+1)),])
     }
 
     cat("\n Type \"`modelname'$fit\" to return full glm output.")
@@ -61,7 +61,7 @@ washb_glmFormat <- function(fit, rfit, dmat, rowdropped, pair, vcovCL, family="g
 
         if(ncol(dmat)>3){
         cat("\n Coef of covariates\n")
-        print(RR[3:(nrow(RR)-(length(unique(pair))-1)),])
+        print(RR[3:(nrow(RR)-(length(unique(pair))+1)),])
         }
 
         cat("\n Type \"`modelname'$fit\" to return full glm output.")

@@ -24,7 +24,7 @@ to be written
 }
 \description{
 WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
-Conducts a permutation test of the indepdence of Y and tr, conditional on randomization block
+Conducts a permutation test of the independence of Y and tr, conditional on randomization block
 using the Wilcoxon rank-sum test statistic
 }
 \examples{
