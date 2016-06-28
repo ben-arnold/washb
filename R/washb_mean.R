@@ -9,9 +9,36 @@
 #'
 #' @return Returns a 1x6 matrix that includes the number of observations, outcome mean, standard deviation, robust SE for the mean, lower 95\% CI, upper 95\% CI
 #' @details This function is most useful for calculating variable means and confidence intervals -- for example, calculating average compliance (uptake) within a given intervention arm, or calculating the average LAZ by arm or measurement round. In the WASH Benefits trials, the independent unit is typically the cluster, so the \code{id} argument should identify the cluster ID.  If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use \code{\link[washb]{washb_glm}}, washb_ttest(TBA for continuous outcomes), or washb_mh (TBA for binary outcomes).
+#' @return matrix containing the following columns: N (number of observations used to calculate mean), Mean, SD, Robust SE (sandwich estimator), and the lower and upper 95% Confidence interval bounds.
 #' @export
 #'
 #' @examples TBD
+#'
+#'  #The washb_mean function
+#'
+#'  #Load in Bandladesh anthropometry data and enrollment data
+#'  data(washb_bd_anthro)
+#'  data(washb_bd_enrol)
+#'
+#'  # drop svydate and month because they are superceded in the child level diarrhea data
+#'  washb_bd_enrol$svydate <- NULL
+#'  washb_bd_enrol$month <- NULL
+#'  ad <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+#'  ad <- subset(ad,svy==2)
+#'  ad <- subset(ad,tchild=="Target child")
+#'
+#   # Drop children with extreme LAZ values
+#'  ad <- subset(ad,laz_x!=1)
+#'
+#'  #Make sure the treatment group variables are set as factors:
+#'  ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
+#'
+#'  #Run washb_mean function on child LAZ score outcome:
+#'  washb_mean(Y=ad$laz,id=ad$clusterid,print=TRUE)
+
+
+
+
 washb_mean <- function(Y,id,print=TRUE) {
 
   # subset data to relevant treatment arm and restrict to complete cases
