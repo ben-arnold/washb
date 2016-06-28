@@ -61,7 +61,7 @@ ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
 
-## ---- message=FALSE-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- warning=FALSE, message=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 washb_prescreen(Y=ad$diar7d,Ws,family="binomial")
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -79,12 +79,12 @@ h2.contrasts <- list(
   c("Handwashing","WSH")
 )
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- warning=FALSE, message=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CvW<-washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
 #Exponentiate coefficients to calculate the prevalence ratio:
 print(exp(CvW))
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- warning=FALSE, message=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #Hypothesis 1
 diff.h1 <- t(sapply(h1.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
 rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
@@ -95,16 +95,16 @@ diff.h2 <- t(sapply(h2.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$b
 rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
 print(exp(diff.h2))
 
-## ---- eval=FALSE ,tidy=TRUE---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- eval=FALSE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE---------------------------------------------------------------------------------------------------------------------------------
 #  permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
-#  rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+#  rownames(permute.diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
 #  permute.diff.h1
 #  
 #  permute.diff.h2<-t(sapply(h2.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
-#  rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+#  rownames(permute.diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
 #  permute.diff.h2
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- warning=FALSE, message=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="binomial"))
 
@@ -179,14 +179,9 @@ adj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block
 #  #---------------------------------------
 #  # H1: Each intervention arm vs. Control
 #  #---------------------------------------
-#  h1.contrasts <- list(
-#    c("Control","Water"),
-#    c("Control","Sanitation"),
-#    c("Control","Handwashing"),
-#    c("Control","WSH"),
-#    c("Control","Nutrition"),
-#    c("Control","Nutrition + WSH")
-#  )
+#  
+#  #Function:paired.ttest
+#  #### unadjusted estimates (paired t-test)
 
 ## ---- eval=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  diff.h1 <- t(sapply(h1.contrasts,washb_ITT.unadj,Y=ad$laz,tr=ad$tr,strat=ad$block,measure="RD"))
