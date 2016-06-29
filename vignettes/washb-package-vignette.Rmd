@@ -176,7 +176,7 @@ prescreened_vars[1:5,1]
 #Function: washb_mean  
 This function is most useful for calculating variable means and confidence intervals -- for example, calculating average compliance (uptake) within a given intervention arm, or calculating the average LAZ by arm or measurement round. In the WASH Benefits trials, the independent unit is typically the cluster, so the \code{id} argument should identify the cluster ID.  If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use \code{\link[washb]{washb_glm}}, washb\_ttest(for continuous outcomes), or washb_mh (for binary outcomes).  
 Here, the mean and 95% Confidence interval for mother's age is calculated:
-```{r, cache=TRUE}
+```{r, echo=FALSE, cache=TRUE}
 washb_mean(Y=ad$momage,id=ad$clusterid,print=TRUE)
 
 ```
@@ -245,18 +245,18 @@ permute.diff.h2
 ####Unadjusted GLM
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
 
-unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="binomial"))
+unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
 
-unadj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="binomial"))
+#unadj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
 
 ```
 
 ####Adjusted GLM
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
 
-adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family="binomial"))
+adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
 
-adj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family="binomial"))
+#adj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
 
 ```
 
@@ -380,42 +380,42 @@ WSH+N | Adjusted SL + TMLE | | | |
   
 ###Length-for-Age Z-score outcome  
 
-Contrast v. control | Estimator | PR | 95% CI | SE | P-value
---------------------|-----------|----|--------|----|--------
-Water | Unadjusted MH | `r round(exp(diff.h1LAZ[1,1]),2)` |(`r round(exp(diff.h1LAZ[1,3:4]),2)`) | `r round(diff.h1LAZ[1,2],4)`| `r round(diff.h1LAZ[1,5],4)`
-Water | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[1]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[1]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[7]][2,2],4)` | `r round(unadj.glm.h1LAZ[[7]][2,4],4)`
-Water | Adjusted GLM | `r round(adj.glm.h1LAZ[[1]][2,1],2)` |(`r round(adj.glm.h1LAZ[[1]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[7]][2,2],4)` | `r round(adj.glm.h1LAZ[[7]][2,4],4)`
+Contrast v. control | Estimator | Difference | 95% CI | t-stat/SE | P-value
+--------------------|-----------|------------|--------|----|--------
+Water | Unadjusted ttest | `r round(diff.h1LAZ[1,1],2)` |(`r round((diff.h1LAZ[1,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[1,4],2)`| `r round(diff.h1LAZ[1,5],3)`
+Water | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[1]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[1]][2,2:3],2)`) |SE:  `r round(unadj.glm.h1LAZ[[7]][2,2],2)` | `r round(unadj.glm.h1LAZ[[7]][2,4],3)`
+Water | Adjusted GLM | `r round(adj.glm.h1LAZ[[1]][2,1],2)` |(`r round(adj.glm.h1LAZ[[1]][2,2:3],2)`) |SE:  `r round(adj.glm.h1LAZ[[7]][2,2],2)` | `r round(adj.glm.h1LAZ[[7]][2,4],3)`
 Water | Adjusted GLM + TMLE |  | | | 
 Water | Adjusted SL + TMLE |  | | | 
 Water | Wilcoxon  permutation test |  | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-Sanitation | Unadjusted MH | `r round(exp(diff.h1LAZ[2,1]),2)` |(`r round(exp(diff.h1LAZ[2,3:4]),2)`) | `r round(diff.h1LAZ[2,2],4)`| `r round(diff.h1LAZ[2,5],4)`
-Sanitation | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[2]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[2]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[8]][2,2],4)` | `r round(unadj.glm.h1LAZ[[8]][2,4],4)`
-Sanitation | Adjusted GLM | `r round(adj.glm.h1LAZ[[2]][2,1],2)` |(`r round(adj.glm.h1LAZ[[2]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[8]][2,2],4)` | `r round(adj.glm.h1LAZ[[8]][2,4],4)`
+Sanitation | Unadjusted ttest | `r round((diff.h1LAZ[2,1]),2)` |(`r round((diff.h1LAZ[2,2:3]),2)`) | `r round(diff.h1LAZ[2,4],2)`| `r round(diff.h1LAZ[2,5],3)`
+Sanitation | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[2]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[2]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[8]][2,2],2)` | `r round(unadj.glm.h1LAZ[[8]][2,4],3)`
+Sanitation | Adjusted GLM | `r round(adj.glm.h1LAZ[[2]][2,1],2)` |(`r round(adj.glm.h1LAZ[[2]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[8]][2,2],2)` | `r round(adj.glm.h1LAZ[[8]][2,4],3)`
 Sanitation | Adjusted GLM + TMLE | | | | 
 Sanitation | Adjusted SL + TMLE | | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-Handwashing | Unadjusted MH | `r round(exp(diff.h1LAZ[3,1]),2)` |(`r round(exp(diff.h1LAZ[3,3:4]),2)`) | `r round(diff.h1LAZ[3,2],4)`| `r round(diff.h1LAZ[3,5],4)`
-Handwashing | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[3]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[3]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[9]][2,2],4)` | `r round(unadj.glm.h1LAZ[[9]][2,4],4)`
-Handwashing | Adjusted GLM | `r round(adj.glm.h1LAZ[[3]][2,1],2)` |(`r round(adj.glm.h1LAZ[[3]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[9]][2,2],4)` | `r round(adj.glm.h1LAZ[[9]][2,4],4)`
+Handwashing | Unadjusted ttest | `r round((diff.h1LAZ[3,1]),2)` |(`r round((diff.h1LAZ[3,2:3]),2)`) | `r round(diff.h1LAZ[3,4],2)`| `r round(diff.h1LAZ[3,5],3)`
+Handwashing | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[3]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[3]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[9]][2,2],2)` | `r round(unadj.glm.h1LAZ[[9]][2,4],3)`
+Handwashing | Adjusted GLM | `r round(adj.glm.h1LAZ[[3]][2,1],2)` |(`r round(adj.glm.h1LAZ[[3]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[9]][2,2],2)` | `r round(adj.glm.h1LAZ[[9]][2,4],3)`
 Handwashing | Adjusted GLM + TMLE | | | | 
 Handwashing | Adjusted SL + TMLE | | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-WSH | Unadjusted MH | `r round(exp(diff.h1LAZ[4,1]),2)` |(`r round(exp(diff.h1LAZ[4,3:4]),2)`) | `r round(diff.h1LAZ[4,2],4)`| `r round(diff.h1LAZ[4,5],4)`
-WSH | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[4]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[4]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[10]][2,2],4)` | `r round(unadj.glm.h1LAZ[[10]][2,4],4)`
-WSH | Adjusted GLM | `r round(adj.glm.h1LAZ[[4]][2,1],2)` |(`r round(adj.glm.h1LAZ[[4]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[10]][2,2],4)` | `r round(adj.glm.h1LAZ[[10]][2,4],4)`
+WSH | Unadjusted ttest | `r round((diff.h1LAZ[4,1]),2)` |(`r round((diff.h1LAZ[4,2:3]),2)`) | `r round(diff.h1LAZ[4,4],2)`| `r round(diff.h1LAZ[4,5],3)`
+WSH | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[4]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[4]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[10]][2,2],2)` | `r round(unadj.glm.h1LAZ[[10]][2,4],3)`
+WSH | Adjusted GLM | `r round(adj.glm.h1LAZ[[4]][2,1],2)` |(`r round(adj.glm.h1LAZ[[4]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[10]][2,2],2)` | `r round(adj.glm.h1LAZ[[10]][2,4],3)`
 WSH | Adjusted GLM + TMLE | | | | 
 WSH | Adjusted SL + TMLE | | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-Nutrition | Unadjusted MH | `r round(exp(diff.h1LAZ[5,1]),2)` |(`r round(exp(diff.h1LAZ[5,3:4]),2)`) | `r round(diff.h1LAZ[5,2],4)`| `r round(diff.h1LAZ[5,5],4)`
+Nutrition | Unadjusted ttest | `r round((diff.h1LAZ[5,1]),2)` |(`r round((diff.h1LAZ[5,2:3]),2)`) | `r round(diff.h1LAZ[5,4],4)`| `r round(diff.h1LAZ[5,5],3)`
 Nutrition | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[5]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[5]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[11]][2,2],4)` | `r round(unadj.glm.h1LAZ[[11]][2,4],4)`
 Nutrition | Adjusted GLM | `r round(adj.glm.h1LAZ[[5]][2,1],2)` |(`r round(adj.glm.h1LAZ[[5]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[11]][2,2],4)` | `r round(adj.glm.h1LAZ[[11]][2,4],4)`
 Nutrition | Adjusted GLM + TMLE | | | | 
 Nutrition | Adjusted SL + TMLE | | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-WSH+N | Unadjusted MH | `r round(exp(diff.h1LAZ[6,1]),2)` |(`r round(exp(diff.h1LAZ[6,3:4]),2)`) | `r round(diff.h1LAZ[6,2],4)`| `r round(diff.h1LAZ[6,5],4)`
-WSH+N | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[6]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[6]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[12]][2,2],4)` | `r round(unadj.glm.h1LAZ[[12]][2,4],4)`
-WSH+N | Adjusted GLM | `r round(adj.glm.h1LAZ[[6]][2,1],2)` |(`r round(adj.glm.h1LAZ[[6]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[12]][2,2],4)` | `r round(adj.glm.h1LAZ[[12]][2,4],4)`
+WSH+N | Unadjusted ttest | `r round((diff.h1LAZ[6,1]),2)` |(`r round((diff.h1LAZ[6,2:3]),2)`) | `r round(diff.h1LAZ[6,4],4)`| `r round(diff.h1LAZ[6,5],3)`
+WSH+N | Unadjusted GLM |  `r round(unadj.glm.h1LAZ[[6]][2,1],2)` |(`r round(unadj.glm.h1LAZ[[6]][2,2:3],2)`) | `r round(unadj.glm.h1LAZ[[12]][2,2],2)` | `r round(unadj.glm.h1LAZ[[12]][2,4],3)`
+WSH+N | Adjusted GLM | `r round(adj.glm.h1LAZ[[6]][2,1],2)` |(`r round(adj.glm.h1LAZ[[6]][2,2:3],2)`) | `r round(adj.glm.h1LAZ[[12]][2,2],2)` | `r round(adj.glm.h1LAZ[[12]][2,4],3)`
 WSH+N | Adjusted GLM + TMLE | | | | 
 WSH+N | Adjusted SL + TMLE | | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
