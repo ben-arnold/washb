@@ -24,27 +24,28 @@
 washb_glmFormat <- function(fit, rfit, dmat, rowdropped, pair, vcovCL, family="gaussian") {
 
 
-    if(family=="binomial"|family=="poisson"|family=="neg.binom"){
+    if(family[1]=="binomial"|family[1]=="poisson"|family[1]=="neg.binom"){
     expcoef<-round(exp(rfit[,1]),4)
-    RR<-data.frame(expcoef, round(exp(confint.default(fit,level=0.95)),4))
+    RR<-data.frame(round(exp(rfit[,1]),4), round(exp(rfit[,1]-1.96*rfit[,2]),4),round(exp(rfit[,1]+1.96*rfit[,2]),4))
     }else{
-      RR<-data.frame(round(rfit[,1],4), round(confint.default(fit,level=0.95),4))
+      if(family[1]=="gaussian")
+      RR<-data.frame(round((rfit[,1]),4), round((rfit[,1]-1.96*rfit[,2]),4),round((rfit[,1]+1.96*rfit[,2]),4))
     }
 
-    if(family=="binomial") {
+    if(family[1]=="binomial") {
       colnames(RR)<-c("PR","2.5%","97.5%")
     } else{
-      if(family=="poisson") {
+      if(family[1]=="poisson") {
         colnames(RR)<-c("CIR","2.5%","97.5%")
       }
-      if(family=="neg.binom") {
+      if(family[1]=="neg.binom") {
         colnames(RR)<-c("IRR","2.5%","97.5%")
       }
       else{
         colnames(RR)<-c("Coef.","2.5%","97.5%")
     }}
 
-      if(family!="gaussian"){
+      if(family[1]!="gaussian"){
     print(RR[2,])
 
     if(ncol(dmat)>3){

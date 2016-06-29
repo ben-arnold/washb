@@ -11,7 +11,7 @@
 #' @param forcedW Optional vector of variable names to force as adjustment covariates (no screening)
 #' @param id ID variable for independent units (cluster ID)
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
-#' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "neg.binom" for Negative binomial.
+#' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.
 #'
 #' @return returns the fit of the glm model. Future versions will format and convert the coefficients if needed.
 #' @export
@@ -102,7 +102,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     dmat <- subset(glmdat,select=c("Y","tr","pair"))
   }
 
-  if(family=="binomial"|family=="poisson"){
+  if(family[1]=="binomial"|family[1]=="poisson"){
     fit <- glm(Y~.,family=family,data=dmat)
     vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
     rfit <- coeftest(fit, vcovCL)
@@ -112,7 +112,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     modelfit<-washb_glmFormat(fit=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family)
     return(modelfit)
   } else{
-      if(family=="gaussian"){
+      if(family[1]=="gaussian"){
         fit <- glm(Y~.,family=family,data=dmat)
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
