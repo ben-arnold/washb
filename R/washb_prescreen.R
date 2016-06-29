@@ -60,7 +60,7 @@ washb_prescreen <- function(Y,Ws,family="gaussian") {
   dat <- dat[complete.cases(dat),]
   nW <- ncol(Ws)
   LRp <- rep(NA,nW)
-  if(family!="neg.binom"){
+  if(family[1]!="neg.binom"){
     for(i in 1:nW) {
       dat$W <- dat[,i]
       fit1 <- glm(Y~W,data=dat,family=family)

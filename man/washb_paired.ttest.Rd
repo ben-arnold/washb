@@ -16,7 +16,7 @@ washb_paired.ttest(Y, tr, strat, contrast)
 \item{contrast}{vector of length 2 that includes the tr groups to contrast}
 }
 \value{
-to be written
+data frame with mean difference ("diff"), 95% confidence intervals ("ci.lb" and "ci.ub"), t-statistic ("t-stat"), and p-value("p")
 }
 \description{
 Function to call the paired t-test for two different arms of the study.
@@ -24,7 +24,25 @@ Estimates the paired t-test for differences in means paired within randomization
 The arguments Y,tr,strat, below need to be from the same dataset:
 }
 \examples{
- to be written
+ #The washb_paired.ttest function
 
+ #Load in Bandladesh anthropometry data and enrollment data
+ data(washb_bd_anthro)
+ data(washb_bd_enrol)
+
+ # drop svydate and month because they are superceded in the child level diarrhea data
+ washb_bd_enrol$svydate <- NULL
+ washb_bd_enrol$month <- NULL
+ ad <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+ ad <- subset(ad,svy==2)
+ ad <- subset(ad,tchild=="Target child")
+
+ ad <- subset(ad,laz_x!=1)
+
+ #Make sure the treatment group variables are set as factors:
+ ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
+
+ #Run paired ttest function:
+ washb_paired.ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))
 }
 

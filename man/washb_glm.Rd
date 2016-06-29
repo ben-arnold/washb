@@ -23,7 +23,7 @@ washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, id, contrast,
 
 \item{contrast}{Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")}
 
-\item{family}{GLM model family (gaussian, binomial, poisson, and negative binomial). Use "neg.binom" for Negative binomial.}
+\item{family}{GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.}
 }
 \value{
 returns the fit of the glm model. Future versions will format and convert the coefficients if needed.
