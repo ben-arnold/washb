@@ -229,14 +229,28 @@ print(exp(diff.h2))
 
 #Function: washb_permute
 #### Non-parametric unadjusted estimates (Wilcoxon Signed Rank permutation test)
-```{r, eval=FALSE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE}
+(Description to be added)  
+  
+Apply the washb_permute function to the Water-Control arm comparison:
+```{r, eval=TRUE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE}
+permute.C.W <- washb_permute(Y=ad$diar7d,tr=ad$tr,pair=ad$block,c("Control","Water"),nreps=100000, seed=242524)
+```
+
+Use sapply to apply the function across all arm comparisons, and assign results to matrices for hypothesis 1 and hypothesis 2 comparisons:
+```{r, eval=TRUE, results = "hide", warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE}
+
 permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
 rownames(permute.diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-permute.diff.h1
 
 permute.diff.h2<-t(sapply(h2.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
 rownames(permute.diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+```
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE}
+
+permute.diff.h1
 permute.diff.h2
+
 ```
 
 
@@ -339,37 +353,42 @@ Water | Unadjusted GLM |  `r round(unadj.glm.h1[[1]][2,1],2)` |(`r round(unadj.g
 Water | Adjusted GLM | `r round(adj.glm.h1[[1]][2,1],2)` |(`r round(adj.glm.h1[[1]][2,2:3],2)`) | `r round(adj.glm.h1[[7]][2,2],4)` | `r round(adj.glm.h1[[7]][2,4],4)`
 Water | Adjusted GLM + TMLE |  | | | 
 Water | Adjusted SL + TMLE |  | | |   
-Water | Wilcoxon  permutation test |  | | | 
+Water | Wilcoxon  permutation test |  | |`r permute.diff.h1[1]` | 
 -----------------------------------------|--------------------------------------|---------------|-----------------------|------------|-----------  
 Sanitation | Unadjusted MH | `r round(exp(diff.h1[2,1]),2)` |(`r round(exp(diff.h1[2,3:4]),2)`) | `r round(diff.h1[2,2],4)`| `r round(diff.h1[2,6],4)`
 Sanitation | Unadjusted GLM |  `r round(unadj.glm.h1[[2]][2,1],2)` |(`r round(unadj.glm.h1[[2]][2,2:3],2)`) | `r round(unadj.glm.h1[[8]][2,2],4)` | `r round(unadj.glm.h1[[8]][2,4],4)`
 Sanitation | Adjusted GLM | `r round(adj.glm.h1[[2]][2,1],2)` |(`r round(adj.glm.h1[[2]][2,2:3],2)`) | `r round(adj.glm.h1[[8]][2,2],4)` | `r round(adj.glm.h1[[8]][2,4],4)`
 Sanitation | Adjusted GLM + TMLE | | | | 
 Sanitation | Adjusted SL + TMLE | | | | 
+Sanitation | Wilcoxon  permutation test |  | |`r permute.diff.h1[2]` | 
 -----------------------------------------|--------------------------------------|---------------|-----------------------|------------|-----------
 Handwashing | Unadjusted MH | `r round(exp(diff.h1[3,1]),2)` |(`r round(exp(diff.h1[3,3:4]),2)`) | `r round(diff.h1[3,2],4)`| `r round(diff.h1[3,6],4)`
 Handwashing | Unadjusted GLM |  `r round(unadj.glm.h1[[3]][2,1],2)` |(`r round(unadj.glm.h1[[3]][2,2:3],2)`) | `r round(unadj.glm.h1[[9]][2,2],4)` | `r round(unadj.glm.h1[[9]][2,4],4)`
 Handwashing | Adjusted GLM | `r round(adj.glm.h1[[3]][2,1],2)` |(`r round(adj.glm.h1[[3]][2,2:3],2)`) | `r round(adj.glm.h1[[9]][2,2],4)` | `r round(adj.glm.h1[[9]][2,4],4)`
 Handwashing | Adjusted GLM + TMLE | | | | 
 Handwashing | Adjusted SL + TMLE | | | | 
+Handwashing | Wilcoxon  permutation test |  | |`r permute.diff.h1[3]` | 
 -----------------------------------------|--------------------------------------|---------------|-----------------------|------------|-----------
 WSH | Unadjusted MH | `r round(exp(diff.h1[4,1]),2)` |(`r round(exp(diff.h1[4,3:4]),2)`) | `r round(diff.h1[4,2],4)`| `r round(diff.h1[4,6],4)`
 WSH | Unadjusted GLM |  `r round(unadj.glm.h1[[4]][2,1],2)` |(`r round(unadj.glm.h1[[4]][2,2:3],2)`) | `r round(unadj.glm.h1[[10]][2,2],4)` | `r round(unadj.glm.h1[[10]][2,4],4)`
 WSH | Adjusted GLM | `r round(adj.glm.h1[[4]][2,1],2)` |(`r round(adj.glm.h1[[4]][2,2:3],2)`) | `r round(adj.glm.h1[[10]][2,2],4)` | `r round(adj.glm.h1[[10]][2,4],4)`
 WSH | Adjusted GLM + TMLE | | | | 
 WSH | Adjusted SL + TMLE | | | | 
+WSH | Wilcoxon  permutation test |  | |`r permute.diff.h1[4]` | 
 -----------------------------------------|--------------------------------------|---------------|-----------------------|------------|-----------
 Nutrition | Unadjusted MH | `r round(exp(diff.h1[5,1]),2)` |(`r round(exp(diff.h1[5,3:4]),2)`) | `r round(diff.h1[5,2],4)`| `r round(diff.h1[5,6],4)`
 Nutrition | Unadjusted GLM |  `r round(unadj.glm.h1[[5]][2,1],2)` |(`r round(unadj.glm.h1[[5]][2,2:3],2)`) | `r round(unadj.glm.h1[[11]][2,2],4)` | `r round(unadj.glm.h1[[11]][2,4],4)`
 Nutrition | Adjusted GLM | `r round(adj.glm.h1[[5]][2,1],2)` |(`r round(adj.glm.h1[[5]][2,2:3],2)`) | `r round(adj.glm.h1[[11]][2,2],4)` | `r round(adj.glm.h1[[11]][2,4],4)`
 Nutrition | Adjusted GLM + TMLE | | | | 
 Nutrition | Adjusted SL + TMLE | | | | 
+Nutrition | Wilcoxon  permutation test |  | |`r permute.diff.h1[5]` | 
 -----------------------------------------|--------------------------------------|---------------|-----------------------|------------|-----------
 WSH+N | Unadjusted MH | `r round(exp(diff.h1[6,1]),2)` |(`r round(exp(diff.h1[6,3:4]),2)`) | `r round(diff.h1[6,2],4)`| `r round(diff.h1[6,6],4)`
 WSH+N | Unadjusted GLM |  `r round(unadj.glm.h1[[6]][2,1],2)` |(`r round(unadj.glm.h1[[6]][2,2:3],2)`) | `r round(unadj.glm.h1[[12]][2,2],4)` | `r round(unadj.glm.h1[[12]][2,4],4)`
 WSH+N | Adjusted GLM | `r round(adj.glm.h1[[6]][2,1],2)` |(`r round(adj.glm.h1[[6]][2,2:3],2)`) | `r round(adj.glm.h1[[12]][2,2],4)` | `r round(adj.glm.h1[[12]][2,4],4)`
 WSH+N | Adjusted GLM + TMLE | | | | 
 WSH+N | Adjusted SL + TMLE | | | | 
+WSH+N | Wilcoxon  permutation test |  | |`r permute.diff.h1[6]` | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
 
   

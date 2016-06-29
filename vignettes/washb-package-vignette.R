@@ -106,14 +106,21 @@ diff.h2 <- t(sapply(h2.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$b
 rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
 print(exp(diff.h2))
 
-## ---- eval=FALSE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE---------------------------------------------------------------------------------------------------------------------------------
-#  permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
-#  rownames(permute.diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-#  permute.diff.h1
-#  
-#  permute.diff.h2<-t(sapply(h2.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
-#  rownames(permute.diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
-#  permute.diff.h2
+## ---- eval=TRUE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE----------------------------------------------------------------------------------------------------------------------------------
+#set.seed(242524)
+
+
+#permute.C.W <- washb.permute(Y=ad$diar7d,tr=ad$tr,block=ad$block,c("Control","Water"))
+permute.C.W <- washb_permute(Y=ad$diar7d,tr=ad$tr,pair=ad$block,c("Control","Water"),nreps=100000, seed=242524)
+
+
+#permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+#rownames(permute.diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+#permute.diff.h1
+
+#permute.diff.h2<-t(sapply(h2.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+#rownames(permute.diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+#permute.diff.h2
 
 ## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
 
