@@ -25,9 +25,8 @@ Calculate means for a variable along with robust sandwich SEs and 95\% confidenc
 This function is most useful for calculating variable means and confidence intervals -- for example, calculating average compliance (uptake) within a given intervention arm, or calculating the average LAZ by arm or measurement round. In the WASH Benefits trials, the independent unit is typically the cluster, so the \code{id} argument should identify the cluster ID.  If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use \code{\link[washb]{washb_glm}}, washb_ttest(TBA for continuous outcomes), or washb_mh (TBA for binary outcomes).
 }
 \examples{
-TBD
 
- #The washb_mean function
+ #Example using the washb_mean function on child LAZ score
 
  #Load in Bandladesh anthropometry data and enrollment data
  data(washb_bd_anthro)
@@ -46,6 +45,20 @@ TBD
  ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
 
  #Run washb_mean function on child LAZ score outcome:
- washb_mean(Y=ad$laz,id=ad$clusterid,print=TRUE)
+ washb_mean(Y=ad$laz,id=ad$clusterid,print=FALSE)
+
+ #Run the function to calculate child LAZ by select intervention arms
+
+ #Subset data to only handwashing arm:
+ H<-ad[which(ad$tr=="Handwashing"),]
+
+ #Run function:
+ washb_mean(Y=H$laz,id=H$clusterid,print=FALSE)
+
+ #Subset data to only WSH arm:
+ WSH<-ad[which(ad$tr=="WSH"),]
+
+ #Run function:
+ washb_mean(Y=WSH$laz,id=WSH$clusterid,print=FALSE)
 }
 

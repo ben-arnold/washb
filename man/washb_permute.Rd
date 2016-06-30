@@ -4,7 +4,7 @@
 \alias{washb_permute}
 \title{washb_permute}
 \usage{
-washb_permute(Y, tr, pair, contrast, nreps = 1e+05, seed = NULL)
+washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
@@ -20,7 +20,11 @@ washb_permute(Y, tr, pair, contrast, nreps = 1e+05, seed = NULL)
 \item{seed}{Number for psuedo-random number generation in R}
 }
 \value{
-to be written
+A list of four slices (replace "~" with the assigned object name):
+~$p.value  The permutation test p-value
+~$Z  The z-statistic
+~$Ho
+~$W The full output of the wilcoxsign_test function called within the washb_permute function.
 }
 \description{
 WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
@@ -28,10 +32,54 @@ Conducts a permutation test of the independence of Y and tr, conditional on rand
 using the Wilcoxon rank-sum test statistic
 }
 \examples{
-to be written
+#Unadjusted permutation test of Bangladesh diarrheal disease primary outcome
+
+#######################
+#Load and clean data
+#######################
+data(washb_bd_diar)
+d<-washb_bd_diar
+d$block <- as.factor(d$block)
+
+# Subset the Data to Follow-up data only
+ad <- subset(d,svy>0)
+
+# Exclude:
+# * siblings who were born after enrollment
+# * siblings who were >36 mos at enrollment
+# * children with missing outcome data
+ad <- subset(ad,sibnewbirth==0)
+ad <- subset(ad,gt36mos==0)
+ad <- subset(ad,!is.na(ad$diar7d))
+
+# re-order the tr factor for convenience
+ad$tr <- factor(ad$tr,levels=c("Water","Sanitation","Handwashing","Nutrition","WSH","Nutrition + WSH","Control"))
+
+#Unadjusted permutation test of Bangladesh diarrheal disease outcome.
+
+# Hypothesis 1 permutation tests (Intervention arms vs. control arms)
+set.seed(242524)
+permute.C.W <- washb_permute(Y=ad$diar7d,tr=ad$tr,pair=ad$block,contrast=c("Control","Water"),nreps=100000)
+permute.C.S <- washb_permute(Y=ad$diar7d,tr=ad$tr,pair=ad$block,contrast=c("Control","Sanitation"),nreps=100000)
+permute.C.H <- washb_permute(Y=ad$diar7d,tr=ad$tr,pair=ad$block,contrast=c("Control","Handwashing"),nreps=100000)
+permute.C.WSH <- washb_permute(Y=ad$diar7d,tr=ad$tr,pair=ad$block,contrast=c("Control","WSH"),nreps=100000)
+permute.C.N   <- washb_permute(Y=ad$diar7d,tr=ad$tr,pair=ad$block,contrast=c("Control","Nutrition"),nreps=100000)
+permute.C.NWSH <- washb_permute(Y=ad$diar7d,tr=ad$tr,pair=ad$block,contrast=c("Control","Nutrition + WSH"),nreps=100000)
+
+# put objects in the standard format
+h1res <- list(permute.C.W,permute.C.S,permute.C.H,permute.C.WSH,permute.C.N,permute.C.NWSH)
+diar_h1_pval_unadj <- as.matrix(sapply(h1res,function(x) x$p.value),nrow=6)
+rownames(diar_h1_pval_unadj) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+
+# print results
+diar_h1_pval_unadj
 }
 \references{
-(Gail 1996, Feng 2001, Rosenbaum 2002)
-Ben: Add full citations
+1.	Gail, M. H., Mark, S. D., Carroll, R. J., Green, S. B. & Pee, D. On Design Considerations and Randomization-Based Inference for Community Intervention Trials. Statist. Med. 15, 1069–1092 (1996).
+[Link](http://onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0258(19960615)15:11%3c1069::AID-SIM220%3e3.0.CO%3b2-Q/full)
+2.	Braun, T. M. & Feng, Z. Optimal Permutation Tests for the Analysis of Group Randomized Trials. Journal of the American Statistical Association 96, 1424–1432 (2001).
+[Link](http://www.tandfonline.com/doi/abs/10.1198/016214501753382336)
+3.	Rosenbaum, P. R. Covariance Adjustment in Randomized Experiments and Observational Studies. Statist. Sci. 17, 286–327 (2002).
+[Link](http://projecteuclid.org/euclid.ss/1042727942)
 }
 

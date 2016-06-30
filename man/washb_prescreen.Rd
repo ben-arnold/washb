@@ -14,49 +14,55 @@ washb_prescreen(Y, Ws, family = "gaussian")
 \item{family}{GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.}
 }
 \value{
-to be written
+Function returns the list of variable names with a likelihood ratio test p-value <0.2.
 }
 \description{
 washb_prescreen
 }
 \examples{
 
- Stochastically generated dataset:
- n <- 250
- set.seed(12345)
- Cov <- matrix(rnorm(n*3), ncol=3)
- colnames(Cov) <- paste("W",1:3, sep="")
- Outcome <- rbinom(n,1, plogis(0.2*Cov[,1] + 0.1*Cov[,2] + 0.2*Cov[,3]^2 ))
+#Prescreen function applied to the Bangladesh diarrheal disease outcome.
+#The function will test a matrix of covariates and return those related to child diarrheal disease with
+#a <0.2 p-value from a likelihood ratio test.
 
- #Call function:
- washb_prescreen(Y=Outcome,Ws=Covariates,family="binomial")
+Cleans and merge the enrollment and diarrhea data:
+library(washb)
+data(washb_bd_enrol)
+data(washb_bd_diar)
 
- #Output:
- Likelihood Ratio Test P-values:
-     [,1]
- [1,] "P = 0.948"
- [2,] "P = 0.770"
- [3,] "P = 0.958"
+# drop svydate and month because they are superceded in the child level diarrhea data
+#washb_bd_enrol$svydate <- NULL
+#washb_bd_enrol$month <- NULL
 
+# merge the baseline dataset to the follow-up dataset
+ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
 
-Covariates selected (P<0.20):
-     [,1]
- [1,] "P = "
+# subset to the relevant measurement
+# Year 1 or Year 2
+ad <- subset(ad,svy==1|svy==2)
 
+#subset the diarrhea to children <36 mos at enrollment
+### (exlude new births that are not target children)
+ad <- subset(ad,sibnewbirth==0)
+ad <- subset(ad,gt36mos==0)
 
- #Continuous outcome:
- Outcome <- rnorm(n)
- washb_prescreen(Y=Outcome,Ws=Cov,family="gaussian")
+# Exclude children with missing data
+ad <- subset(ad,!is.na(ad$diar7d))
 
- Likelihood Ratio Test P-values:
-     [,1]
- [1,] "P = 0.139"
- [2,] "P = 0.756"
- [3,] "P = 0.619"
+#Re-order the tr factor for convenience
+ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
 
- Covariates selected (P<0.20):
-     [,1]
- [1,] "P = 0.139"
+#Ensure that month is coded as a factor
+ad$month <- factor(ad$month)
+
+#Sort the data for perfect replication when using V-fold cross-validation
+ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
+
+###Subset to a new dataframe the variables to be screened:
+Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+
+###Run the washb_prescreen function
+prescreened_varnames<-washb_prescreen(Y=ad$diar7d,Ws,family="binomial")
 
 }
 

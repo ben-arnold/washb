@@ -12,9 +12,9 @@
 #' @return matrix containing the following columns: N (number of observations used to calculate mean), Mean, SD, Robust SE (sandwich estimator), and the lower and upper 95% Confidence interval bounds.
 #' @export
 #'
-#' @examples TBD
+#' @examples
 #'
-#'  #The washb_mean function
+#'  #Example using the washb_mean function on child LAZ score
 #'
 #'  #Load in Bandladesh anthropometry data and enrollment data
 #'  data(washb_bd_anthro)
@@ -34,7 +34,22 @@
 #'  ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
 #'
 #'  #Run washb_mean function on child LAZ score outcome:
-#'  washb_mean(Y=ad$laz,id=ad$clusterid,print=TRUE)
+#'  washb_mean(Y=ad$laz,id=ad$clusterid,print=FALSE)
+#'
+#'  #Run the function to calculate child LAZ by select intervention arms
+#'
+#'  #Subset data to only handwashing arm:
+#'  H<-ad[which(ad$tr=="Handwashing"),]
+#'
+#'  #Run function:
+#'  washb_mean(Y=H$laz,id=H$clusterid,print=FALSE)
+#'
+#'  #Subset data to only WSH arm:
+#'  WSH<-ad[which(ad$tr=="WSH"),]
+#'
+#'  #Run function:
+#'  washb_mean(Y=WSH$laz,id=WSH$clusterid,print=FALSE)
+
 
 
 
