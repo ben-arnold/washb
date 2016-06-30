@@ -26,13 +26,63 @@ washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, id, contrast,
 \item{family}{GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.}
 }
 \value{
-returns the fit of the glm model. Future versions will format and convert the coefficients if needed.
+Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
+        used to fit the glm model
 }
 \description{
 Generalized linear model function for WASH Benefits study.
 washb_glm
 }
 \examples{
-to be written
+
+#washb_glm function applied to the Bangladesh diarrheal disease outcome to determine both unadjusted and adjusted
+#prevalence ratios between intervention and control arms.
+
+
+Cleans and merge the enrollment and diarrhea data:
+library(washb)
+data(washb_bd_enrol)
+data(washb_bd_diar)
+
+# drop svydate and month because they are superceded in the child level diarrhea data
+#washb_bd_enrol$svydate <- NULL
+#washb_bd_enrol$month <- NULL
+
+# merge the baseline dataset to the follow-up dataset
+ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+
+# subset to the relevant measurement
+# Year 1 or Year 2
+ad <- subset(ad,svy==1|svy==2)
+
+#subset the diarrhea to children <36 mos at enrollment
+### (exlude new births that are not target children)
+ad <- subset(ad,sibnewbirth==0)
+ad <- subset(ad,gt36mos==0)
+
+# Exclude children with missing data
+ad <- subset(ad,!is.na(ad$diar7d))
+
+#Re-order the tr factor for convenience
+ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
+
+#Ensure that month is coded as a factor
+ad$month <- factor(ad$month)
+
+#Sort the data for perfect replication when using V-fold cross-validation
+ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
+
+###Create vector of contrasts for each hypothesis to facilitate comparisons between arms.
+#Hypothesis 1: Each intervention arm vs. Control
+h1.contrasts <- list(
+  c("Control","Water"),
+  c("Control","Sanitation"),
+  c("Control","Handwashing"),
+  c("Control","WSH"),
+  c("Control","Nutrition"),
+  c("Control","Nutrition + WSH")
+)
+
+#Need to flesh out glm use in the vignette and then add below:
 }
 

@@ -4,13 +4,13 @@
 \alias{washb_glmFormat}
 \title{washb_glmFormat}
 \usage{
-washb_glmFormat(fit, rfit, dmat, rowdropped, pair, vcovCL,
+washb_glmFormat(rfit, RDfit = RDfit, dmat, rowdropped, pair, vcovCL,
   family = "gaussian")
 }
 \arguments{
-\item{fit}{glm fit object to be formatted}
-
 \item{rfit}{output from coeftest with fit and sandwich SE}
+
+\item{RDfit}{glm fit object with the identity link used to estimate risk differences.}
 
 \item{dmat}{dataframe used within the washb_glm function to fit data}
 
