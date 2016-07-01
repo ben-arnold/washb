@@ -4,6 +4,7 @@
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
 #' @param Ws data frame that includes candidate adjustment covariates to screen
 #' @param family GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.
+#' @param pval The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2
 #'
 #' @return
 #'  Function returns the list of variable names with a likelihood ratio test p-value <0.2.
@@ -57,12 +58,18 @@
 
 
 
-washb_prescreen <- function(Y,Ws,family="gaussian") {
+washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2) {
   # Y   : outcome variable of interest
   # Ws  : data frame of candidate covariates to screen
   # family : exponential model family (gaussian for continuous outcomes, binomial for binary outcomes, poisson for counts, and neg.binom for negative binomial models)
   require(lmtest)
   require(MASS)
+
+  #Check pvalue
+  if(pval>0.99|pval<0){
+    stop("P-value threshold not set between 0 and 1.")
+  }
+
   dat <- data.frame(Ws,Y)
   dat <- dat[complete.cases(dat),]
   nW <- ncol(Ws)
@@ -87,7 +94,7 @@ washb_prescreen <- function(Y,Ws,family="gaussian") {
         }
       }
     }
-  p20 <- ifelse(LRp<0.2,1,0)
+  p20 <- ifelse(LRp<pval,1,0)
   cat("\nLikelihood Ratio Test P-values:\n")
   print(cbind(names(Ws),paste("P =",sprintf("%1.3f",LRp))))
   cat("\n\nCovariates selected (P<0.20):\n")

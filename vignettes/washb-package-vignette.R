@@ -27,6 +27,54 @@ library(washb)
 #  data(washb_bd_diar)
 #  
 
+## ---- results="hide", cache=TRUE----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# drop svydate and month because they are superceded in the child level diarrhea data
+  washb_bd_enrol$svydate <- NULL
+  washb_bd_enrol$month <- NULL
+
+# merge the baseline dataset to the follow-up dataset
+ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+
+# subset to the relevant measurement
+# Year 1 or Year 2
+ad <- subset(ad,svy==1|svy==2)
+
+#subset the diarrhea to children <36 mos at enrollment
+### (exlude new births that are not target children)
+ad <- subset(ad,sibnewbirth==0)
+ad <- subset(ad,gt36mos==0)
+
+# Exclude children with missing data
+ad <- subset(ad,!is.na(ad$diar7d))
+
+#Re-order the tr factor for convenience
+ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
+
+#Ensure that month is coded as a factor
+ad$month <- factor(ad$month)
+
+#Sort the data for perfect replication when using V-fold cross-validation
+ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
+
+## ---- results = "hide" , cache=TRUE-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+
+
+## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
+prescreened_varnames<-washb_prescreen(Y=ad$diar7d,Ws,family="binomial")
+
+## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
+prescreened_varnames
+prescreened_vars <- subset(Ws,select=prescreened_varnames)
+#Examine the first five observations of the first selected variable:
+prescreened_vars[1:5,1]
+
+
+## ---- echo=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+washb_mean(Y=ad$momage,id=ad$clusterid,print=TRUE)
+
+
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 h1.contrasts <- list(
   c("Control","Water"),
@@ -41,6 +89,63 @@ h2.contrasts <- list(
   c("Sanitation","WSH"),
   c("Handwashing","WSH")
 )
+
+## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
+washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
+
+## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
+washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RD")
+
+## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
+#Hypothesis 1
+diff.h1 <- t(sapply(h1.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
+rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+print(diff.h1)
+
+#Hypothesis 2
+diff.h2 <- t(sapply(h2.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
+rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+print(diff.h2)
+
+## ---- eval=TRUE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE----------------------------------------------------------------------------------------------------------------------------------
+permute.C.W <- washb_permute(Y=ad$diar7d, tr=ad$tr, pair=ad$block, contrast=c("Control","Water"), nreps=100000, seed=242524)
+
+## ---- eval=TRUE, results = "hide", warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE----------------------------------------------------------------------------------------------------------------
+
+permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+rownames(permute.diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+
+permute.diff.h2<-t(sapply(h2.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
+rownames(permute.diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
+
+## ---- eval=TRUE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE----------------------------------------------------------------------------------------------------------------------------------
+
+permute.diff.h1
+permute.diff.h2
+
+
+## ---- warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE---------------------------------------------------------------------------------------------------------------------------------------------
+glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
+
+family=binomial(link='log')
+glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Water"), family=family)
+
+## ---- warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE---------------------------------------------------------------------------------------------------------------------------------------------
+glm.C.W$RD
+
+## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, V=NULL, id=ad$clusterid, family=binomial(link='log')))
+
+#unadj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
+
+
+## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, V=NULL, id=ad$clusterid, family=binomial(link='log')))
+
+#adj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
+
 
 ## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
 #Create a W variable containing only "sex", unadjusted for other covariates:
