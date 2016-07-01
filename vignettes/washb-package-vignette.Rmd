@@ -264,10 +264,10 @@ permute.diff.h2
 
 First, apply the washb_glm function to compare the water and control arms:
 ```{r, warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE}
-glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
+glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
 
 family=binomial(link='log')
-glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, contrast=c("Control","Water"), family=family)
+glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Water"), family=family)
 ```
 On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, 'objectname'$RD returns the risk difference instead of the risk ratio for all covariates (not applicable when the glm  model is gaussian).
 ```{r, warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE}
@@ -283,7 +283,7 @@ Other objects are:
 Use sapply to apply function across all pre-registered WASH Benefits arm comparisons:
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
 
-unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
+unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, V=NULL, id=ad$clusterid, family=binomial(link='log')))
 
 #unadj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
 
@@ -292,14 +292,24 @@ unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$blo
 ####Adjusted GLM
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
 
-adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
+adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, V=NULL, id=ad$clusterid, family=binomial(link='log')))
 
 #adj.glm.h2 <- t(sapply(h2.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family=binomial(link='log')))
 
 ```
 
+####Forcing covariates into the glm model regardless of prescreening p-value
+To be added
 
+####Subgroup analysis with GLM
+The "V" arguement can be used to create an interaction term with "tr", the treatment variable. V is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of water treatment on diarrheal disease, by sex. 
+```{r, warning=FALSE, message=FALSE, cache=TRUE}
+#Create a W variable containing only "sex", unadjusted for other covariates:
+W.interact<-subset(ad,select="sex")
 
+#Estimate subgroup analysis glm with washb_glm
+glm.C.W.bysex <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W.interact,forcedW=NULL, V="sex", id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
+```
 
 #LAZ Outcome Analysis  
   
@@ -348,18 +358,18 @@ round(print(diff.h1LAZ),3)
 ####Unadjusted GLM
 ```{r, warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE}
 
-unadj.glm.h1LAZ <- t(sapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="gaussian"))
+unadj.glm.h1LAZ <- t(sapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
 
-unadj.glm.h2LAZ <- t(sapply(h2.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, id=ad$clusterid, family="gaussian"))
+unadj.glm.h2LAZ <- t(sapply(h2.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
 
 ```
 
 ####Adjusted GLM
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
 
-adj.glm.h1LAZ <- t(sapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family="gaussian"))
+adj.glm.h1LAZ <- t(sapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
 
-adj.glm.h2LAZ <- t(sapply(h2.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, id=ad$clusterid, family="gaussian"))
+adj.glm.h2LAZ <- t(sapply(h2.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
 
 ```
   

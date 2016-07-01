@@ -5,7 +5,7 @@
 \title{Generalized linear model function for WASH Benefits study.
 washb_glm}
 \usage{
-washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, id, contrast,
+washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, V = NULL, id, contrast,
   family = gaussian)
 }
 \arguments{
@@ -18,6 +18,8 @@ washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, id, contrast,
 \item{W}{Optional data frame that includes adjustment covariates (for adjusted estimates)}
 
 \item{forcedW}{Optional vector of variable names to force as adjustment covariates (no screening)}
+
+\item{V}{Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.}
 
 \item{id}{ID variable for independent units (cluster ID)}
 

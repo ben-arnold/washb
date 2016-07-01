@@ -9,6 +9,7 @@
 #' @param pair Pair-matched randomization ID variable (in WASH Benefits: block)
 #' @param W Optional data frame that includes adjustment covariates (for adjusted estimates)
 #' @param forcedW Optional vector of variable names to force as adjustment covariates (no screening)
+#' @param V Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.
 #' @param id ID variable for independent units (cluster ID)
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
 #' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.
@@ -71,7 +72,7 @@
 
 
 
-washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussian) {
+washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family=gaussian) {
   # Y     : outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
   # tr    : binary treatment group variable, comparison group first
   # pair  : Pair-matched randomization ID variable (in WASH Benefits: block)
@@ -92,7 +93,11 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
       tr=tr[tr==contrast[1]|tr==contrast[2]],
       pair=pair[tr==contrast[1]|tr==contrast[2]],
       W[tr==contrast[1]|tr==contrast[2],]
-    )
+      )
+      #Fix variable name error if W is a single variable
+      if(ncol(W)==1){
+       colnames(glmdat)[5]<-  colnames(W)
+        }
   } else{
     glmdat <- data.frame(
       id=id[tr==contrast[1]|tr==contrast[2]],
@@ -103,6 +108,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
   }
   glmdat$tr    <- factor(glmdat$tr,levels=contrast[1:2])
   glmdat$pair <- factor(glmdat$pair)
+
+
 
   # restrict to complete cases and save a vector indexing observations dropped
   n.orig <- dim(glmdat)[1]
@@ -133,27 +140,37 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     # pre-screen the covariates
     # see Wprescreen() in the base functions
     cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
-    Wscreen <- washb_prescreen(Y=glmdat$Y,Ws=screenW,family=family)
+    suppressWarnings(Wscreen <- washb_prescreen(Y=glmdat$Y,Ws=screenW,family=family))
 
     if(!is.null(forcedW)){
       if(!is.null(Wscreen)){
-        dmat <- subset(glmdat,select=c("Y","tr",Wscreen,forcedW,"pair"))
+        dmat <- subset(glmdat,select=c("Y","tr",V,Wscreen,forcedW,"pair"))
         }else{
-        dmat <- subset(glmdat,select=c("Y","tr",forcedW,"pair"))
+        dmat <- subset(glmdat,select=c("Y","tr",V,forcedW,"pair"))
         }
     } else {
       if(!is.null(Wscreen)){
-        dmat <- subset(glmdat,select=c("Y","tr",Wscreen,"pair"))
+        dmat <- subset(glmdat,select=c("Y","tr",V,Wscreen,"pair"))
       }else{
-        dmat <- subset(glmdat,select=c("Y","tr","pair"))
+        dmat <- subset(glmdat,select=c("Y","tr",V,"pair"))
       }
     }
   } else {
-    dmat <- subset(glmdat,select=c("Y","tr","pair"))
+    dmat <- subset(glmdat,select=c("Y","tr",V,"pair"))
+  }
+
+  #Create interaction term with variable V
+  if(!is.null(V)){
+  vdat<-subset(dmat, select=V)
+  Vint<-interaction(dmat$tr, vdat[[1]], sep=":")
+  Vname<-as.character(colnames(vdat)[1])
+  dmat<- cbind(dmat[1:2], Vint, dmat[3:ncol(dmat)])
+  colnames(dmat)[3]<-paste(colnames(dmat)[2],Vname, sep=":")
   }
 
   if(family[1]=="binomial"|family[1]=="poisson"){
-    fit <- glm(Y~.,family=family,data=dmat)
+    suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
+
     vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
     rfit <- coeftest(fit, vcovCL)
 
@@ -170,7 +187,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
     return(modelfit)
   } else{
       if(family[1]=="gaussian"){
-        fit <- glm(Y~.,family=family,data=dmat)
+        suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
 
@@ -189,7 +206,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, id,contrast,family=gaussia
       stop("MASS needed for this function to work. Please install it.",
            call. = FALSE)
     }else{
-      fit<- glm.nb(Y ~., data = dmat)
+      suppressWarnings(fit<- glm.nb(Y ~., data = dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
 
