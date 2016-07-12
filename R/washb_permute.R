@@ -90,7 +90,6 @@ washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL) {
   pd <- ddply(pd,c("pair","tr"),summarise,Y=mean(Y))
   if(!is.null(seed)) set.seed(seed)
   W <- wilcoxsign_test(Y~tr|pair,data=pd,distribution = approximate(B=nreps),zero.method="Pratt" )
-  #W <- wilcoxsign_test(Y~tr,data=pd,distribution = approximate(B=nreps),zero.method="Pratt" )
 
   show(W)
 
