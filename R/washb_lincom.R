@@ -1,0 +1,45 @@
+#' washb_lincom
+#'
+#' Function to get Estimates, SEs, CIs, and P-values for Pr>|Z| from a linear combination of regression coefficients.
+#'
+#' @param lc : Index vector of coefficients from glm modellinear combination of coefficients
+#' @param fit : Model object returned from coeftest (class=coeftest) command within the washb_glm function. Accessed with $fit from washb_glm output.
+#' @param vcv : variance-covariance matrix of coefficients. Accessed with $vcv from washb_glm output.
+#' @param measure measure of effect. RR = risk ratio, RD = risk difference
+#'
+#' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
+#'         used to fit the glm model
+#' @export
+#'
+#' @examples
+#'
+
+
+# Add?: #' @param varlist : Vector of variables names to create a linear combination of coefficients
+
+
+washb_lincom <- function(lc,fit,vcv, measure="RR") {
+    x<-fit
+
+   if(measure=="RD"){
+     est <- (t(lc)%*%x[,1])
+     se  <- sqrt( t(lc)%*%vcv%*%lc )
+     Z   <- (est)/se
+     P   <- 2*pnorm(-abs(Z))
+     lb <- est-1.96*se
+     ub <- est+1.96*se
+  }else{
+    est <- exp(t(lc)%*%x[,1])
+    se  <- sqrt( t(lc)%*%vcv%*%lc )
+    Z   <- log(est)/se
+    P   <- 2*pnorm(-abs(Z))
+    lb <- exp(log(est)-1.96*se)
+    ub <- exp(log(est)+1.96*se)
+  }
+
+  res <- matrix(c(est,se,lb,ub,Z,P),nrow=1)
+  colnames(res) <- c("est","se.est","est.lb","est.ub","Z","P")
+  cat("\nLinear combination of coefficients:\n")
+  print(res)
+  return(res)
+}
