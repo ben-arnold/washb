@@ -179,18 +179,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       rfit <- coeftest(fit, vcovCL)
     }
 
-    #fit new model here with identity link after declaring new family[2]=(link=identity)
-      #Assign non-zero start values
-      #start<-rep(.5,length(fit$coefficients))
-
-    family.rd<-family
-    family.rd$link<-"identity"
-    #Note: commented code below has same fit as log-link. Why? Debug or use alternate code
-    #fit.rd<-glm(Y~.,family=family.rd,data=dmat)
-    #temp avoid RD error by fitting OLS model:
+    #fit OLS risk difference model
     fit.rd<-lm(Y~.,data=dmat)
-    #if(family[1]=="binomial"){fit.rd<-glm(Y~.,family=binomial(link='identity'), start=start,data=dmat)}
-    #if(family[1]=="poisson"){fit.rd<-glm(Y~.,family=poisson(link="identity"),data=dmat)}
     vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
     RDfit <- coeftest(fit.rd, vcovCL.rd)
 
@@ -223,8 +213,13 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
 
+      #fit OLS risk difference model
+      fit.rd<-lm(Y~.,data=dmat)
+      vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
+      RDfit <- coeftest(fit.rd, vcovCL.rd)
+
       cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
-      modelfit<-washb_glmFormat(rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family)
+      modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups)
 
       cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
 
