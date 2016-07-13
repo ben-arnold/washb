@@ -51,15 +51,9 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, fa
   }
 
 
-  #lincom[i,] <- suppressWarnings(washb_lincom(ctrlV0,rfit,vcovCL,flag=1))
   }
 
-  library(gdata)
-  startsWith(Subgroups,"Control")
-  charmatch(contrast[1], Subgroups[1]) # returns 2
-  "Control" %in% Subgroups
 
-  levels(dmat$V)[1] %in% Subgroups
 
   trV1<-ctrlV1<-trV0<-ctrlV0<-rep(0,(nrow(rfit)))
   trV1[2:4]<-c(1,1,1)
