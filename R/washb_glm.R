@@ -101,7 +101,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       if(ncol(W)==1){
        colnames(glmdat)[5]<-  colnames(W)
         }
-  } else{
+    }else{
     glmdat <- data.frame(
       id=id[tr==contrast[1]|tr==contrast[2]],
       Y=Y[tr==contrast[1]|tr==contrast[2]],
@@ -111,7 +111,6 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   }
   glmdat$tr    <- factor(glmdat$tr,levels=contrast[1:2])
   glmdat$pair <- factor(glmdat$pair)
-
 
 
   # restrict to complete cases and save a vector indexing observations dropped
@@ -127,7 +126,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   #split W into screened and forced adjustment covariates
   if(!is.null(W)){
     if(!is.null(V)){
-      forcedW=c(forcedW,V)
+      forcedW=c(V,forcedW)
     }
     if(!is.null(forcedW)){
       screenW<-subset(glmdat, select=colnames(W))
@@ -150,29 +149,28 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
 
     if(!is.null(forcedW)){
       if(!is.null(Wscreen)){
-        dmat <- subset(glmdat,select=c("Y","tr",V,Wscreen,forcedW,"pair"))
+        dmat <- subset(glmdat,select=c("Y","tr",forcedW,Wscreen,"pair"))
         }else{
-        dmat <- subset(glmdat,select=c("Y","tr",V,forcedW,"pair"))
+        dmat <- subset(glmdat,select=c("Y","tr",forcedW,"pair"))
         }
     } else {
       if(!is.null(Wscreen)){
-        dmat <- subset(glmdat,select=c("Y","tr",V,Wscreen,"pair"))
+        dmat <- subset(glmdat,select=c("Y","tr",Wscreen,"pair"))
       }else{
-        dmat <- subset(glmdat,select=c("Y","tr",V,"pair"))
+        dmat <- subset(glmdat,select=c("Y","tr","pair"))
       }
     }
   } else {
-    dmat <- subset(glmdat,select=c("Y","tr",V,"pair"))
+    dmat <- subset(glmdat,select=c("Y","tr","pair"))
   }
 
   if(family[1]=="binomial"|family[1]=="poisson"){
 
     if(!is.null(V)){
-      Subgroups<-levels(dmat$tr:dmat$V)
       colnames(dmat)[which(colnames(dmat)==V)]<-"V"
-      if( class(V)!="factor") stop('Error: V is not a factor variable within the W covariate data frame')
+      Subgroups<-levels(dmat$tr:dmat$V)
+      if( class(dmat$V)!="factor") stop('Error: V is not a factor variable within the W covariate data frame')
       suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
-      #fit<-update(fit, ~.+tr*V)
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
     }else{
