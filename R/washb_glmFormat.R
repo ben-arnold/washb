@@ -25,22 +25,58 @@
 
 washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, family="gaussian", V=NULL, Subgroups=NULL) {
 
-  #format interactions
+  #format interactions and call lincom function if V is specified
   if(!is.null(V)){
   #sort rfit output to put interactions before pair factors
-  rfit<-rfit[c(1:(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
+  rfit<-rfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
 
-  #call lincom function
-  #(NEED TO CHANGE )
+  lincom<-matrix(0,nrow=length(Subgroups),ncol=6)
+  lincom_index<-matrix(0,nrow=length(Subgroups),ncol=nrow(rfit))
+
+  for(i in 2:length(Subgroups)){
+    #assign(paste(Subgroups[i], i, sep = ""), i)
+    #assign(paste("lincom_ind", i, sep = ""), rep(0,(nrow(rfit))))
+   temp<-rep(0, length(Subgroups))
+   if(!is.na(charmatch(levels(dmat$tr)[2], Subgroups[i]))){temp[1]=1}
+
+   for(j in 2:length(levels(dmat$V))){
+     if((agrepl(levels(dmat$V)[j], Subgroups[i])==T)){temp[j]=1}
+   }
+
+   for(k in 2:length(levels(dmat$V))){
+     if((agrepl(levels(dmat$V)[k], Subgroups[i])==T) & !is.na(charmatch(levels(dmat$tr)[2], Subgroups[i]))){temp[k+length(levels(dmat$V))]=1}
+     }
+
+   lincom_index[i,1:(length(Subgroups))]<-temp
+  }
+
+
+  #lincom[i,] <- suppressWarnings(washb_lincom(ctrlV0,rfit,vcovCL,flag=1))
+  }
+
+  library(gdata)
+  startsWith(Subgroups,"Control")
+  charmatch(contrast[1], Subgroups[1]) # returns 2
+  "Control" %in% Subgroups
+
+  levels(dmat$V)[1] %in% Subgroups
+
   trV1<-ctrlV1<-trV0<-ctrlV0<-rep(0,(nrow(rfit)))
   trV1[2:4]<-c(1,1,1)
-  ctrlV1[2:4]<-c(0,1,0)
   trV0[2:4]<-c(1,0,0)
+  ctrlV1[2:4]<-c(0,1,0)
   ctrlV0[2:4]<-c(0,0,0)
+
+  trV2[2:4]<-c(1,0,1,0,1)
+  trV1[2:4]<-c(1,1,0,1,0)
+  trV0[2:4]<-c(1,0,0,0,0)
+  ctrlV2[2:4]<-c(0,0,1,0,0)
+  ctrlV1[2:4]<-c(0,1,0,0,0)
+  ctrlV0[2:4]<-c(0,0,0,0,0)
+
 
 #To do: investigate if there is a way to keep the printed output when externally calling the lincom function,
 #but suppress it here, so that the formatted output isn't messed up.
-  lincom<-matrix(0,nrow=4,ncol=6)
   lincom[1,] <- suppressWarnings(washb_lincom(ctrlV0,rfit,vcovCL,flag=1))
   lincom[2,] <- suppressWarnings(washb_lincom(trV0,rfit,vcovCL,flag=1))
   lincom[3,] <- suppressWarnings(washb_lincom(ctrlV1,rfit,vcovCL,flag=1))

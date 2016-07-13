@@ -170,6 +170,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
     if(!is.null(V)){
       Subgroups<-levels(dmat$tr:dmat$V)
       colnames(dmat)[which(colnames(dmat)==V)]<-"V"
+      if( class(V)!="factor") stop('Error: V is not a factor variable within the W covariate data frame')
       suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
       #fit<-update(fit, ~.+tr*V)
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
