@@ -9,6 +9,7 @@
 #' @param rowdropped dummy vector indexing rows of data dropped because a var contained missing data, to be read through the function and added to the formatted output.
 #' @param pair Pair-matched randomization ID variable (in WASH Benefits: block)
 #' @param vcovCL sandwichSE function output
+#' @param vcovCL.rd sandwichSE function output for OLS RD model
 #' @param family GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.
 #' @param V Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.
 #' @param Subgroups Names of subgroups created by the interaction between treatment and V factor.
@@ -23,73 +24,39 @@
 
 
 
-washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, family="gaussian", V=NULL, Subgroups=NULL) {
+washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL) {
 
-  #format interactions and call lincom function if V is specified
+  #Create linear comparisons by subgroup if V is specified
   if(!is.null(V)){
-  #sort rfit output to put interactions before pair factors
-  rfit<-rfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
+    #sort rfit output to put interactions before pair factors
+    rfit<-rfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
+    RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
 
-  lincom<-matrix(0,nrow=length(Subgroups),ncol=6)
-  lincom_index<-matrix(0,nrow=length(Subgroups),ncol=nrow(rfit))
+    lincom<-matrix(0,nrow=length(levels(dmat$V)),ncol=6)
+    lincomRD<-matrix(0,nrow=length(levels(dmat$V)),ncol=6)
+    lincom_index<-matrix(0,nrow=length(levels(dmat$V)),ncol=nrow(rfit))
 
-  for(i in 2:length(Subgroups)){
-    #assign(paste(Subgroups[i], i, sep = ""), i)
-    #assign(paste("lincom_ind", i, sep = ""), rep(0,(nrow(rfit))))
-   temp<-rep(0, length(Subgroups))
-   if(!is.na(charmatch(levels(dmat$tr)[2], Subgroups[i]))){temp[1]=1}
+    for(i in 1:length(levels(dmat$V))){
+        temp<-rep(0, length(Subgroups))
+        temp[2]=1
+        if(i!=1){
+          temp[i+length(levels(dmat$V))]<- temp[i+1]<-1
+          }
 
-   for(j in 2:length(levels(dmat$V))){
-     if((agrepl(levels(dmat$V)[j], Subgroups[i])==T)){temp[j]=1}
-   }
+        lincom_index[i,1:(length(Subgroups))]<-temp
 
-   for(k in 2:length(levels(dmat$V))){
-     if((agrepl(levels(dmat$V)[k], Subgroups[i])==T) & !is.na(charmatch(levels(dmat$tr)[2], Subgroups[i]))){temp[k+length(levels(dmat$V))]=1}
-     }
 
-   lincom_index[i,1:(length(Subgroups))]<-temp
+      lincom[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],rfit,vcovCL,flag=1))
+      lincomRD[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],RDfit,vcovCL.rd,flag=1))
+    }
+
+    lincom<-data.frame(levels(dmat$V),lincom)
+    lincomRD<-data.frame(levels(dmat$V),lincomRD)
+    colnames(lincomRD) <- colnames(lincom) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
   }
 
 
-  }
-
-
-
-  trV1<-ctrlV1<-trV0<-ctrlV0<-rep(0,(nrow(rfit)))
-  trV1[2:4]<-c(1,1,1)
-  trV0[2:4]<-c(1,0,0)
-  ctrlV1[2:4]<-c(0,1,0)
-  ctrlV0[2:4]<-c(0,0,0)
-
-  trV2[2:4]<-c(1,0,1,0,1)
-  trV1[2:4]<-c(1,1,0,1,0)
-  trV0[2:4]<-c(1,0,0,0,0)
-  ctrlV2[2:4]<-c(0,0,1,0,0)
-  ctrlV1[2:4]<-c(0,1,0,0,0)
-  ctrlV0[2:4]<-c(0,0,0,0,0)
-
-
-#To do: investigate if there is a way to keep the printed output when externally calling the lincom function,
-#but suppress it here, so that the formatted output isn't messed up.
-  lincom[1,] <- suppressWarnings(washb_lincom(ctrlV0,rfit,vcovCL,flag=1))
-  lincom[2,] <- suppressWarnings(washb_lincom(trV0,rfit,vcovCL,flag=1))
-  lincom[3,] <- suppressWarnings(washb_lincom(ctrlV1,rfit,vcovCL,flag=1))
-  lincom[4,] <- suppressWarnings(washb_lincom(trV1,rfit,vcovCL,flag=1))
-  lincom[,]<-round(lincom[,],8)
-  lincom<-data.frame(Subgroups,lincom)
-  lincom[,1]<-as.character(lincom[,1])
-  lincom[1,1]<-paste(as.character(lincom[1,1]),"(ref)")
-  colnames(lincom) <- c("Subgroups","est","se.est","est.lb","est.ub","Z","P")
-
-  }
-  #exp(rfit[1,1]+rfit[2,1]+rfit[3,1])
-  #exp(rfit[2,1]+rfit[3,1]+rfit[4,1])
-  #testRD<-matrix(0,nrow=4,ncol=6)
-  #testRD[1,]<- suppressWarnings(lincom(ctrlV0,RDfit,vcovCL.rd,  measure="RD"))
-  #testRD[2,]<- suppressWarnings(lincom(trV0,RDfit,vcovCL.rd,  measure="RD"))
-  #testRD[3,]<- suppressWarnings(lincom(ctrlV1,RDfit,vcovCL.rd,  measure="RD"))
-  #testRD[4,]<- suppressWarnings(lincom(trV1,RDfit,vcovCL.rd,  measure="RD"))
-
+  #Create formatted dataframe with risk ratios and risk differences and corresponding 95% CI.
     if(family[1]=="binomial"|family[1]=="poisson"|family[1]=="neg.binom"){
     expcoef<-round(exp(rfit[,1]),4)
     RR<-data.frame(round(exp(rfit[,1]),4), round(exp(rfit[,1]-1.96*rfit[,2]),4),round(exp(rfit[,1]+1.96*rfit[,2]),4))
@@ -115,18 +82,29 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, fa
         colnames(RR)<-c("Coef.","2.5%","97.5%")
     }}
 
+  #Print formatted glm model output.
+  if(!is.null(V)){
+   cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup ",V,".\n-----------------------------------------\n")
+   print(lincom)
+  }else{
+    cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+    print(RR[2,])
+  }
 
-  print(RR[2,])
+
+  if(family[1]!="gaussian"){
+    cat("\n\n RD of treatment\n")
+     if(!is.null(V)){
+       print(lincomRD)
+    }else{
+      print(RD[2,])
+    }
+  }
 
   if(ncol(dmat)>3){
     if(family[1]=="gaussian"){cat("\n Coef of covariates\n")}
     if(family[1]!="gaussian"){cat("\n RR of covariates\n")}
-    print(RR[3:(nrow(RR)-(length(unique(pair))+1)),])
-  }
-
-  if(family[1]!="gaussian"){
-    cat("\n\n RD of treatment\n")
-    print(RD[2,])
+    print(RR[2:(nrow(RR)-(length(unique(pair))+1)),])
   }
 
   cat("\n Type \"`modelname'$fit\" to return full glm output.")
@@ -138,39 +116,17 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, fa
     }
   cat("\n Type \"`modelname'$vcv\" to return the variance-covariance matrix.")
   cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
-  if(!is.null(V)){cat("\n Type \"`modelname'$lincom\" to return getting subgroup-specific conditional estimates if a subgroup V is specified")}
+  if(!is.null(V)){
+    cat("\n Type \"`modelname'$lincom\" to return subgroup-specific conditional relative risk estimates if a subgroup V is specified")
+    cat("\n Type \"`modelname'$lincomRD\" to return subgroup-specific conditional risk difference estimates if a subgroup V is specified")
+        }
 
-  #    if(family[1]=="gaussian"){
-  #  if(ncol(dmat)>3){
-  #    cat("\n Coef of covariates\n")
-  #    print(RR[3:(nrow(RR)-(length(unique(pair))+1)),])
-  #  }
-  #    cat("\n Type \"`modelname'$fit\" to return raw glm output, without coefficients transformed into relative risks, and \nwith standard errors and p-values..")
-  #    cat("\n Type \"`modelname'$coef\" to return the coefficients and 95% CI's  of the full model, including pair-matched blocks.")
-  #    cat("\n Type \"`modelname'$vcv\" to return the variance-covariance matrix.")
-  #    cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
-  #    cat("\n Type \"`modelname'$lincom\" to return getting subgroup-specific conditional estimates if a subgroup V is specified")
-  #  }else{
-  #    if(ncol(dmat)>3){
-  #      cat("\n RR of covariates\n")
-  #      print(RR[3:(nrow(RR)-(length(unique(pair))+1)),])
-  #    }
-  #      cat("\n\n RD of treatment\n")
-  #      print(RD[2,])
-
-   #     cat("\n Type \"`modelname'$fit\" to return full glm output.")
-    #    cat("\n Type \"`modelname'$RR\" to return the relative risks and 95% CI's of the full model, including pair-matched blocks.")
-     #   cat("\n Type \"`modelname'$RD\" to return the risk difference of the treatment (and all covariates, including block pairs).")
-      #  cat("\n Type \"`modelname'$vcv\" to return the variance-covariance matrix.")
-      #  cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
-      #  cat("\n Type \"`modelname'$lincom\" to return getting subgroup-specific conditional estimates if a subgroup V is specified")
-      #}
 
 
   if(family[1]=="gaussian"){
-  modelfit=list(coef=RR, fit=rfit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom)
+  modelfit=list(coef=RR, fit=rfit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
   }else{
-    modelfit=list(RR=RR, RD=RD, fit=rfit, RDfit=RDfit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom)
+    modelfit=list(RR=RR, RD=RD, fit=rfit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
   }
 
   return(modelfit)

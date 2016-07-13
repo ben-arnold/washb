@@ -5,7 +5,7 @@
 \title{washb_glmFormat}
 \usage{
 washb_glmFormat(rfit, RDfit = NULL, dmat, rowdropped, pair, vcovCL,
-  family = "gaussian", V = NULL, Subgroups = NULL)
+  vcovCL.rd = NULL, family = "gaussian", V = NULL, Subgroups = NULL)
 }
 \arguments{
 \item{rfit}{output from coeftest with fit and sandwich SE}
@@ -19,6 +19,8 @@ washb_glmFormat(rfit, RDfit = NULL, dmat, rowdropped, pair, vcovCL,
 \item{pair}{Pair-matched randomization ID variable (in WASH Benefits: block)}
 
 \item{vcovCL}{sandwichSE function output}
+
+\item{vcovCL.rd}{sandwichSE function output for OLS RD model}
 
 \item{family}{GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.}
 

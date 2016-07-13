@@ -173,20 +173,21 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
+      #fit OLS risk difference model
+      fit.rd<-lm(Y~tr*V+.,data=dmat)
+      vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
+      RDfit <- coeftest(fit.rd, vcovCL.rd)
     }else{
       suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
+      #fit OLS risk difference model
+      fit.rd<-lm(Y~.,data=dmat)
+      vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
+      RDfit <- coeftest(fit.rd, vcovCL.rd)
     }
 
-    #fit OLS risk difference model
-    fit.rd<-lm(Y~.,data=dmat)
-    vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
-    RDfit <- coeftest(fit.rd, vcovCL.rd)
-
-    cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
-
-    modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups)
+    modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups)
     return(modelfit)
   } else{
       if(family[1]=="gaussian"){
