@@ -86,6 +86,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   require(MASS)
   options(scipen=999)
 
+  #add subgroup to forcedW
+
 
   if(!is.null(W)){
     glmdat <- data.frame(
@@ -124,12 +126,15 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
 
   #split W into screened and forced adjustment covariates
   if(!is.null(W)){
+    if(!is.null(V)){
+      forcedW=c(forcedW,V)
+    }
     if(!is.null(forcedW)){
       screenW<-subset(glmdat, select=colnames(W))
       toexclude <- names(screenW) %in% forcedW
       screenW=screenW[!toexclude]
       cat("\n-----------------------------------------\nInclude the following adjustment covariates:\n-----------------------------------------\n")
-      cat(forcedW, sep="\n")
+      print(forcedW, sep="\n")
     }else{
       screenW<-subset(glmdat, select=colnames(W))
     }
@@ -160,61 +165,39 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
     dmat <- subset(glmdat,select=c("Y","tr",V,"pair"))
   }
 
-  #Create a dummy variable interaction term with variable V
-  if(!is.null(V)){
-    if(class(dmat[,which(colnames(dmat)==V)])!="integer"){
-    #dmat<-dmat2
-  Vnames<-levels(dmat[,which(colnames(dmat)==V)])
-  contrast[1]
-  vdat<-subset(dmat, select=V)
-  #dmat<-subset(dmat, select=-which(colnames(W)==V))
-  #Vint<-interaction(dmat$tr, vdat[[1]], sep=":")
-  Vint<-interaction(dmat$tr, vdat[[1]], sep=":")
-  Vintnames<-levels(Vint)
-  #Vname<-as.character(colnames(vdat)[1])
-  dmat<- cbind(dmat[1:3], Vint, dmat[4:ncol(dmat)])
-  colnames(dmat)[2]<-paste("tr",levels(dmat[,2])[2], sep="=")
-  #colnames(dmat)[3]<-paste(levels(dmat[,2])[2],levels(W[,which(colnames(W)==V)])[1], sep=":")
-  colnames(dmat)[3]<-paste(levels(dmat[,3])[2])
-  colnames(dmat)[4]<-paste(levels(dmat[,4])[4]) #What to do for naming if it's a factor variable?
-
-  #Code to create dummy vars (use on both factor interaction and on V itself) (from http://stackoverflow.com/questions/3384506/create-new-dummy-variable-columns-from-categorical-variable)
-  #temp code for binary V:
-  dmat[,2] <- ifelse(dmat[,2]==levels(dmat[,2])[2],1,0)
-  #dmat[paste(levels(dmat[,3])[4])] <- ifelse(dmat[,3]==levels(dmat[,3])[4],1,0)
-  dmat[,3] <- ifelse(dmat[,3]==levels(dmat[,3])[2],1,0)
-  dmat[,4] <- ifelse(dmat[,4]==levels(dmat[,4])[4],1,0)
-  #head(dmat)
-  #for(t in 2:length(unique(dmat[,3]))) {dmat[paste(unique(dmat[,3])[t])] <- ifelse(dmat[,3]==unique(dmat[,3])[t],1,0) }
-  #for(t in 2:length(unique(dmat[,4]))) {dmat[paste("type",unique(dmat[,4])[t],sep=":")] <- ifelse(dmat[,4]==unique(dmat[,4])[t],1,0) }
-  #Need to drop factor vars now that dummy is created.
-  #dmat<-dmat[,-c(3,4)]
-  #Reorder so "pair" is final variable to allow glmFormat function to work.
-  #dmat<-dmat[,c(1,2,(which(colnames(dmat)=="pair")+1):ncol(dmat),3:(which(colnames(dmat)=="pair")-1),(which(colnames(dmat)=="pair")))]
-    }
-  }
-
   if(family[1]=="binomial"|family[1]=="poisson"){
-    suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
 
-    vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
-    rfit <- coeftest(fit, vcovCL)
+    if(!is.null(V)){
+      Subgroups<-levels(dmat$tr:dmat$V)
+      colnames(dmat)[which(colnames(dmat)==V)]<-"V"
+      suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
+      #fit<-update(fit, ~.+tr*V)
+      vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+      rfit <- coeftest(fit, vcovCL)
+    }else{
+      suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
+      vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+      rfit <- coeftest(fit, vcovCL)
+    }
 
     #fit new model here with identity link after declaring new family[2]=(link=identity)
+      #Assign non-zero start values
+      #start<-rep(.5,length(fit$coefficients))
+
     family.rd<-family
     family.rd$link<-"identity"
     #Note: commented code below has same fit as log-link. Why? Debug or use alternate code
     #fit.rd<-glm(Y~.,family=family.rd,data=dmat)
-    #temp avoid RD error:
-    fit.rd<-fit
-    #if(family[1]=="binomial"){fit.rd<-glm(Y~.,family=binomial(link='identity'),data=dmat)}
-    if(family[1]=="poisson"){fit.rd<-glm(Y~.,family=poisson(link="identity"),data=dmat)}
+    #temp avoid RD error by fitting OLS model:
+    fit.rd<-lm(Y~.,data=dmat)
+    #if(family[1]=="binomial"){fit.rd<-glm(Y~.,family=binomial(link='identity'), start=start,data=dmat)}
+    #if(family[1]=="poisson"){fit.rd<-glm(Y~.,family=poisson(link="identity"),data=dmat)}
     vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
     RDfit <- coeftest(fit.rd, vcovCL.rd)
 
     cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
 
-    modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, V=V)
+    modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups)
     return(modelfit)
   } else{
       if(family[1]=="gaussian"){

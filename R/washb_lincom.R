@@ -6,6 +6,7 @@
 #' @param fit : Model object returned from coeftest (class=coeftest) command within the washb_glm function. Accessed with $fit from washb_glm output.
 #' @param vcv : variance-covariance matrix of coefficients. Accessed with $vcv from washb_glm output.
 #' @param measure measure of effect. RR = risk ratio, RD = risk difference
+#' @param flag Internal argument used to flag and suppress printing if the washb_lincom function is called within another function.
 #'
 #' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
 #'         used to fit the glm model
@@ -18,7 +19,7 @@
 # Add?: #' @param varlist : Vector of variables names to create a linear combination of coefficients
 
 
-washb_lincom <- function(lc,fit,vcv, measure="RR") {
+washb_lincom <- function(lc,fit,vcv, measure="RR", flag=NULL) {
     x<-fit
 
    if(measure=="RD"){
@@ -39,7 +40,9 @@ washb_lincom <- function(lc,fit,vcv, measure="RR") {
 
   res <- matrix(c(est,se,lb,ub,Z,P),nrow=1)
   colnames(res) <- c("est","se.est","est.lb","est.ub","Z","P")
+  if(is.null(flag)){
   cat("\nLinear combination of coefficients:\n")
   print(res)
+  }
   return(res)
 }

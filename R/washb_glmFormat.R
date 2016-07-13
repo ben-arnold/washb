@@ -11,6 +11,7 @@
 #' @param vcovCL sandwichSE function output
 #' @param family GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.
 #' @param V Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.
+#' @param Subgroups Names of subgroups created by the interaction between treatment and V factor.
 #'
 #' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
 #'         used to fit the glm model
@@ -22,9 +23,15 @@
 
 
 
-washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, family="gaussian", V=NULL) {
+washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, family="gaussian", V=NULL, Subgroups=NULL) {
+
+  #format interactions
+  if(!is.null(V)){
+  #sort rfit output to put interactions before pair factors
+  rfit<-rfit[c(1:(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
 
   #call lincom function
+  #(NEED TO CHANGE )
   trV1<-ctrlV1<-trV0<-ctrlV0<-rep(0,(nrow(rfit)))
   trV1[2:4]<-c(1,1,1)
   ctrlV1[2:4]<-c(0,1,0)
@@ -34,12 +41,17 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, fa
 #To do: investigate if there is a way to keep the printed output when externally calling the lincom function,
 #but suppress it here, so that the formatted output isn't messed up.
   lincom<-matrix(0,nrow=4,ncol=6)
-  lincom[1,] <- suppressWarnings(washb_lincom(ctrlV0,rfit,vcovCL))
-  lincom[2,] <- suppressWarnings(washb_lincom(trV0,rfit,vcovCL))
-  lincom[3,] <- suppressWarnings(washb_lincom(ctrlV1,rfit,vcovCL))
-  lincom[4,] <- suppressWarnings(washb_lincom(trV1,rfit,vcovCL))
+  lincom[1,] <- suppressWarnings(washb_lincom(ctrlV0,rfit,vcovCL,flag=1))
+  lincom[2,] <- suppressWarnings(washb_lincom(trV0,rfit,vcovCL,flag=1))
+  lincom[3,] <- suppressWarnings(washb_lincom(ctrlV1,rfit,vcovCL,flag=1))
+  lincom[4,] <- suppressWarnings(washb_lincom(trV1,rfit,vcovCL,flag=1))
   lincom[,]<-round(lincom[,],8)
-  lincom<-data.frame(Vintnames,lincom)
+  lincom<-data.frame(Subgroups,lincom)
+  lincom[,1]<-as.character(lincom[,1])
+  lincom[1,1]<-paste(as.character(lincom[1,1]),"(ref)")
+  colnames(lincom) <- c("Subgroups","est","se.est","est.lb","est.ub","Z","P")
+
+  }
   #exp(rfit[1,1]+rfit[2,1]+rfit[3,1])
   #exp(rfit[2,1]+rfit[3,1]+rfit[4,1])
   #testRD<-matrix(0,nrow=4,ncol=6)

@@ -4,7 +4,7 @@
 \alias{washb_lincom}
 \title{washb_lincom}
 \usage{
-washb_lincom(lc, fit, vcv, measure = "RR")
+washb_lincom(lc, fit, vcv, measure = "RR", flag = NULL)
 }
 \arguments{
 \item{lc}{: Index vector of coefficients from glm modellinear combination of coefficients}
@@ -14,6 +14,8 @@ washb_lincom(lc, fit, vcv, measure = "RR")
 \item{vcv}{: variance-covariance matrix of coefficients. Accessed with $vcv from washb_glm output.}
 
 \item{measure}{measure of effect. RR = risk ratio, RD = risk difference}
+
+\item{flag}{Internal argument used to flag and suppress printing if the washb_lincom function is called within another function.}
 }
 \value{
 Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
