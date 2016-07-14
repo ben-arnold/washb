@@ -13,6 +13,7 @@
 #' @param family GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.
 #' @param V Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.
 #' @param Subgroups Names of subgroups created by the interaction between treatment and V factor.
+#' @param print Logical for whether to print function output
 #'
 #' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
 #'         used to fit the glm model
@@ -24,7 +25,7 @@
 
 
 
-washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL) {
+washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL, print=print) {
 
   #Create linear comparisons by subgroup if V is specified
   if(!is.null(V)){
@@ -86,6 +87,8 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
         colnames(RR)<-c("Coef.","2.5%","97.5%")
       }}
 
+
+  if(print==TRUE){
   #Print formatted glm model output.
   if(!is.null(V)){
    cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup: /'",V,"/'\n-----------------------------------------\n")
@@ -123,6 +126,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
     if(family[1]!="gaussian"){
     cat("\n Type \"`modelname'$lincomRD\" to return subgroup-specific conditional risk difference estimates if a subgroup V is specified")
         }}
+  }
 
   #Create matriz holding RR, 95% CI and log-linear fit
   if (family[1]=="gaussian"){

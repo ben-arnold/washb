@@ -14,6 +14,7 @@
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
 #' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.
 #' @param pval The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2
+#' @param print Logical for whether to print function output, defaults to TRUE.
 #'
 #' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
 #'         used to fit the glm model
@@ -73,14 +74,7 @@
 
 
 
-washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family=gaussian, pval=0.2) {
-  # Y     : outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
-  # tr    : binary treatment group variable, comparison group first
-  # pair  : Pair-matched randomization ID variable (in WASH Benefits: block)
-  # W     : (optional) data frame that includes adjustment covariates
-  # id    : id variable for independent units (e.g., cluster)
-  # contrast : vector of length 2 that includes the tr groups to contrast
-  # family : glm family (gaussian,binomial,poisson, or "neg.binom" for negative binomial)
+washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family=gaussian, pval=0.2, print=TRUE) {
   require(sandwich)
   require(lmtest)
   require(MASS)
@@ -116,7 +110,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   rowdropped[which(complete.cases(glmdat))]<-0
   glmdat <- glmdat[complete.cases(glmdat),]
   n.sub  <- dim(glmdat)[1]
-  if(n.orig>n.sub) cat("\n-----------------------------------------\nDropping",n.orig-n.sub,"observations due to missing values in 1 or more variables\n","Final sample size:",n.sub,"\n-----------------------------------------\n")
+  if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\nDropping",n.orig-n.sub,"observations due to missing values in 1 or more variables\n","Final sample size:",n.sub,"\n-----------------------------------------\n")
 
 
 
@@ -129,8 +123,10 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       screenW<-subset(glmdat, select=colnames(W))
       toexclude <- names(screenW) %in% forcedW
       screenW=screenW[!toexclude]
-      cat("\n-----------------------------------------\nInclude the following adjustment covariates without screening:\n-----------------------------------------\n")
-      print(forcedW, sep="\n")
+      if(print==TRUE){
+        cat("\n-----------------------------------------\nInclude the following adjustment covariates without screening:\n-----------------------------------------\n")
+        print(forcedW, sep="\n")
+        }
     }else{
       screenW<-subset(glmdat, select=colnames(W))
     }
@@ -141,8 +137,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   if(!is.null(screenW)){
     # pre-screen the covariates
     # see Wprescreen() in the base functions
-    cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
-    suppressWarnings(Wscreen <- washb_prescreen(Y=glmdat$Y,Ws=screenW,family=family, pval=pval))
+    if(print==TRUE)cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
+    suppressWarnings(Wscreen <- washb_prescreen(Y=glmdat$Y,Ws=screenW,family=family, pval=pval, print=print))
 
     if(!is.null(forcedW)){
       if(!is.null(Wscreen)){
@@ -170,6 +166,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
+
       #fit OLS risk difference model
       fit.rd<-lm(Y~tr*V+.,data=dmat)
       vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
@@ -178,13 +175,15 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
+
       #fit OLS risk difference model
       fit.rd<-lm(Y~.,data=dmat)
       vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
       RDfit <- coeftest(fit.rd, vcovCL.rd)
     }
 
-    modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups)
+    modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
+    #modelfit<-c(modelfit, fit)
     return(modelfit)
   } else{
       if(family[1]=="gaussian"){
@@ -197,9 +196,9 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         #out<-out[2:(length(X)-(length(unique(pair))-1)),]
         colnames(out)<-c("Coef.","2.5%","97.5%")
 
-        cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+        if(print==TRUE)cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
 
-        modelfit<-washb_glmFormat(rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family)
+        modelfit<-washb_glmFormat(rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, print=print)
         return(modelfit)
 
       }else{
@@ -216,17 +215,18 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
       RDfit <- coeftest(fit.rd, vcovCL.rd)
 
-      cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
-      modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups)
+      if(print==TRUE)cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+      modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups,  print=print)
 
-      cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
+      if(print==TRUE)cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
 
       pois <- glm(Y ~ ., family = "poisson", data = dmat)
       X2 <- 2 * (logLik(fit) - logLik(pois))
-      cat("\nLog-likelihood ratio test P-value:\n")
-      cat("\nIf <0.05, negative binomial model is more appropriate than a Poisson model.\n\n")
-      print(pchisq(X2, df = 1, lower.tail=FALSE))
-
+      if(print==TRUE){
+        cat("\nLog-likelihood ratio test P-value:\n")
+        cat("\nIf <0.05, negative binomial model is more appropriate than a Poisson model.\n\n")
+        print(pchisq(X2, df = 1, lower.tail=FALSE))
+        }
       return(modelfit)
       }
     }
