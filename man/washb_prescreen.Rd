@@ -4,7 +4,7 @@
 \alias{washb_prescreen}
 \title{washb_prescreen}
 \usage{
-washb_prescreen(Y, Ws, family = "gaussian", pval = 0.2)
+washb_prescreen(Y, Ws, family = "gaussian", pval = 0.2, print = TRUE)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
@@ -14,6 +14,8 @@ washb_prescreen(Y, Ws, family = "gaussian", pval = 0.2)
 \item{family}{GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.}
 
 \item{pval}{The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2}
+
+\item{print}{Logical for whether to print function output, defaults to TRUE.}
 }
 \value{
 Function returns the list of variable names with a likelihood ratio test p-value <0.2.

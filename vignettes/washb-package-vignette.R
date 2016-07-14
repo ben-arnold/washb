@@ -42,59 +42,11 @@ h2.contrasts <- list(
   c("Handwashing","WSH")
 )
 
-## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
-#Create a W variable containing only "sex", unadjusted for other covariates:
-W.interact<-subset(ad,select="sex")
-
-#Estimate subgroup analysis glm with washb_glm
-glm.C.W.bysex <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W.interact,forcedW=NULL, V="sex", id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
-
 ## ---- eval=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  data(washb_bd_anthro)
 #  data(washb_bd_enrol)
 #  
 #  ad <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
-
-## ---- include=FALSE, eval=TRUE, cache=TRUE------------------------------------------------------------------------------------------------------------------------------------------------------------
-load(file.path(extPath, "washb_bd_enrol.Rdata"))  
-load(file.path(extPath, "washb_bd_anthro.Rdata"))  
-  washb_bd_enrol$svydate <- NULL
-  washb_bd_enrol$month <- NULL
-ad <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
-ad <- subset(ad,svy==2)
-ad <- subset(ad,tchild=="Target child")
-
-# Drop children with extreme LAZ values
-ad <- subset(ad,laz_x!=1)
-
-ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
-ad$month <- factor(ad$month)
-ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
-
-Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
-
-## ---- cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Run washb_paired.ttest on water vs. control arm comparison
-washb_paired.ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))
-
-#Use sapply to apply across all contrasts
-diff.h1LAZ <- t(sapply(h1.contrasts,washb_paired.ttest,Y=ad$laz,tr=ad$tr,strat=ad$block))
-rownames(diff.h1LAZ) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-round(print(diff.h1LAZ),3)
-
-## ---- warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE---------------------------------------------------------------------------------------------------------------------------------------------
-
-unadj.glm.h1LAZ <- t(sapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
-
-unadj.glm.h2LAZ <- t(sapply(h2.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
-
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE--------------------------------------------------------------------------------------------------------------------------------------------------------
-
-adj.glm.h1LAZ <- t(sapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
-
-adj.glm.h2LAZ <- t(sapply(h2.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
-
 
 ## ---- eval=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  #Table of Primary Outcome Results

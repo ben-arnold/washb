@@ -5,7 +5,8 @@
 \title{washb_glmFormat}
 \usage{
 washb_glmFormat(rfit, RDfit = NULL, dmat, rowdropped, pair, vcovCL,
-  vcovCL.rd = NULL, family = "gaussian", V = NULL, Subgroups = NULL)
+  vcovCL.rd = NULL, family = "gaussian", V = NULL, Subgroups = NULL,
+  print = print)
 }
 \arguments{
 \item{rfit}{output from coeftest with fit and sandwich SE}
@@ -27,6 +28,8 @@ washb_glmFormat(rfit, RDfit = NULL, dmat, rowdropped, pair, vcovCL,
 \item{V}{Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.}
 
 \item{Subgroups}{Names of subgroups created by the interaction between treatment and V factor.}
+
+\item{print}{Logical for whether to print function output}
 }
 \value{
 Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations

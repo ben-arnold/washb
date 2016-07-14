@@ -6,7 +6,7 @@
 washb_glm}
 \usage{
 washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, V = NULL, id, contrast,
-  family = gaussian, pval = 0.2)
+  family = gaussian, pval = 0.2, print = TRUE)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
@@ -28,6 +28,8 @@ washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, V = NULL, id, contrast,
 \item{family}{GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.}
 
 \item{pval}{The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2}
+
+\item{print}{Logical for whether to print function output, defaults to TRUE.}
 }
 \value{
 Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations

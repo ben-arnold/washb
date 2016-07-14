@@ -57,7 +57,7 @@ __washb_means__ uses __sandwichSE__ to estimate sandwich-based robust standard e
 #R resources
 For new users of R, the following sources are helpful learning resources:
  * [Calendar of UC Berkeley D-Lab workshops](http://dlab.berkeley.edu/event-host/d-lab) (Look for R bootcamps)
- * [Datacamp: R for SAS, SPSS, and Stata users](https://www.datacamp.com/courses/r-for-sas-spss-and-stata-users-r-tutorial) (This course is for those familiar with statistical programming who only need to learn R-specific syntax)
+ * [Datacamp: R for SAS, SPSS, and Stata users](https://www.datacamp.com/courses/r-for-sas-spss-and-stata-users-r-tutorial) (This course is for those familiar with statistical programming who only need to learn R-specific syntax. Great GUI learning interface, and free for introductory course, and academic discount for paid courses.)
  * [Try R codeschool](http://tryr.codeschool.com/) (An interactive introductory course)
  * [UCLA Institute For Digital Research and Education: R resources](http://statistics.ats.ucla.edu/stat/r/) (Great source for topic-specific tutorials)
  * [R -tutor introduction](http://www.r-tutor.com/r-introduction)
@@ -310,6 +310,13 @@ W.interact<-subset(ad,select="sex")
 #Estimate subgroup analysis glm with washb_glm
 glm.C.W.bysex <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W.interact,forcedW=NULL, V="sex", id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
 ```
+
+
+
+#Function: washb_lincom
+To be added
+
+
 
 #LAZ Outcome Analysis  
   
