@@ -84,10 +84,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   require(sandwich)
   require(lmtest)
   require(MASS)
-  options(scipen=999)
-
-  #add subgroup to forcedW
-
+  #options(scipen=999)
 
   if(!is.null(W)){
     glmdat <- data.frame(
@@ -132,7 +129,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       screenW<-subset(glmdat, select=colnames(W))
       toexclude <- names(screenW) %in% forcedW
       screenW=screenW[!toexclude]
-      cat("\n-----------------------------------------\nInclude the following adjustment covariates:\n-----------------------------------------\n")
+      cat("\n-----------------------------------------\nInclude the following adjustment covariates without screening:\n-----------------------------------------\n")
       print(forcedW, sep="\n")
     }else{
       screenW<-subset(glmdat, select=colnames(W))

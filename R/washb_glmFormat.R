@@ -50,7 +50,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
       lincomRD[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],RDfit,vcovCL.rd,flag=1))
     }
 
-    lincom<-data.frame(levels(dmat$V),lincom)
+    lincom<-data.frame(levels(dmat$V),round(lincom,6))
     lincomRD<-data.frame(levels(dmat$V),lincomRD)
     colnames(lincomRD) <- colnames(lincom) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
   }
@@ -80,11 +80,11 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
       }
       else{
         colnames(RR)<-c("Coef.","2.5%","97.5%")
-    }}
+      }}
 
   #Print formatted glm model output.
   if(!is.null(V)){
-   cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup ",V,".\n-----------------------------------------\n")
+   cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup: /'",V,"/'\n-----------------------------------------\n")
    print(lincom)
   }else{
     cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
@@ -107,26 +107,34 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
     print(RR[2:(nrow(RR)-(length(unique(pair))+1)),])
   }
 
-  cat("\n Type \"`modelname'$fit\" to return full glm output.")
-  if(family[1]=="gaussian"){
-    cat("\n Type \"`modelname'$coef\" to return the coefficients and 95% CI's  of the full model, including pair-matched blocks.")
-    }else{
-    cat("\n Type \"`modelname'$RR\" to return the relative risks and 95% CI's of the full model, including pair-matched blocks.")
-    cat("\n Type \"`modelname'$RD\" to return the risk difference of the treatment (and all covariates, including block pairs).")
+  cat("\n Type \"`modelname'$TR\" to return the treatment effect.")
+  cat("\n Type \"`modelname'$fit\" to return full glm model estimates.")
+  if(family[1]!="gaussian"){
+    cat("\n Type \"`modelname'$RDfit\" to return the risk difference of the treatment (and all covariates, including block pairs).")
     }
   cat("\n Type \"`modelname'$vcv\" to return the variance-covariance matrix.")
   cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
   if(!is.null(V)){
     cat("\n Type \"`modelname'$lincom\" to return subgroup-specific conditional relative risk estimates if a subgroup V is specified")
+    if(family[1]!="gaussian"){
     cat("\n Type \"`modelname'$lincomRD\" to return subgroup-specific conditional risk difference estimates if a subgroup V is specified")
-        }
+        }}
 
+  #Create matriz holding RR, 95% CI and log-linear fit
+  if (family[1]=="gaussian"){
+    fit<-cbind(RR,(rfit[,2:4]))
+    TR<-fit[2,]
+  }else{
+    fit<-cbind(RR,(rfit))
+    TR<-fit[2,]
+    RDfit<-cbind(RD,(RDfit))
+  }
 
 
   if(family[1]=="gaussian"){
-  modelfit=list(coef=RR, fit=rfit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
+  modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom)
   }else{
-    modelfit=list(RR=RR, RD=RD, fit=rfit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
+    modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
   }
 
   return(modelfit)
