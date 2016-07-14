@@ -70,7 +70,11 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
     }}
 
     if(family[1]=="binomial") {
-      colnames(RR)<-c("PR","2.5%","97.5%")
+      if(family[2]=="log"){
+        colnames(RR)<-c("PR","2.5%","97.5%")
+      }else{
+        colnames(RR)<-c("OR","2.5%","97.5%")
+      }
     } else{
       if(family[1]=="poisson") {
         colnames(RR)<-c("CIR","2.5%","97.5%")
