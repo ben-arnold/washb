@@ -78,6 +78,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   require(sandwich)
   require(lmtest)
   require(MASS)
+  #Create empty variable used in subgroup analysis
+  Subgroups=NULL
   #options(scipen=999)
 
   if(!is.null(W)){
@@ -183,20 +185,20 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
     }
 
     modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
-    #modelfit<-c(modelfit, fit)
     return(modelfit)
   } else{
       if(family[1]=="gaussian"){
-        suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
+        if(!is.null(V)){
+          colnames(dmat)[which(colnames(dmat)==V)]<-"V"
+          Subgroups<-levels(dmat$tr:dmat$V)
+          if( class(dmat$V)!="factor") stop('Error: V is not a factor variable within the W covariate data frame')
+          suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
+        }else{
+          suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
+        }
+
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
-
-        coef<-round(exp(rfit[,1]),4)
-        out<-data.frame(coef, round((confint.default(fit,level=0.95)),4))
-        #out<-out[2:(length(X)-(length(unique(pair))-1)),]
-        colnames(out)<-c("Coef.","2.5%","97.5%")
-
-        if(print==TRUE)cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
 
         modelfit<-washb_glmFormat(rfit=rfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, print=print)
         return(modelfit)
@@ -206,27 +208,46 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       stop("MASS needed for this function to work. Please install it.",
            call. = FALSE)
     }else{
-      suppressWarnings(fit<- glm.nb(Y ~., data = dmat))
-      vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
-      rfit <- coeftest(fit, vcovCL)
+      if(!is.null(V)){
+        colnames(dmat)[which(colnames(dmat)==V)]<-"V"
+        Subgroups<-levels(dmat$tr:dmat$V)
+        if( class(dmat$V)!="factor") stop('Error: V is not a factor variable within the W covariate data frame')
+        suppressWarnings(fit <- glm.nb(Y~tr*V+. ,data=dmat))
+        vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+        rfit <- coeftest(fit, vcovCL)
 
-      #fit OLS risk difference model
-      fit.rd<-lm(Y~.,data=dmat)
-      vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
-      RDfit <- coeftest(fit.rd, vcovCL.rd)
+        #fit OLS risk difference model
+        fit.rd<-lm(Y~tr*V+.,data=dmat)
+        vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
+        RDfit <- coeftest(fit.rd, vcovCL.rd)
+      }else{
+        suppressWarnings(fit<- glm.nb(Y ~., data = dmat))
+        vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+        rfit <- coeftest(fit, vcovCL)
 
-      if(print==TRUE)cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
-      modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups,  print=print)
+        #fit OLS risk difference model
+        fit.rd<-lm(Y~.,data=dmat)
+        vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
+        RDfit <- coeftest(fit.rd, vcovCL.rd)
+      }
+
+      modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
 
       if(print==TRUE)cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
 
-      pois <- glm(Y ~ ., family = "poisson", data = dmat)
+      if(!is.null(V)){
+        pois <- glm(Y ~ tr*V+., family = "poisson", data = dmat)
+      }else{
+        pois <- glm(Y ~ ., family = "poisson", data = dmat)
+      }
       X2 <- 2 * (logLik(fit) - logLik(pois))
+      Pois_LRtest<-pchisq(X2, df = 1, lower.tail=FALSE)
       if(print==TRUE){
         cat("\nLog-likelihood ratio test P-value:\n")
         cat("\nIf <0.05, negative binomial model is more appropriate than a Poisson model.\n\n")
-        print(pchisq(X2, df = 1, lower.tail=FALSE))
-        }
+        print(Pois_LRtest)
+      }
+      modelfit<-c(modelfit, Pois_LRtest)
       return(modelfit)
       }
     }

@@ -31,10 +31,10 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
   if(!is.null(V)){
     #sort rfit output to put interactions before pair factors
     rfit<-rfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
-    RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
+    if(family[1]!="gaussian"){RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]}
 
     lincom<-matrix(0,nrow=length(levels(dmat$V)),ncol=6)
-    lincomRD<-matrix(0,nrow=length(levels(dmat$V)),ncol=6)
+    if(family[1]!="gaussian"){lincomRD<-matrix(0,nrow=length(levels(dmat$V)),ncol=6)}
     lincom_index<-matrix(0,nrow=length(levels(dmat$V)),ncol=nrow(rfit))
 
     for(i in 1:length(levels(dmat$V))){
@@ -48,12 +48,15 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
 
 
       lincom[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],rfit,vcovCL,flag=1))
-      lincomRD[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],RDfit,vcovCL.rd,flag=1))
+      if(family[1]!="gaussian"){lincomRD[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],RDfit,vcovCL.rd,flag=1))}
     }
 
     lincom<-data.frame(levels(dmat$V),round(lincom,6))
-    lincomRD<-data.frame(levels(dmat$V),lincomRD)
-    colnames(lincomRD) <- colnames(lincom) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
+    colnames(lincom) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
+    if(family[1]!="gaussian"){
+      lincomRD<-data.frame(levels(dmat$V),lincomRD)
+      colnames(lincomRD) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
+    }
   }
 
 
@@ -68,13 +71,14 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
       RR<-data.frame(round((rfit[,1]),4), round((rfit[,1]-1.96*rfit[,2]),4),round((rfit[,1]+1.96*rfit[,2]),4))
       }else{
       cat("\nError: argument \"family\" is not a valid option.\n")
-    }}
+      }}
 
+    #Create data.frame headers
     if(family[1]=="binomial") {
-      if(family[2]=="log"){
-        colnames(RR)<-c("PR","2.5%","97.5%")
-      }else{
+      if(family[2]!="log"|length(family)==1){
         colnames(RR)<-c("OR","2.5%","97.5%")
+      }else{
+        colnames(RR)<-c("PR","2.5%","97.5%")
       }
     } else{
       if(family[1]=="poisson") {
@@ -140,10 +144,18 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
 
 
   if(family[1]=="gaussian"){
-  modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom)
-  }else{
-    modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
-  }
+    if(!is.null(V)){
+      modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom)
+    }else{
+      modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped)
+      }
 
+  }else{
+    if(!is.null(V)){
+    modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
+    }else{
+      modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped)
+    }
+  }
   return(modelfit)
 }
