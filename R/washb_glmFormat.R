@@ -7,6 +7,7 @@
 #' @param RDfit glm fit object with the identity link used to estimate risk differences.
 #' @param dmat dataframe used within the washb_glm function to fit data
 #' @param rowdropped dummy vector indexing rows of data dropped because a var contained missing data, to be read through the function and added to the formatted output.
+#' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
 #' @param pair Pair-matched randomization ID variable (in WASH Benefits: block)
 #' @param vcovCL sandwichSE function output
 #' @param vcovCL.rd sandwichSE function output for OLS RD model
@@ -25,7 +26,7 @@
 
 
 
-washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL, print=print) {
+washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL, print=print) {
 
   #Create linear comparisons by subgroup if V is specified
   if(!is.null(V)){
@@ -95,10 +96,10 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
   if(print==TRUE){
   #Print formatted glm model output.
   if(!is.null(V)){
-   cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup: \'",V,"\'\n-----------------------------------------\n")
+   cat("\n\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup: \'",V,"\'\n-----------------------------------------\n")
    print(lincom)
   }else{
-    cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+    cat("\n\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
     print(RR[2,])
   }
 
@@ -132,14 +133,14 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
         }}
   }
 
-  #Create matriz holding RR, 95% CI and log-linear fit
+  #Create matrix holding RR, 95% CI and log-linear fit
   if (family[1]=="gaussian"){
     fit<-cbind(RR,(rfit[,2:4]))
     TR<-fit[2,]
   }else{
-    fit<-cbind(RR,(rfit))
+    fit<-cbind(RR,(rfit[,]))
     TR<-fit[2,]
-    RDfit<-cbind(RD,(RDfit))
+    RDfit<-cbind(RD,(RDfit[,]))
   }
 
 

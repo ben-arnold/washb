@@ -32,6 +32,9 @@ washb_tmle(Y, tr, strat, W, id, contrast, prtr = c(0.5, 0.5),
 
 \item{SL.Library}{Library of algorithms to include in the SuperLearner (pre-specified defaults are encoded above)}
 }
+\value{
+To be filled
+}
 \description{
 # Targeted maximum likelihood estimation (TMLE) for the WASH Benefits intention to treat (ITT) analyses
 }

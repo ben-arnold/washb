@@ -263,25 +263,28 @@ permute.diff.h2
 -mention why the log-link is used
 
 First, apply the washb_glm function to compare the water and control arms:
-```{r, warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE}
+```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE}
 glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
 
-family=binomial(link='log')
-glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Water"), family=family)
+#family=binomial(link='log')
+#glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Water"), family=family)
 ```
-On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, 'objectname'$RD returns the risk difference instead of the risk ratio for all covariates (not applicable when the glm  model is gaussian).
-```{r, warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE}
-glm.C.W$RD
+On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, 'objectname'$RDfit returns the risk difference instead of the risk ratio for all covariates (not applicable when the glm  model is gaussian).
+```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE}
+glm.C.W$RDfit
 ```
 Other objects are:
-`objectname'$fit' to return full glm output."
-`objectname'$RR' to return the relative risks and 95% CI's of the full model, including pair-matched blocks."
-`objectname'$cov' to return the variance-covariance matrix."
-`objectname'$rowdropped' to return the vector list of observations included in the model fit"
+`objectname''$TR to return the treatment effect.
+`objectname'$fit to return full glm model estimates.
+`objectname'$RDfit to return the risk difference of the treatment (and all covariates, including block pairs).
+`objectname'$vcv to return the variance-covariance matrix.
+`objectname'$rowdropped to return the vector list of observations included in the model fit
+`objectname'$lincom to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
+'objectname'$lincomRD to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.
 
   
 Use sapply to apply function across all pre-registered WASH Benefits arm comparisons:
-```{r, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE}
 
 unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, V=NULL, id=ad$clusterid, family=binomial(link='log')))
 
@@ -290,7 +293,7 @@ unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$blo
 ```
 
 ####Adjusted GLM
-```{r, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE}
 
 adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, V=NULL, id=ad$clusterid, family=binomial(link='log')))
 
@@ -302,13 +305,15 @@ adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block
 To be added
 
 ####Subgroup analysis with GLM
-The "V" arguement can be used to create an interaction term with "tr", the treatment variable. V is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of water treatment on diarrheal disease, by sex. 
+The "V" arguement can be used to create an interaction term with "tr", the treatment variable. V is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of water treatment on diarrheal disease, by target child (vs. sibling). 
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
-#Create a W variable containing only "sex", unadjusted for other covariates:
-W.interact<-subset(ad,select="sex")
+
+#Create a W variable containing "tchild" and other potential covariates:
+Ws <- subset(ad,select=c("tchild","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+
 
 #Estimate subgroup analysis glm with washb_glm
-glm.C.W.bysex <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W.interact,forcedW=NULL, V="sex", id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
+glm.C.W.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws, forcedW=NULL, V="tchild", id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
 ```
 
 
@@ -363,7 +368,7 @@ round(print(diff.h1LAZ),3)
 ```
 
 ####Unadjusted GLM
-```{r, warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE}
+```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE}
 
 unadj.glm.h1LAZ <- t(sapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=NULL,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
 
@@ -372,7 +377,7 @@ unadj.glm.h2LAZ <- t(sapply(h2.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$blo
 ```
 
 ####Adjusted GLM
-```{r, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, warning=FALSE, message=FALSE, eval=TRUE, cache=TRUE}
 
 adj.glm.h1LAZ <- t(sapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Ws,forcedW=NULL, V=NULL, id=ad$clusterid, family="gaussian"))
 
@@ -380,6 +385,19 @@ adj.glm.h2LAZ <- t(sapply(h2.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block
 
 ```
   
+
+####Subgroup analysis with multi-level factor
+The "V" arguement can be used with multilevel factors. Here is code for a subgroup analysis of the effect of water treatment on diarrheal disease, by target child (vs. sibling). 
+```{r, warning=FALSE, message=FALSE, eval=F, cache=TRUE}
+
+#Create a W variable containing "tchild" and other potential covariates:
+Ws <- subset(ad,select=c("month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+
+
+#Estimate subgroup analysis glm with washb_glm
+glm.C.W.byFoodSecurity <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws, forcedW=NULL, V="hfiacat", id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
+```  
+
   
 ```{r, eval=FALSE}  
 #Table of Primary Outcome Results  

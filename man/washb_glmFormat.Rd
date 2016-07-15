@@ -4,7 +4,7 @@
 \alias{washb_glmFormat}
 \title{washb_glmFormat}
 \usage{
-washb_glmFormat(rfit, RDfit = NULL, dmat, rowdropped, pair, vcovCL,
+washb_glmFormat(rfit, RDfit = NULL, dmat, rowdropped, contrast, pair, vcovCL,
   vcovCL.rd = NULL, family = "gaussian", V = NULL, Subgroups = NULL,
   print = print)
 }
@@ -16,6 +16,8 @@ washb_glmFormat(rfit, RDfit = NULL, dmat, rowdropped, pair, vcovCL,
 \item{dmat}{dataframe used within the washb_glm function to fit data}
 
 \item{rowdropped}{dummy vector indexing rows of data dropped because a var contained missing data, to be read through the function and added to the formatted output.}
+
+\item{contrast}{Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")}
 
 \item{pair}{Pair-matched randomization ID variable (in WASH Benefits: block)}
 
