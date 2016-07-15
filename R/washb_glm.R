@@ -123,6 +123,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
     if(!is.null(forcedW)){
       screenW<-subset(glmdat, select=colnames(W))
       toexclude <- names(screenW) %in% forcedW
+      if(length(which(toexclude==TRUE))!=length(forcedW)) stop("A forcedW variable name is not a variable within the W data frame.")
       screenW=screenW[!toexclude]
       if(print==TRUE){
         cat("\n-----------------------------------------\nInclude the following adjustment covariates without screening:\n-----------------------------------------\n")
@@ -163,7 +164,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
     if(!is.null(V)){
       colnames(dmat)[which(colnames(dmat)==V)]<-"V"
       Subgroups<-levels(dmat$tr:dmat$V)
-      if( class(dmat$V)!="factor") stop('Error: V is not a factor variable within the W covariate data frame')
+      if( class(dmat$V)!="factor") stop('V is not a factor variable within the W covariate data frame')
       suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
@@ -190,7 +191,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         if(!is.null(V)){
           colnames(dmat)[which(colnames(dmat)==V)]<-"V"
           Subgroups<-levels(dmat$tr:dmat$V)
-          if( class(dmat$V)!="factor") stop('Error: V is not a factor variable within the W covariate data frame')
+          if( class(dmat$V)!="factor") stop('V is not a factor variable within the W covariate data frame')
           suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
         }else{
           suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
@@ -213,7 +214,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       if(!is.null(V)){
         colnames(dmat)[which(colnames(dmat)==V)]<-"V"
         Subgroups<-levels(dmat$tr:dmat$V)
-        if( class(dmat$V)!="factor") stop('Error: V is not a factor variable within the W covariate data frame')
+        if( class(dmat$V)!="factor") stop('V is not a factor variable within the W covariate data frame')
         suppressWarnings(fit <- glm.nb(Y~tr*V+. ,data=dmat))
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
