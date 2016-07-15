@@ -77,7 +77,6 @@
 washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family=gaussian, pval=0.2, print=TRUE) {
   require(sandwich)
   require(lmtest)
-  require(MASS)
   #Create empty variable used in subgroup analysis
   Subgroups=NULL
   #options(scipen=999)
@@ -204,10 +203,13 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         return(modelfit)
 
       }else{
-    if (!requireNamespace("MASS", quietly = TRUE)) {
-      stop("MASS needed for this function to work. Please install it.",
-           call. = FALSE)
-    }else{
+        if(family[1]=="neg.binom"){
+          require(MASS)
+          if (!requireNamespace("MASS", quietly = TRUE)) {
+            stop("MASS needed for this function to work. Please install it.",
+                 call. = FALSE)
+            }
+
       if(!is.null(V)){
         colnames(dmat)[which(colnames(dmat)==V)]<-"V"
         Subgroups<-levels(dmat$tr:dmat$V)
@@ -249,6 +251,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       }
       modelfit<-c(modelfit, Pois_LRtest)
       return(modelfit)
+      }else{
+        stop('Error in family specified. Must choose Gaussian, Poisson, Binomial, Binomial(link-log), or neg.binom.')
       }
     }
   }

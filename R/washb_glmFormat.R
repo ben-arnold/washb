@@ -33,8 +33,8 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
     rfit<-rfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
     if(family[1]!="gaussian"){RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]}
 
-    lincom<-matrix(0,nrow=length(levels(dmat$V)),ncol=6)
-    if(family[1]!="gaussian"){lincomRD<-matrix(0,nrow=length(levels(dmat$V)),ncol=6)}
+    lincom<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))
+    if(family[1]!="gaussian"){lincomRD<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))}
     lincom_index<-matrix(0,nrow=length(levels(dmat$V)),ncol=nrow(rfit))
 
     for(i in 1:length(levels(dmat$V))){
@@ -51,7 +51,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
       if(family[1]!="gaussian"){lincomRD[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],RDfit,vcovCL.rd,flag=1))}
     }
 
-    lincom<-data.frame(levels(dmat$V),round(lincom,6))
+    lincom<-data.frame(levels(dmat$V),lincom)
     colnames(lincom) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
     if(family[1]!="gaussian"){
       lincomRD<-data.frame(levels(dmat$V),lincomRD)
@@ -95,7 +95,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, pair, vcovCL, vc
   if(print==TRUE){
   #Print formatted glm model output.
   if(!is.null(V)){
-   cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup: /'",V,"/'\n-----------------------------------------\n")
+   cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup: \'",V,"\'\n-----------------------------------------\n")
    print(lincom)
   }else{
     cat("\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")

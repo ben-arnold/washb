@@ -21,8 +21,8 @@
 
 washb_lincom <- function(lc,fit,vcv, measure="RR", flag=NULL) {
     x<-fit
-
-   if(measure=="RD"){
+    coef<-paste(rownames(fit)[which(lc==1)], collapse=" + ")
+  if(measure=="RD"){
      est <- (t(lc)%*%x[,1])
      se  <- sqrt( t(lc)%*%vcv%*%lc )
      Z   <- (est)/se
@@ -39,10 +39,11 @@ washb_lincom <- function(lc,fit,vcv, measure="RR", flag=NULL) {
   }
 
   res <- matrix(c(est,se,lb,ub,Z,P),nrow=1)
+  res[1:6]<-round(res[1:6],4)
   colnames(res) <- c("est","se.est","est.lb","est.ub","Z","P")
   if(is.null(flag)){
   cat("\nLinear combination of coefficients:\n")
-  print(res)
+  print(coef)
   }
   return(res)
 }
