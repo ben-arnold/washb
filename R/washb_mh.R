@@ -1,4 +1,4 @@
-#' washb_MH.pool
+#' washb_mh
 #'
 #' Mantel-Haenszel Pooled estimates of the prevalence ratio (PR) or the prevalence
 #' difference (PD) using randomization block as the stratification variable.
@@ -72,22 +72,22 @@
 #'   c("Control","Nutrition + WSH")
 #' )
 #'
-#' Apply washb_MH.pooled to the water vs. control arm contrast.
-#' washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
+#' Apply washb_mh to the water vs. control arm contrast.
+#' washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
 #'
 #' Return the risk difference instead of the risk ration:
-#' washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
+#' washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
 #'
 #'
 #' Use sapply command to efficiently apply the function to all the treatment arm contrasts
 #'
-#' diff.h1 <- t(sapply(h1.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
+#' diff.h1 <- t(sapply(h1.contrasts,washb_mh,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
 #' rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
 #' print(diff.h1)
 #'
 
 
-washb_MH.pooled <- function(Y,tr,strat,contrast,measure="RR") {
+washb_mh <- function(Y,tr,strat,contrast,measure="RR") {
   require(metafor)
   mhdat <- data.frame(Y=Y[tr==contrast[1]|tr==contrast[2]],
                       tr=tr[tr==contrast[1]|tr==contrast[2]],

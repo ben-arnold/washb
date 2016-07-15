@@ -1,4 +1,4 @@
-#' washb_paired.ttest
+#' washb_ttest
 #'
 #'
 #' Function to call the paired t-test for two different arms of the study.
@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#'  #The washb_paired.ttest function
+#'  #The washb_ttest function
 #'
 #'  #Load in Bandladesh anthropometry data and enrollment data
 #'  data(washb_bd_anthro)
@@ -34,12 +34,12 @@
 #'  ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
 #'
 #'  #Run paired ttest function:
-#'  washb_paired.ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))
+#'  washb_ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))
 
 
 
 
-washb_paired.ttest <- function(Y,tr,strat,contrast) {
+washb_ttest <- function(Y,tr,strat,contrast) {
   ttdat <- data.frame(Y=Y[tr==contrast[1]|tr==contrast[2]],
                       tr=tr[tr==contrast[1]|tr==contrast[2]],
                       strat=strat[tr==contrast[1]|tr==contrast[2]])
