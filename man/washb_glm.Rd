@@ -6,7 +6,7 @@
 washb_glm}
 \usage{
 washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, V = NULL, id, contrast,
-  family = gaussian, pval = 0.2, print = TRUE)
+  family = "gaussian", pval = 0.2, print = TRUE)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}

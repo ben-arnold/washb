@@ -74,7 +74,7 @@
 
 
 
-washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family=gaussian, pval=0.2, print=TRUE) {
+washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE) {
   require(sandwich)
   require(lmtest)
   options(scipen=50)
@@ -153,8 +153,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         dmat <- subset(glmdat,select=c("Y","tr",Wscreen,"pair"))
       }else{
         dmat <- subset(glmdat,select=c("Y","tr","pair"))
+        }
       }
-    }
   } else {
     dmat <- subset(glmdat,select=c("Y","tr","pair"))
   }
@@ -200,7 +200,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
 
-        modelfit<-washb_glmFormat(rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, print=print)
+        modelfit<-washb_glmFormat(rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print)
         return(modelfit)
 
       }else{
