@@ -203,28 +203,28 @@ h2.contrasts <- list(
 
 
 
-#Function: washb_MH.pooled
+#Function: washb_mh
 ### Unadjusted Mantel-Haenszel estimates 
 Y=binary outcome (here, 7-day diarrheal disease recall "ad$diar7d")
 tr=binary treatment group variable, 
 
-Apply washb_MH.pooled to the water vs. control arm contrast. 
+Apply washb_mh to the water vs. control arm contrast. 
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
-washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
+washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
 ```
-The function washb_MH.pooled can also be used to calculate an unadjusted risk difference: 
+The function washb_mh can also be used to calculate an unadjusted risk difference: 
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
-washb_MH.pooled(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RD")
+washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RD")
 ```
 Use sapply command to efficiently apply the function to all the treatment arm contrasts
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
 #Hypothesis 1
-diff.h1 <- t(sapply(h1.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
+diff.h1 <- t(sapply(h1.contrasts,washb_mh,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
 rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
 print(diff.h1)
 
 #Hypothesis 2
-diff.h2 <- t(sapply(h2.contrasts,washb_MH.pooled,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
+diff.h2 <- t(sapply(h2.contrasts,washb_mh,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
 rownames(diff.h2) <- c("WSH v Water","WSH v Sanitation","WSH v Handwashing")
 print(diff.h2)
 ```
@@ -353,16 +353,16 @@ Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","mom
 ```
 
 
-#Function: washb_paired.ttest  
+#Function: washb_ttest  
 Function to call the paired t-test for two different arms of the study. It estimates the paired t-test for differences in means paired within randomization blocks. This function should be used for the unadjusted analysis of continious outcomes.
 
 
 ```{r, cache=TRUE}
-#Run washb_paired.ttest on water vs. control arm comparison
-washb_paired.ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))
+#Run washb_ttest on water vs. control arm comparison
+washb_ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))
 
 #Use sapply to apply across all contrasts
-diff.h1LAZ <- t(sapply(h1.contrasts,washb_paired.ttest,Y=ad$laz,tr=ad$tr,strat=ad$block))
+diff.h1LAZ <- t(sapply(h1.contrasts,washb_ttest,Y=ad$laz,tr=ad$tr,strat=ad$block))
 rownames(diff.h1LAZ) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
 round(print(diff.h1LAZ),3)
 ```
