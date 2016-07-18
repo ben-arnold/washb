@@ -31,34 +31,40 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
   #Create linear comparisons by subgroup if V is specified
   if(!is.null(V)){
     #sort rfit output to put interactions before pair factors
-    rfit<-rfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
-    if(family[1]!="gaussian"){RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]}
+    if(class(dmat$V)!="factor"){
+        rfit<-rfit[c(1:3,nrow(rfit),4:(nrow(rfit)-1)),]
+        if(family[1]!="gaussian"){ RDfit<-RDfit[c(1:3,nrow(rfit),4:(nrow(rfit)-1)),]}
+      }
 
-    lincom<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))
-    if(family[1]!="gaussian"){lincomRD<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))}
-    lincom_index<-matrix(0,nrow=length(levels(dmat$V)),ncol=nrow(rfit))
+    if(class(dmat$V)=="factor"){
+      rfit<-rfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]
+      if(family[1]!="gaussian"){RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(rfit)+2-length(unique(dmat$V))):(nrow(rfit)),(length(levels(dmat$V))+2):(nrow(rfit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(rfit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(rfit)+1-length(unique(dmat$V)))),]}
 
-    for(i in 1:length(levels(dmat$V))){
-        temp<-rep(0, length(Subgroups))
-        temp[2]=1
-        if(i!=1){
-          temp[i+length(levels(dmat$V))]<- temp[i+1]<-1
-          }
+      lincom<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))
+      if(family[1]!="gaussian"){lincomRD<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))}
+      lincom_index<-matrix(0,nrow=length(levels(dmat$V)),ncol=nrow(rfit))
 
-        lincom_index[i,1:(length(Subgroups))]<-temp
+      for(i in 1:length(levels(dmat$V))){
+          temp<-rep(0, length(Subgroups))
+          temp[2]=1
+          if(i!=1){
+            temp[i+length(levels(dmat$V))]<- temp[i+1]<-1
+            }
 
+          lincom_index[i,1:(length(Subgroups))]<-temp
 
-      lincom[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],rfit,vcovCL,flag=1))
-      if(family[1]!="gaussian"){lincomRD[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],RDfit,vcovCL.rd,flag=1))}
+        lincom[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],rfit,vcovCL,flag=1))
+        if(family[1]!="gaussian"){lincomRD[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],RDfit,vcovCL.rd,flag=1))}
+      }
+
+      lincom<-data.frame(levels(dmat$V),lincom)
+      colnames(lincom) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
+      if(family[1]!="gaussian"){
+        lincomRD<-data.frame(levels(dmat$V),lincomRD)
+        colnames(lincomRD) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
+        }
+      }
     }
-
-    lincom<-data.frame(levels(dmat$V),lincom)
-    colnames(lincom) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
-    if(family[1]!="gaussian"){
-      lincomRD<-data.frame(levels(dmat$V),lincomRD)
-      colnames(lincomRD) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
-    }
-  }
 
 
   #Create formatted dataframe with risk ratios and risk differences and corresponding 95% CI.
@@ -95,7 +101,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
 
   if(print==TRUE){
   #Print formatted glm model output.
-  if(!is.null(V)){
+  if(!is.null(V)&class(dmat$V)=="factor"){
    cat("\n\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup: \'",V,"\'\n-----------------------------------------\n")
    print(lincom)
   }else{
@@ -106,7 +112,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
 
   if(family[1]!="gaussian"){
     cat("\n\n RD of treatment\n")
-     if(!is.null(V)){
+     if(!is.null(V)&class(dmat$V)=="factor"){
        print(lincomRD)
     }else{
       print(RD[2,])
@@ -147,14 +153,14 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
 
 
   if(family[1]=="gaussian"){
-    if(!is.null(V)){
+    if(!is.null(V)&class(dmat$V)=="factor"){
       modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom)
     }else{
       modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped)
       }
 
   }else{
-    if(!is.null(V)){
+    if(!is.null(V)&class(dmat$V)=="factor"){
     modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
     }else{
       modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped)

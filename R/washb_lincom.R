@@ -16,12 +16,10 @@
 #'
 
 
-# Add?: #' @param varlist : Vector of variables names to create a linear combination of coefficients
-
 
 washb_lincom <- function(lc,fit,vcv, measure="RR", flag=NULL) {
     x<-fit
-    coef<-paste(rownames(fit)[which(lc==1)], collapse=" + ")
+    coef<-paste(rownames(fit)[which(lc!=0)], collapse=" + ")
   if(measure=="RD"){
      est <- (t(lc)%*%x[,1])
      se  <- sqrt( t(lc)%*%vcv%*%lc )
@@ -29,18 +27,22 @@ washb_lincom <- function(lc,fit,vcv, measure="RR", flag=NULL) {
      P   <- 2*pnorm(-abs(Z))
      lb <- est-1.96*se
      ub <- est+1.96*se
+     res <- matrix(c(est,se,lb,ub,Z,P),nrow=1)
+     res[1:6]<-round(res[1:6],4)
+     colnames(res) <- c("est","se.est","est.lb","est.ub","Z","P")
   }else{
-    est <- exp(t(lc)%*%x[,1])
+    est <- exp(t(lc)%*%x[,4])
     se  <- sqrt( t(lc)%*%vcv%*%lc )
     Z   <- log(est)/se
     P   <- 2*pnorm(-abs(Z))
     lb <- exp(log(est)-1.96*se)
     ub <- exp(log(est)+1.96*se)
+    res <- matrix(c(est,se,lb,ub,Z,P),nrow=1)
+    res[1:6]<-round(res[1:6],4)
+    colnames(res) <- c("RR","se.RR","RR.lb","RR.ub","Z","P")
   }
 
-  res <- matrix(c(est,se,lb,ub,Z,P),nrow=1)
-  res[1:6]<-round(res[1:6],4)
-  colnames(res) <- c("est","se.est","est.lb","est.ub","Z","P")
+
   if(is.null(flag)){
   cat("\nLinear combination of coefficients:\n")
   print(coef)

@@ -163,8 +163,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
 
     if(!is.null(V)){
       colnames(dmat)[which(colnames(dmat)==V)]<-"V"
-      Subgroups<-levels(dmat$tr:dmat$V)
-      if( class(dmat$V)!="factor") stop('V is not a factor variable within the W covariate data frame')
+      if( class(dmat$V)=="factor") Subgroups<-levels(dmat$tr:dmat$V)
+      if( class(dmat$V)!="factor") warning('V is not a factor variable within the W covariate data frame. An interaction term will be added to the model but not linear combination of coefficients will be calculated.')
       suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
@@ -191,7 +191,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         if(!is.null(V)){
           colnames(dmat)[which(colnames(dmat)==V)]<-"V"
           Subgroups<-levels(dmat$tr:dmat$V)
-          if( class(dmat$V)!="factor") stop('V is not a factor variable within the W covariate data frame')
+          if( class(dmat$V)!="factor") warning('V is not a factor variable within the W covariate data frame. An interaction term will be added to the model but not linear combination of coefficients will be calculated.')
           suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
         }else{
           suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
@@ -214,7 +214,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       if(!is.null(V)){
         colnames(dmat)[which(colnames(dmat)==V)]<-"V"
         Subgroups<-levels(dmat$tr:dmat$V)
-        if( class(dmat$V)!="factor") stop('V is not a factor variable within the W covariate data frame')
+        if( class(dmat$V)!="factor") warning('V is not a factor variable within the W covariate data frame. An interaction term will be added to the model but not linear combination of coefficients will be calculated.')
         suppressWarnings(fit <- glm.nb(Y~tr*V+. ,data=dmat))
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
