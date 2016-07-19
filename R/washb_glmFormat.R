@@ -31,13 +31,13 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
 
   #Create formatted dataframe with risk ratios and risk differences and corresponding 95% CI.
     if(family[1]=="binomial"|family[1]=="poisson"|family[1]=="neg.binom"){
-    expcoef<-round(exp(rfit[,1]),4)
-    RR<-data.frame(round(exp(rfit[,1]),4), round(exp(rfit[,1]-1.96*rfit[,2]),4),round(exp(rfit[,1]+1.96*rfit[,2]),4))
-    RD<-data.frame(round((RDfit[,1]),4), round((RDfit[,1]-1.96*RDfit[,2]),4),round((RDfit[,1]+1.96*RDfit[,2]),4))
+    expcoef<-round(exp(rfit[,1]),8)
+    RR<-data.frame(round(exp(rfit[,1]),8), round(exp(rfit[,1]-1.96*rfit[,2]),8),round(exp(rfit[,1]+1.96*rfit[,2]),8))
+    RD<-data.frame(round((RDfit[,1]),8), round((RDfit[,1]-1.96*RDfit[,2]),8),round((RDfit[,1]+1.96*RDfit[,2]),8))
     colnames(RD)<-c("RD","2.5%","97.5%")
     }else{
       if(family[1]=="gaussian"){
-      RR<-data.frame(round((rfit[,1]),4), round((rfit[,1]-1.96*rfit[,2]),4),round((rfit[,1]+1.96*rfit[,2]),4))
+      RR<-data.frame(round((rfit[,1]),8), round((rfit[,1]-1.96*rfit[,2]),8),round((rfit[,1]+1.96*rfit[,2]),8))
       }else{
       stop("\nError: argument \"family\" is not a valid option.\n")
       }}
@@ -82,8 +82,9 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
     }
 
     if(class(dmat$V)=="factor"){
-      fit<-fit[c(1:(length(levels(dmat$V))+1),(nrow(fit)+2-length(unique(dmat$V))):(nrow(fit)),(length(levels(dmat$V))+2):(nrow(fit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(fit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(fit)+1-length(unique(dmat$V)))),]
-      if(family[1]!="gaussian"){RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(fit)+2-length(unique(dmat$V))):(nrow(fit)),(length(levels(dmat$V))+2):(nrow(fit)-length(unique(pair))+2-length(unique(dmat$V))),(nrow(fit)-length(unique(pair))+3-length(unique(dmat$V))):(nrow(fit)+1-length(unique(dmat$V)))),]}
+
+      fit<-fit[c(1:(length(levels(dmat$V))+1),(nrow(fit)+2-length(unique(dmat$V))):(nrow(fit)),(length(levels(dmat$V))+2):(nrow(fit)-(length(unique(dmat$V))-1))),]
+      if(family[1]!="gaussian"){ RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(RDfit)+2-length(unique(dmat$V))):(nrow(RDfit)),(length(levels(dmat$V))+2):(nrow(RDfit)-(length(unique(dmat$V))-1))),]}
 
       lincom<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))
       if(family[1]!="gaussian"){lincomRD<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))}
@@ -136,7 +137,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
       }
     }
 
-    if(ncol(dmat)>3){
+    if(ncol(dmat)>3&is.null(V)|ncol(dmat)>4){
       if(family[1]=="gaussian"){cat("\n Coef of covariates\n")}
       if(family[1]!="gaussian"){cat("\n RR of covariates\n")}
       print(RR[2:(nrow(RR)-(length(unique(pair))+1)),])

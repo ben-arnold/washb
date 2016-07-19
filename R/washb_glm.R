@@ -128,6 +128,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       toexclude <- names(screenW) %in% forcedW
       if(length(which(toexclude==TRUE))!=length(forcedW)) stop("A forcedW variable name is not a variable within the W data frame.")
       screenW=screenW[!toexclude]
+      if(ncol(screenW)==0){screenW<-NULL}
       if(print==TRUE){
         cat("\n-----------------------------------------\nInclude the following adjustment covariates without screening:\n-----------------------------------------\n")
         print(forcedW, sep="\n")
@@ -144,7 +145,9 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
     # see Wprescreen() in the base functions
     if(print==TRUE)cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
     suppressWarnings(Wscreen <- washb_prescreen(Y=glmdat$Y,Ws=screenW,family=family, pval=pval, print=print))
-
+  }else{
+    Wscreen=NULL
+  }
     if(!is.null(forcedW)){
       if(!is.null(Wscreen)){
         dmat <- subset(glmdat,select=c("Y","tr",forcedW,Wscreen,"pair"))
@@ -158,9 +161,6 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         dmat <- subset(glmdat,select=c("Y","tr","pair"))
         }
       }
-  } else {
-    dmat <- subset(glmdat,select=c("Y","tr","pair"))
-  }
 
   if(family[1]=="binomial"|family[1]=="poisson"){
 
