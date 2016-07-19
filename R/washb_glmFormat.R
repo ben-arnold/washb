@@ -53,10 +53,10 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
 
           lincom_index[i,1:(length(Subgroups))]<-temp
 
-        if(family[1]=="gaussian"){lincom[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],rfit,vcovCL, measure="RD",flag=1))}
+        if(family[1]=="gaussian"){lincom[i,] <- suppressWarnings(washb_lincom(lc=lincom_index[i,],fit=rfit,vcv=vcovCL, measure="RD",flag=1))}
         if(family[1]!="gaussian"){
-          lincom[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],rfit,vcovCL, measure="RR",flag=1))
-          lincomRD[i,] <- suppressWarnings(washb_lincom(lincom_index[i,],RDfit,vcovCL.rd, measure="RD",flag=1))
+          lincom[i,] <- suppressWarnings(washb_lincom(lc=lincom_index[i,],fit=rfit,vcv=vcovCL, measure="RR",flag=1))
+          lincomRD[i,] <- suppressWarnings(washb_lincom(lc=lincom_index[i,],fit=RDfit,vcv=vcovCL.rd, measure="RD",flag=1))
           }
       }
 
