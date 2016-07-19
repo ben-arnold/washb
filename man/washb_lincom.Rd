@@ -4,10 +4,13 @@
 \alias{washb_lincom}
 \title{washb_lincom}
 \usage{
-washb_lincom(lc, fit, vcv, measure = "RR", flag = NULL)
+washb_lincom(lc = NULL, varlist = NULL, fit, vcv, measure = "RR",
+  flag = NULL)
 }
 \arguments{
 \item{lc}{: Index vector of coefficients from glm modellinear combination of coefficients}
+
+\item{varlist}{: Character vector of variables to include. Alternative to lc. If lc is specified, this arguement is ignored.}
 
 \item{fit}{: Model object returned from coeftest (class=coeftest) command within the washb_glm function. Accessed with $fit from washb_glm output.}
 

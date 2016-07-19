@@ -3,6 +3,7 @@
 #' Function to get Estimates, SEs, CIs, and P-values for Pr>|Z| from a linear combination of regression coefficients.
 #'
 #' @param lc : Index vector of coefficients from glm modellinear combination of coefficients
+#' @param varlist : Character vector of variables to include. Alternative to lc. If lc is specified, this arguement is ignored.
 #' @param fit : Model object returned from coeftest (class=coeftest) command within the washb_glm function. Accessed with $fit from washb_glm output.
 #' @param vcv : variance-covariance matrix of coefficients. Accessed with $vcv from washb_glm output.
 #' @param measure measure of effect. RR = risk ratio, RD = risk difference
@@ -17,9 +18,21 @@
 
 
 
-washb_lincom <- function(lc,fit,vcv, measure="RR", flag=NULL) {
+washb_lincom <- function(lc=NULL,varlist=NULL,fit,vcv, measure="RR", flag=NULL) {
     x<-fit
-    coef<-paste(rownames(fit)[which(lc!=0)], collapse=" + ")
+
+    if(!is.null(lc)){
+      coef<-paste(rownames(x)[which(lc!=0)], collapse=" + ")
+    }else{
+      if(!is.null(varlist)){
+      tocombine <- which(rownames(x) %in% varlist)
+      lc=rep(0,nrow(x))
+      lc[tocombine]<-1
+    }else{
+      stop("Specify either lc or varlist.")
+      }
+    }
+
   if(measure=="RD"){
      est <- (t(lc)%*%x[,1])
      se  <- sqrt( t(lc)%*%vcv%*%lc )
