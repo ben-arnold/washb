@@ -3,7 +3,7 @@
 #'
 #' WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
 #' Conducts a permutation test of the independence of Y and tr, conditional on randomization block
-#' using the Wilcoxon rank-sum test statistic
+#' using the Wilcoxon rank-sum test statistic.
 #'
 #' @usage
 #' washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)
@@ -37,23 +37,8 @@
 #' #######################
 #' #Load and clean data
 #' #######################
-#' data(washb_bd_diar)
-#' d<-washb_bd_diar
-#' d$block <- as.factor(d$block)
-#'
-#' # Subset the Data to Follow-up data only
-#' ad <- subset(d,svy>0)
-#'
-#' # Exclude:
-#' # * siblings who were born after enrollment
-#' # * siblings who were >36 mos at enrollment
-#' # * children with missing outcome data
-#' ad <- subset(ad,sibnewbirth==0)
-#' ad <- subset(ad,gt36mos==0)
-#' ad <- subset(ad,!is.na(ad$diar7d))
-#'
-#' # re-order the tr factor for convenience
-#' ad$tr <- factor(ad$tr,levels=c("Water","Sanitation","Handwashing","Nutrition","WSH","Nutrition + WSH","Control"))
+#' data(washb_bd_diarClean)
+#' ad<-washb_bd_diarClean
 #'
 #' #Unadjusted permutation test of Bangladesh diarrheal disease outcome.
 #'

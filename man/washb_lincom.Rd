@@ -28,6 +28,7 @@ Returns a list of the risk ratios or risk differences, the variance-covariance m
 Function to get Estimates, SEs, CIs, and P-values for Pr>|Z| from a linear combination of regression coefficients.
 }
 \examples{
-
+library(washb)
+data(washb_anthroClean)
 }
 

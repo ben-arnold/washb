@@ -6,7 +6,8 @@
 #' Function to call the M-H estimator for two different arms of the study this relies on
 #' teh rma.mh() function in the metafor package.
 #'
-#'
+#' @usage
+#' washb_mh(Y,tr,strat,contrast,measure="RR")
 #'
 #' Estimate the Mantel-Haenszel prevalence ratio note: strata with no outcomes (i.e., missing PR) are dropped.
 #' This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates.
@@ -28,39 +29,11 @@
 #' #The function will test a matrix of covariates and return those related to child diarrheal disease with
 #' #a <0.2 p-value from a likelihood ratio test.
 #'
-#' Cleans and merge the enrollment and diarrhea data:
+#' Load cleaned diarrhea data (see vignette for cleaning steps):
 #' library(washb)
-#' data(washb_bd_enrol)
-#' data(washb_bd_diar)
-#'
-#' # drop svydate and month because they are superceded in the child level diarrhea data
-#' #washb_bd_enrol$svydate <- NULL
-#' #washb_bd_enrol$month <- NULL
-#'
-#' # merge the baseline dataset to the follow-up dataset
-#' ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
-#'
-#' # subset to the relevant measurement
-#' # Year 1 or Year 2
-#' ad <- subset(ad,svy==1|svy==2)
-#'
-#' #subset the diarrhea to children <36 mos at enrollment
-#' ### (exlude new births that are not target children)
-#' ad <- subset(ad,sibnewbirth==0)
-#' ad <- subset(ad,gt36mos==0)
-#'
-#' # Exclude children with missing data
-#' ad <- subset(ad,!is.na(ad$diar7d))
-#'
-#' #Re-order the tr factor for convenience
-#' ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
-#'
-#' #Ensure that month is coded as a factor
-#' ad$month <- factor(ad$month)
-#'
-#' #Sort the data for perfect replication when using V-fold cross-validation
-#' ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
-#'
+#' data(washb_bd_diarClean)
+#' ad<-washb_bd_diarClean
+#''
 #' ###Create vector of contrasts for each hypothesis to facilitate comparisons between arms.
 #' #Hypothesis 1: Each intervention arm vs. Control
 #' h1.contrasts <- list(

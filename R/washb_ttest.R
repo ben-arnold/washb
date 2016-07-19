@@ -5,6 +5,9 @@
 #' Estimates the paired t-test for differences in means paired within randomization blocks.
 #' The arguments Y,tr,strat, below need to be from the same dataset:
 #'
+#' @usage
+#' washb_ttest(Y,tr,strat,contrast)
+#'
 #' @param Y quantitative outcome variable (e.g. LAZ)
 #' @param tr binary treatment group variable, comparison group first
 #' @param strat stratification variable (here: block)
@@ -16,24 +19,11 @@
 #' @examples
 #'  #The washb_ttest function
 #'
-#'  #Load in Bandladesh anthropometry data and enrollment data
-#'  data(washb_bd_anthro)
-#'  data(washb_bd_enrol)
+#'  #Load in Bangladesh cleaned anthropometry data. (See vignette for specific cleaning steps).
+#'  data(washb_bd_anthroClean)
+#'  ad<-washb_bd_anthroClean
 #'
-#'  # drop svydate and month because they are superceded in the child level diarrhea data
-#'  washb_bd_enrol$svydate <- NULL
-#'  washb_bd_enrol$month <- NULL
-#'  ad <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
-#'  ad <- subset(ad,svy==2)
-#'  ad <- subset(ad,tchild=="Target child")
-#'
-#   # Drop children with extreme LAZ values
-#'  ad <- subset(ad,laz_x!=1)
-#'
-#'  #Make sure the treatment group variables are set as factors:
-#'  ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
-#'
-#'  #Run paired ttest function:
+#'  #Run paired ttest function for water vs. control comparison:
 #'  washb_ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))
 
 

@@ -5,8 +5,7 @@
 \title{Generalized linear model function for WASH Benefits study.
 washb_glm}
 \usage{
-washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, V = NULL, id, contrast,
-  family = "gaussian", pval = 0.2, print = TRUE)
+washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
@@ -19,7 +18,7 @@ washb_glm(Y, tr, pair, W = NULL, forcedW = NULL, V = NULL, id, contrast,
 
 \item{forcedW}{Optional vector of variable names to force as adjustment covariates (no screening)}
 
-\item{V}{Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.}
+\item{V}{Optional variable name for subgroup analyses, which is interacted with 'tr'.}
 
 \item{id}{ID variable for independent units (cluster ID)}
 
