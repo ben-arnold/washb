@@ -634,35 +634,35 @@ Water | Adjusted GLM + TMLE |  | | |
 Water | Adjusted SL + TMLE |  | | | 
 Water | Wilcoxon  permutation test |  | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-Sanitation | Unadjusted ttest | `r round(diff.h1LAZ[1,1],2)` |(`r round((diff.h1LAZ[1,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[1,4],2)`| `r round(diff.h1LAZ[1,5],3)`
+Sanitation | Unadjusted ttest | `r round(diff.h1LAZ[2,1],2)` |(`r round((diff.h1LAZ[2,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[2,4],2)`| `r round(diff.h1LAZ[2,5],3)`
 Sanitation | Unadjusted GLM | `r round(unadj.glm.h1LAZ[[2]]$TR[1],2)` |(`r round(unadj.glm.h1LAZ[[2]]$TR[2:3],2)`) |SE:  `r round(unadj.glm.h1LAZ[[2]]$TR[4],2)` | `r round(unadj.glm.h1LAZ[[2]]$TR[6],3)`
 Sanitation | Adjusted GLM | `r round(adj.glm.h1LAZ[[2]]$TR[1],2)` |(`r round(adj.glm.h1LAZ[[2]]$TR[2:3],2)`) |SE:  `r round(adj.glm.h1LAZ[[2]]$TR[4],2)` | `r round(adj.glm.h1LAZ[[2]]$TR[6],3)`
 Sanitation | Adjusted GLM + TMLE |  | | | 
 Sanitation | Adjusted SL + TMLE |  | | | 
 Sanitation | Wilcoxon  permutation test |  | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-Handwashing | Unadjusted ttest | `r round(diff.h1LAZ[1,1],2)` |(`r round((diff.h1LAZ[1,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[1,4],2)`| `r round(diff.h1LAZ[1,5],3)`
+Handwashing | Unadjusted ttest | `r round(diff.h1LAZ[3,1],2)` |(`r round((diff.h1LAZ[3,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[3,4],2)`| `r round(diff.h1LAZ[3,5],3)`
 Handwashing | Unadjusted GLM | `r round(unadj.glm.h1LAZ[[3]]$TR[1],2)` |(`r round(unadj.glm.h1LAZ[[3]]$TR[2:3],2)`) |SE:  `r round(unadj.glm.h1LAZ[[3]]$TR[4],2)` | `r round(unadj.glm.h1LAZ[[3]]$TR[6],3)`
 Handwashing | Adjusted GLM | `r round(adj.glm.h1LAZ[[3]]$TR[1],2)` |(`r round(adj.glm.h1LAZ[[3]]$TR[2:3],2)`) |SE:  `r round(adj.glm.h1LAZ[[3]]$TR[4],2)` | `r round(adj.glm.h1LAZ[[3]]$TR[6],3)`
 Handwashing | Adjusted GLM + TMLE |  | | | 
 Handwashing | Adjusted SL + TMLE |  | | | 
 Handwashing | Wilcoxon  permutation test |  | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-Nutrition | Unadjusted ttest | `r round(diff.h1LAZ[1,1],2)` |(`r round((diff.h1LAZ[1,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[1,4],2)`| `r round(diff.h1LAZ[1,5],3)`
+Nutrition | Unadjusted ttest | `r round(diff.h1LAZ[4,1],2)` |(`r round((diff.h1LAZ[4,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[4,4],2)`| `r round(diff.h1LAZ[4,5],3)`
 Nutrition | Unadjusted GLM | `r round(unadj.glm.h1LAZ[[4]]$TR[1],2)` |(`r round(unadj.glm.h1LAZ[[4]]$TR[2:3],2)`) |SE:  `r round(unadj.glm.h1LAZ[[4]]$TR[4],2)` | `r round(unadj.glm.h1LAZ[[4]]$TR[6],3)`
 Nutrition | Adjusted GLM | `r round(adj.glm.h1LAZ[[5]]$TR[1],2)` |(`r round(adj.glm.h1LAZ[[5]]$TR[2:3],2)`) |SE:  `r round(adj.glm.h1LAZ[[5]]$TR[4],2)` | `r round(adj.glm.h1LAZ[[5]]$TR[6],3)`
 Nutrition | Adjusted GLM + TMLE |  | | | 
 Nutrition | Adjusted SL + TMLE |  | | | 
 Nutrition | Wilcoxon  permutation test |  | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-WSH | Unadjusted ttest | `r round(diff.h1LAZ[1,1],2)` |(`r round((diff.h1LAZ[1,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[1,4],2)`| `r round(diff.h1LAZ[1,5],3)`
+WSH | Unadjusted ttest | `r round(diff.h1LAZ[5,1],2)` |(`r round((diff.h1LAZ[5,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[5,4],2)`| `r round(diff.h1LAZ[5,5],3)`
 WSH | Unadjusted GLM | `r round(unadj.glm.h1LAZ[[5]]$TR[1],2)` |(`r round(unadj.glm.h1LAZ[[5]]$TR[2:3],2)`) |SE:  `r round(unadj.glm.h1LAZ[[5]]$TR[4],2)` | `r round(unadj.glm.h1LAZ[[5]]$TR[6],3)`
 WSH | Adjusted GLM | `r round(adj.glm.h1LAZ[[5]]$TR[1],2)` |(`r round(adj.glm.h1LAZ[[5]]$TR[2:3],2)`) |SE:  `r round(adj.glm.h1LAZ[[5]]$TR[4],2)` | `r round(adj.glm.h1LAZ[[5]]$TR[6],3)`
 WSH | Adjusted GLM + TMLE |  | | | 
 WSH | Adjusted SL + TMLE |  | | | 
 WSH | Wilcoxon  permutation test |  | | | 
 -----------------------------------------|--------------------------------------|---------------|--------------|------------|-------------
-WSH+Nutrition | Unadjusted ttest | `r round(diff.h1LAZ[1,1],2)` |(`r round((diff.h1LAZ[1,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[1,4],2)`| `r round(diff.h1LAZ[1,5],3)`
+WSH+Nutrition | Unadjusted ttest | `r round(diff.h1LAZ[6,1],2)` |(`r round((diff.h1LAZ[6,2:3]),2)`) | t-stat:  `r round(diff.h1LAZ[6,4],2)`| `r round(diff.h1LAZ[6,5],3)`
 WSH+Nutrition | Unadjusted GLM | `r round(unadj.glm.h1LAZ[[6]]$TR[1],2)` |(`r round(unadj.glm.h1LAZ[[6]]$TR[2:3],2)`) |SE:  `r round(unadj.glm.h1LAZ[[6]]$TR[4],2)` | `r round(unadj.glm.h1LAZ[[6]]$TR[6],3)`
 WSH+Nutrition | Adjusted GLM | `r round(adj.glm.h1LAZ[[6]]$TR[1],2)` |(`r round(adj.glm.h1LAZ[[6]]$TR[2:3],2)`) |SE:  `r round(adj.glm.h1LAZ[[6]]$TR[4],2)` | `r round(adj.glm.h1LAZ[[6]]$TR[6],3)`
 WSH+Nutrition | Adjusted GLM + TMLE |  | | | 
