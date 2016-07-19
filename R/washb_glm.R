@@ -77,7 +77,7 @@
 washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE) {
   require(sandwich)
   require(lmtest)
-  options(scipen=50)
+  options(scipen=20)
   #Create empty variable used in subgroup analysis
   Subgroups=NULL
 
