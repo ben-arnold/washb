@@ -14,7 +14,8 @@
 #' @export
 #'
 #' @examples
-#'
+#' library(washb)
+#' data(washb_anthroClean)
 
 
 

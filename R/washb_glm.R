@@ -4,12 +4,15 @@
 #' Generalized linear model function for WASH Benefits study.
 #' washb_glm
 #'
+#' @usage
+#' washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE)
+#'
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
 #' @param tr Binary treatment group variable (ideally a factor), comparison group first
 #' @param pair Pair-matched randomization ID variable (in WASH Benefits: block)
 #' @param W Optional data frame that includes adjustment covariates (for adjusted estimates)
 #' @param forcedW Optional vector of variable names to force as adjustment covariates (no screening)
-#' @param V Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.
+#' @param V Optional variable name for subgroup analyses, which is interacted with 'tr'.
 #' @param id ID variable for independent units (cluster ID)
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
 #' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.
