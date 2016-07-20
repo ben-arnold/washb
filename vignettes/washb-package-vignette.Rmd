@@ -27,15 +27,23 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Vignette overview  
-  
+
+<br>
+
 #### WASH Benefits Bangladesh primary outcome analysis using the washb R package functions.  
   
-Calculates unadjusted and adjusted differences in diarrheal disease and length-for-age z-score between treatment arms for pre-specified hypothesis 1 (Treatment arms vs. Control arm), and for unspecified subgroup analyses (by target child/sibling for diarrhea outcome and by food security status for LAZ ouctome).  
+Calculates unadjusted and adjusted differences in diarrheal disease and length-for-age z-score between treatment arms for pre-specified hypothesis 1 (Treatment arms vs. Control arm), and for unspecified subgroup analyses (by target child/sibling for diarrhea outcome and by food security status for LAZ ouctome).
+
+<br>
+
   
 ####Input files:
- * washb-bangladesh-diar.csv
- * washb-bangladesh-anthro.csv  
- * washb-bangladesh-enrol.csv  
+ * __washb-bangladesh-diar.csv__
+ * __washb-bangladesh-anthro.csv__  
+ * __washb-bangladesh-enrol.csv__  
+ 
+<br>
+
 
  
 ####List and description of the functions documented in this vignette:  
@@ -43,10 +51,13 @@ Calculates unadjusted and adjusted differences in diarrheal disease and length-f
  * __washb_permute:__  Conducts a permutation test of the indepdence of Y and tr, conditional on randomization block using the Wilcoxon rank-sum test statistic.
  * __washb_glm:__  Convenience wrapper function to run glm models with robust standard errors for unadjusted and adjusted estimates.
  * __washb_means:__   Means estimated with robust standard errors for the WASH Benefits trials. Calculate means for a variable along with robust sandwich SEs and 95% confidence intervals that account for clustering within id.
- * __sandwichSE__  
+ * __sandwichSE__  Function to calculate the Huber Sandwich Estimator for robust standard errors. [Reference](http://www.stat.berkeley.edu/~census/mlesan.pdf)  
  * __washb_ttest:__  Wrapper function to call the paired t-test for two different arms of the study.  
  * __washb_mh:__  Estimates the Mantel-Haenszel prevalence ratio. Note: strata with no outcomes (i.e., missing PR) are dropped. This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates. The arguments Y,tr,strat, below need to be from the same dataset.  
  * __washb_lincom:__ Function to get Estimates, SEs, CIs, and P-values for Pr>|Z| from a linear combination of regression coefficients.
+ 
+<br>
+
   
   
 ####Relationships among functions:  
@@ -56,6 +67,10 @@ Calculates unadjusted and adjusted differences in diarrheal disease and length-f
  * __washb\_glm__ uses __washb\_lincom__ to calculate linear combinations of glm coefficients if a subgroup factor V is supplied to the function.
   
  * __washb_means__ uses __sandwichSE__ to estimate sandwich-based robust standard errors to account for clustering.
+
+<br>
+<br>
+<br>
 
 #R resources
 For new users of R, the following sources are helpful learning resources:  
@@ -67,10 +82,13 @@ For new users of R, the following sources are helpful learning resources:
  * [Johns Hopkins Coursera course in R programming](https://www.coursera.org/learn/r-programming)  
 
   
-  
+<br>
+<br>
+<br>
+
 #Package and Data Loading
-### Load in required packages:
-If you are installing the packages for the first time:
+#### Load in required packages:
+The `washb` package relies on several external functions found in a few different packages. These packaged need to be installed onto each computer once, and loaded into the R workspace each time R is opened. If you are installing the packages for the first time, use the following code:
 ```{r, eval = FALSE, tidy=TRUE}
     install.packages("sandwich")
     install.packages("lmtest")
@@ -79,15 +97,19 @@ If you are installing the packages for the first time:
     install.packages("metafor")
 ```
   
-Once packages are installed for the first time, they will be loaded along with the `washb` package when the following code is run:
+Once packages are installed for the first time, they will be automatically loaded along with the `washb` package when the following code is run:
 
 ```{r , results = "hide"}
 library(washb)
 ```
+The `library()` command can be used to load any installed package. It is not needed for any of the required packages listed above, but it is for suggested packages. For example, to fit a negative binomial glm model, the "MASS" package is required, and can be installed once with `install.packages("metafor")` and loaded each time R is opened with `library("MASS")`.
 
-###Package documentation
+<br>
+
+####Package documentation
 Use `??washb` to see full list of package documentation, or use `?(function name)` to see help documentation for any specific package. For example, `?washb_glm` returns the help page for the washb\_glm function.
 
+<br>
 
 ###Clean data  
 The data in this vignette is contained in 3 files, included in the package:  
@@ -159,29 +181,41 @@ data(washb_bd_diarClean)
 ad<-washb_bd_diarClean
 ```
 Now that the dataset is cleaned and merged, the washb package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis. (With the exception that the primary outcome analysis used TMLE, targeted maximum likelihood estimation, rather than GLM models in estimating the adjusted treatment effects.)  
-Diarrheal data with the above cleaning steps applied is available in the __washb\_bd_diarClean.Rdata__ file, accessed with `data(washb_bd_diarClean)` Tables of the estimated treatment effects the primary Bangladesh outcomes (diarrheal disease and length-for-age Z-score), estimated using the functions in this package, are included at the end of this vignette.
+
+<br>
+
+Diarrheal data with the above cleaning steps applied is available in the __"washb\_bd_diarClean.Rdata"__ file, accessed with `data(washb_bd_diarClean)` Tables of the estimated treatment effects the primary Bangladesh outcomes (diarrheal disease and length-for-age Z-score), estimated using the functions in this package, are included at the end of this vignette.
   
-  
+<br>
+<br>
+<br>
+
 #Function: wasb_prescreen  
 Selects covariates with univariate associations with the outcome of P<0.2 based on a likelihood ratio test.
  * (Excluded from screening because only measured in target children: birthord)  
  * (Excluded from screening due to too many missing values: asset_clock, momheight)  
 
-###Subset to a new dataframe the variables to be screened:
+####Subset to a new dataframe the variables to be screened:
 ```{r , results = "hide" , cache=TRUE, comment=NA}
 
 Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
 ```
 
-###Run the washb_prescreen function  
+<br>  
+
+####Run the washb_prescreen function  
 The washb\_prescreen function performs a likelihood ratio test on a set of potential covariates and returns all covariates with an associated p-value<0.2 (unless a custom pvalue is specified). It can be called as a function on its own, and is also called internally within the washb\_glm function. Unless otherwise specified by the use, the washb\_glm function with therefore only include covariates with a LR-test p-value <0.2 in the model. See the Function: washb_glm section for more details.
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
 prescreened_varnames<-washb_prescreen(Y=ad$diar7d,Ws,family="binomial", pval=0.2)
 ```
-  
-__Description of output:__  
+
+<br>
+
+####Description of output 
 The function runs a likelihood ratio test between a generalized linear model fit to each screened variable and a null model. The first section of the output includes all screened variables and the p-values from the likelihood ratio test. The second section outputs only those variables with a p-value <0.2. The function does not currently support a user-defined p-value threshold.  
+
+<br>
   
 Use the following code to return the saved a list of variable names for the selected variables. Then, subset the covariate dataframe to only those variables:  
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
@@ -192,15 +226,24 @@ prescreened_vars[1:5,1]
 
 ```  
 
+<br>
+<br>
+<br>
 
 #Function: washb_mean  
-This function is most useful for calculating variable means and confidence intervals -- for example, calculating average compliance (uptake) within a given intervention arm, or calculating the average LAZ by arm or measurement round. In the WASH Benefits trials, the independent unit is typically the cluster, so the `id` argument should identify the cluster ID.  If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use washb\_ttest(for unadjusted continuous outcomes), or washb\_mh (for unadjusted binary outcomes), or washb\_glm for unadjusted or adjusted generalized linear models.  
-  
-Here, the mean and 95% Confidence interval for mother's age is calculated:
-```{r, echo=FALSE, cache=TRUE, comment=NA}
-washb_mean(Y=ad$momage,id=ad$clusterid,print=TRUE)
-```
+This function is most useful for calculating variable means and confidence intervals -- for example, calculating average compliance (uptake) within a given intervention arm, or calculating the average LAZ by arm or measurement round. In the WASH Benefits trials, the independent unit is typically the cluster, so the `id` argument should identify the cluster ID.  
 
+<br>
+
+If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use `washb_ttest()` (for unadjusted continuous outcomes), or `washb_mh()` (for unadjusted binary outcomes), or `washb_glm()` for unadjusted or adjusted generalized linear models.  
+
+<br>
+  
+Using the cleaned Wash Benefits data, the mean and 95% Confidence interval for mother's age is calculated:
+```{r, echo=FALSE, cache=TRUE, comment=NA}
+MeanMomage<-washb_mean(Y=ad$momage,id=ad$clusterid,print=TRUE)
+```
+The `<-` command assigns the output of the `wahb_mean()` function to the new `MeanMomage` object. 
 
 ###Create vector of contrasts  
 For the pre-specified hypothesis 1 (each intervention arm vs. control) to facilitate comparisons between arms.
@@ -216,6 +259,9 @@ h1.contrasts <- list(
 ```
 
 
+<br>
+<br>
+<br>
 
 #Function: washb_mh
 ### Unadjusted Mantel-Haenszel estimates  
@@ -245,18 +291,21 @@ rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C",
 print(diff.h1)
 ```
 
+<br>
+<br>
+<br>
+
 #Function: washb_permute
 #### Non-parametric unadjusted estimates (Wilcoxon Signed Rank permutation test)
 WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block. It conducts a permutation test of the independence of Y and tr, conditional on randomization block using the Wilcoxon rank-sum test statistic.  
 __Usage:__ `washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)`  
-__References:__
-1.	Gail, M. H., Mark, S. D., Carroll, R. J., Green, S. B. & Pee, D. On Design Considerations and Randomization-Based Inference for Community Intervention Trials. Statist. Med. 15, 1069–1092 (1996).
- * [Link](http://onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0258(19960615)15:11%3c1069::AID-SIM220%3e3.0.CO%3b2-Q/full)
-2.	Braun, T. M. & Feng, Z. Optimal Permutation Tests for the Analysis of Group Randomized Trials. Journal of the American Statistical Association 96, 1424–1432 (2001).
- * [Link](http://www.tandfonline.com/doi/abs/10.1198/016214501753382336)
-3.	Rosenbaum, P. R. Covariance Adjustment in Randomized Experiments and Observational Studies. Statist. Sci. 17, 286–327 (2002).
- * [Link](http://projecteuclid.org/euclid.ss/1042727942)
-  
+__References:__  
+1.	Gail, M. H., Mark, S. D., Carroll, R. J., Green, S. B. & Pee, D. On Design Considerations and Randomization-Based Inference for Community Intervention Trials. Statist. Med. 15, 1069–1092 (1996). [Link](http://onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0258(19960615)15:11%3c1069::AID-SIM220%3e3.0.CO%3b2-Q/full)  
+2.	Braun, T. M. & Feng, Z. Optimal Permutation Tests for the Analysis of Group Randomized Trials. Journal of the American Statistical Association 96, 1424–1432 (2001). [Link](http://www.tandfonline.com/doi/abs/10.1198/016214501753382336)  
+3.	Rosenbaum, P. R. Covariance Adjustment in Randomized Experiments and Observational Studies. Statist. Sci. 17, 286–327 (2002). [Link](http://projecteuclid.org/euclid.ss/1042727942)  
+
+<br>
+
 Apply the washb_permute function to the Water-Control arm comparison:
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE, comment=NA}
 permute.C.W <- washb_permute(Y=ad$diar7d, tr=ad$tr, pair=ad$block, contrast=c("Control","Water"), nreps=100000, seed=242524)
@@ -275,6 +324,9 @@ permute.diff.h1
 ```
 
 
+<br>
+<br>
+<br>
 
 #Function: washb_glm 
 ####Generalized linear model function for WASH Benefits study.
@@ -328,14 +380,17 @@ unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$blo
 adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws, forcedW=NULL, V=NULL, id=ad$clusterid, family=binomial(link='log'), print=FALSE))
 ```
   
-  
+
 ####Forcing covariates into the glm model regardless of prescreening p-value
 If there are certain variables to include in the glm model, regardless of prescreening results, use the `forcedW` option. This argument takes a variable name or a vector of variable names. These variables must already be in the W dataframe of potential adjustment covariates. For example, if adjustment by age and sex is standard, force them into the glm model:
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
 glm.C.W <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws, forcedW=c("agedays","sex"), id=ad$clusterid, contrast=c("Control","Water"), family=binomial(link='log'))
 ```
   
-  
+<br>
+<br>
+<br>
+
 #Subgroup analysis with GLM
 The `V` arguement can be used to create an interaction term with `tr`, the treatment variable. `V` is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of water treatment on diarrheal disease, by target child (vs. sibling). 
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
@@ -373,7 +428,10 @@ WSH+Nutrition |`r glm.byChildType[[6]]$lincom[1,1]` | `r glm.byChildType[[6]]$li
 
   
   
-  
+<br>
+<br>
+<br>
+
 ###Risk difference between treatment and control arms, stratified into target children and siblings.
 Contrast v. control | Child Type | Coefficient |  95% CI  |  P-value  
 --------------------|------------------------|-------------|----------|---------  
@@ -391,6 +449,9 @@ WSH + Nutrition |`r glm.byChildType[[6]]$lincomRD[1,1]` | `r glm.byChildType[[6]
 - |`r glm.byChildType[[6]]$lincomRD[2,1]`  | `r glm.byChildType[[6]]$lincomRD[2,2]` | `r round(glm.byChildType[[6]]$lincomRD[2,4:5],2)` | `r glm.byChildType[[6]]$lincomRD[2,7]`
 
 
+<br>
+<br>
+<br>
 
 #Function: washb_lincom
 The subgroup analysis option in washb\_glm internally calls the washb\_lincom function to calculate estimates, SEs, CIs, and P-values from a linear combination of regression coefficients. The washb\_lincom function can be called alone to calculate a custom linear combination of coefficients. Below is an example comparing target children in the treatment arms whose household has assets associated with reduced diarrheal disease to siblings in the control arm whose households do not have these assets.
@@ -431,10 +492,13 @@ washb_lincom(varlist=varlist,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildTy
 ```
 
 
+<br>
+<br>
+<br>
 
 #LAZ Outcome Analysis  
   
-Load and merge the anthropometry and enrollment datasets. and clean as for the diarheal disease analysis shown above (cleaning code ommitted)
+Load and merge the anthropometry and enrollment datasets. and clean as for the diarheal disease analysis shown above.
 ```{r, eval=FALSE, comment=NA}
 data(washb_bd_anthro)
 data(washb_bd_enrol)
@@ -462,6 +526,9 @@ ad<-washb_bd_anthroClean
 Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 ```
 
+<br>
+<br>
+<br>
 
 #Function: washb_ttest  
 Function to call the paired t-test for two different arms of the study. It estimates the paired t-test for differences in means paired within randomization blocks. This function should be used for the unadjusted analysis of continious outcomes.
@@ -475,6 +542,10 @@ washb_ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))
 diff.h1LAZ <- t(sapply(h1.contrasts,washb_ttest,Y=ad$laz,tr=ad$tr,strat=ad$block))
 rownames(diff.h1LAZ) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
 ```
+
+<br>
+<br>
+<br>
 
 #LAZ GLM Analysis  
 ####Estimating treatment effects for hypothesis 1 comparisons using unadjusted and adjusted gaussian linear models. Results are in the results table at the end of the document.
@@ -511,8 +582,15 @@ unadj.glm.byFoodSecurity <- lapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair
 glm.byFoodSecurity <- lapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Wsubgroup, forcedW=NULL, V="hfiacat", id=ad$clusterid, family="gaussian", print=FALSE)
 ```  
 
+<br>
+<br>
+<br>
+
 ###LAZ comparisons between treatment and control arms, stratified by food security level.
 Results from the washb_glm function run above with `V="hfiacat"`.
+
+<br>
+<br>
 
 ##Unadjusted
 Contrast v. control | Food Security Subgroup | Coefficient |  95% CI  |  P-value  
@@ -542,6 +620,9 @@ WSH + Nutrition |`r unadj.glm.byFoodSecurity[[6]]$lincom[1,1]` | `r unadj.glm.by
 - |`r unadj.glm.byFoodSecurity[[6]]$lincom[3,1]`  | `r unadj.glm.byFoodSecurity[[6]]$lincom[3,2]` | `r round(unadj.glm.byFoodSecurity[[6]]$lincom[3,4:5],2)` | `r unadj.glm.byFoodSecurity[[6]]$lincom[3,7]`
 - |`r unadj.glm.byFoodSecurity[[6]]$lincom[4,1]`  | `r unadj.glm.byFoodSecurity[[6]]$lincom[4,2]` | `r round(unadj.glm.byFoodSecurity[[6]]$lincom[4,4:5],2)` | `r unadj.glm.byFoodSecurity[[6]]$lincom[4,7]`
 
+<br>
+<br>
+<br>
 
 ##Adjusted
 
@@ -574,10 +655,13 @@ WSH + Nutrition |`r glm.byFoodSecurity[[6]]$lincom[1,1]` | `r glm.byFoodSecurity
 
 
   
- 
+<br>
+<br>
+<br>
+
 #Table of Primary Outcome Results  
 
-###7-day diarrheal disease recall outcome  
+##7-day diarrheal disease recall outcome  
 
 Contrast v. control | Estimator | PR | 95% CI | SE logPR | P-value  
 --------------------|-----------|----|--------|----------|--------  
@@ -623,7 +707,11 @@ WSH+Nutrition | Adjusted GLM + TMLE |  | | |
 WSH+Nutrition | Adjusted SL + TMLE |  | | |   
 WSH+Nutrition | Wilcoxon  permutation test |  | | |`r permute.diff.h1[6]` 
 
-###Length-for-Age Z-score outcome  
+<br>
+<br>
+<br>
+
+##Length-for-Age Z-score outcome  
 
 Contrast v. control | Estimator | Difference | 95% CI | t-stat/SE | P-value
 --------------------|-----------|------------|--------|-----------|--------
