@@ -25,7 +25,7 @@
 #' @export
 #'
 #' @examples
-#'  #' #Prescreen function applied to the Bangladesh diarrheal disease outcome.
+#' #Prescreen function applied to the Bangladesh diarrheal disease outcome.
 #' #The function will test a matrix of covariates and return those related to child diarrheal disease with
 #' #a <0.2 p-value from a likelihood ratio test.
 #'
@@ -33,7 +33,7 @@
 #' library(washb)
 #' data(washb_bd_diarClean)
 #' ad<-washb_bd_diarClean
-#''
+#'
 #' ###Create vector of contrasts for each hypothesis to facilitate comparisons between arms.
 #' #Hypothesis 1: Each intervention arm vs. Control
 #' h1.contrasts <- list(

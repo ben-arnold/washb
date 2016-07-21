@@ -379,7 +379,8 @@ unadj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$blo
 
 adj.glm.h1 <- t(sapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws, forcedW=NULL, V=NULL, id=ad$clusterid, family=binomial(link='log'), print=FALSE))
 ```
-  
+
+<br>
 
 ####Forcing covariates into the glm model regardless of prescreening p-value
 If there are certain variables to include in the glm model, regardless of prescreening results, use the `forcedW` option. This argument takes a variable name or a vector of variable names. These variables must already be in the W dataframe of potential adjustment covariates. For example, if adjustment by age and sex is standard, force them into the glm model:
@@ -408,8 +409,9 @@ glm.C.W.byChildType$lincom
 glm.byChildType <- lapply(h1.contrasts,washb_glm,Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild, forcedW=NULL, V="tchild", id=ad$clusterid, family=binomial(link='log'), print=FALSE)
 ```
 
+<br>
 
-###Diarrheal disease comparisons between treatment and control arms, stratified into target children and siblings.
+##Diarrheal disease comparisons between treatments and control, stratified into target children and siblings.
 
 Contrast v. control | Child Type | Coefficient |  95% CI  |  P-value  
 --------------------|------------|-------------|----------|---------  
@@ -432,7 +434,7 @@ WSH+Nutrition |`r glm.byChildType[[6]]$lincom[1,1]` | `r glm.byChildType[[6]]$li
 <br>
 <br>
 
-###Risk difference between treatment and control arms, stratified into target children and siblings.
+##Risk difference between treatments and control, stratified into target children and siblings.
 Contrast v. control | Child Type | Coefficient |  95% CI  |  P-value  
 --------------------|------------------------|-------------|----------|---------  
 Water |`r glm.byChildType[[1]]$lincomRD[1,1]` | `r glm.byChildType[[1]]$lincomRD[1,2]` | `r round(glm.byChildType[[1]]$lincomRD[1,4:5],2)` | `r glm.byChildType[[1]]$lincomRD[1,7]`
@@ -592,7 +594,7 @@ Results from the washb_glm function run above with `V="hfiacat"`.
 <br>
 <br>
 
-##Unadjusted
+##Unadjusted Food Security Subgroup
 Contrast v. control | Food Security Subgroup | Coefficient |  95% CI  |  P-value  
 --------------------|------------------------|-------------|----------|---------  
 Water |`r unadj.glm.byFoodSecurity[[1]]$lincom[1,1]` | `r unadj.glm.byFoodSecurity[[1]]$lincom[1,2]` | `r round(unadj.glm.byFoodSecurity[[1]]$lincom[1,4:5],2)` | `r unadj.glm.byFoodSecurity[[1]]$lincom[1,7]`
@@ -624,7 +626,7 @@ WSH + Nutrition |`r unadj.glm.byFoodSecurity[[6]]$lincom[1,1]` | `r unadj.glm.by
 <br>
 <br>
 
-##Adjusted
+##Adjusted Food Security Subgroup
 
 Contrast v. control | Food Security Subgroup | Coefficient |  95% CI  |  P-value  
 --------------------|------------------------|-------------|----------|---------  

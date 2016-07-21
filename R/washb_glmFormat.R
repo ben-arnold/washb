@@ -94,7 +94,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
         temp<-rep(0, length(Subgroups))
         temp[2]=1
         if(i!=1){
-          temp[i+length(levels(dmat$V))]<- temp[i+1]<-1
+          temp[i+length(levels(dmat$V))]<-1
         }
 
         lincom_index[i,1:(length(Subgroups))]<-temp
@@ -111,9 +111,9 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
       if(family[1]!="gaussian"){
         lincomRD<-data.frame(levels(dmat$V),lincomRD)
         colnames(lincomRD) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
+        }
       }
     }
-  }
 
 
 
