@@ -198,7 +198,7 @@ Selects covariates with univariate associations with the outcome of P<0.2 based 
 ####Subset to a new dataframe the variables to be screened:
 ```{r , results = "hide" , cache=TRUE, comment=NA}
 
-Ws <- subset(ad,select=c("fracode","month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+Ws <- subset(ad,select=c("month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
 ```
 
@@ -566,12 +566,8 @@ The `V` argument can be used with multilevel factors. Here is code for a subgrou
 #Create a W variable containing only "hfiacat" for the unadjusted subgroup analysis:
 W_hfiacat <- subset(ad,select=c("hfiacat"))
 
-#Create a W variable containing "hfiacat" and other potential covariates:= for the adjusted subgroup analysis
-Wsubgroup <- subset(ad,select=c("month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
-
-
 #Estimate subgroup analysis glm with washb_glm
-glm.C.W.byFoodSecurity <- washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=Wsubgroup, forcedW=NULL, V="hfiacat", id=ad$clusterid, contrast=c("Control","Water"), family="gaussian", print=FALSE)
+glm.C.W.byFoodSecurity <- washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=W_hfiacat, forcedW=NULL, V="hfiacat", id=ad$clusterid, contrast=c("Control","Water"), family="gaussian", print=FALSE)
 glm.C.W.byFoodSecurity$lincom
 
 ```
@@ -580,8 +576,7 @@ glm.C.W.byFoodSecurity$lincom
 #Extend code to all treatment/control comparisons with lapply
 #Unadjusted:
 unadj.glm.byFoodSecurity <- lapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=W_hfiacat, forcedW=NULL, V="hfiacat", id=ad$clusterid, family="gaussian", print=FALSE)
-#Adjusted
-glm.byFoodSecurity <- lapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=Wsubgroup, forcedW=NULL, V="hfiacat", id=ad$clusterid, family="gaussian", print=FALSE)
+
 ```  
 
 <br>
@@ -594,7 +589,7 @@ Results from the washb_glm function run above with `V="hfiacat"`.
 <br>
 <br>
 
-##Unadjusted Food Security Subgroup
+##Food Security Subgroup
 Contrast v. control | Food Security Subgroup | Coefficient |  95% CI  |  P-value  
 --------------------|------------------------|-------------|----------|---------  
 Water |`r unadj.glm.byFoodSecurity[[1]]$lincom[1,1]` | `r unadj.glm.byFoodSecurity[[1]]$lincom[1,2]` | `r round(unadj.glm.byFoodSecurity[[1]]$lincom[1,4:5],2)` | `r unadj.glm.byFoodSecurity[[1]]$lincom[1,7]`
@@ -621,40 +616,6 @@ WSH + Nutrition |`r unadj.glm.byFoodSecurity[[6]]$lincom[1,1]` | `r unadj.glm.by
 - |`r unadj.glm.byFoodSecurity[[6]]$lincom[2,1]`  | `r unadj.glm.byFoodSecurity[[6]]$lincom[2,2]` | `r round(unadj.glm.byFoodSecurity[[6]]$lincom[2,4:5],2)` | `r unadj.glm.byFoodSecurity[[6]]$lincom[2,7]`
 - |`r unadj.glm.byFoodSecurity[[6]]$lincom[3,1]`  | `r unadj.glm.byFoodSecurity[[6]]$lincom[3,2]` | `r round(unadj.glm.byFoodSecurity[[6]]$lincom[3,4:5],2)` | `r unadj.glm.byFoodSecurity[[6]]$lincom[3,7]`
 - |`r unadj.glm.byFoodSecurity[[6]]$lincom[4,1]`  | `r unadj.glm.byFoodSecurity[[6]]$lincom[4,2]` | `r round(unadj.glm.byFoodSecurity[[6]]$lincom[4,4:5],2)` | `r unadj.glm.byFoodSecurity[[6]]$lincom[4,7]`
-
-<br>
-<br>
-<br>
-
-##Adjusted Food Security Subgroup
-
-Contrast v. control | Food Security Subgroup | Coefficient |  95% CI  |  P-value  
---------------------|------------------------|-------------|----------|---------  
-Water |`r glm.byFoodSecurity[[1]]$lincom[1,1]` | `r glm.byFoodSecurity[[1]]$lincom[1,2]` | `r round(glm.byFoodSecurity[[1]]$lincom[1,4:5],2)` | `r glm.byFoodSecurity[[1]]$lincom[1,7]`
-- |`r glm.byFoodSecurity[[1]]$lincom[2,1]`  | `r glm.byFoodSecurity[[1]]$lincom[2,2]` | `r round(glm.byFoodSecurity[[1]]$lincom[2,4:5],2)` | `r glm.byFoodSecurity[[1]]$lincom[2,7]`
-- |`r glm.byFoodSecurity[[1]]$lincom[3,1]`  | `r glm.byFoodSecurity[[1]]$lincom[3,2]` | `r round(glm.byFoodSecurity[[1]]$lincom[3,4:5],2)` | `r glm.byFoodSecurity[[1]]$lincom[3,7]`
-- |`r glm.byFoodSecurity[[1]]$lincom[4,1]`  | `r glm.byFoodSecurity[[1]]$lincom[4,2]` | `r round(glm.byFoodSecurity[[1]]$lincom[4,4:5],2)` | `r glm.byFoodSecurity[[1]]$lincom[4,7]`
-Sanitation |`r glm.byFoodSecurity[[2]]$lincom[1,1]` | `r glm.byFoodSecurity[[2]]$lincom[1,2]` | `r round(glm.byFoodSecurity[[2]]$lincom[1,4:5],2)` | `r glm.byFoodSecurity[[2]]$lincom[1,7]`
-- |`r glm.byFoodSecurity[[2]]$lincom[2,1]`  | `r glm.byFoodSecurity[[2]]$lincom[2,2]` | `r round(glm.byFoodSecurity[[2]]$lincom[2,4:5],2)` | `r glm.byFoodSecurity[[2]]$lincom[2,7]`
-- |`r glm.byFoodSecurity[[2]]$lincom[3,1]`  | `r glm.byFoodSecurity[[2]]$lincom[3,2]` | `r round(glm.byFoodSecurity[[2]]$lincom[3,4:5],2)` | `r glm.byFoodSecurity[[2]]$lincom[3,7]`
-- |`r glm.byFoodSecurity[[2]]$lincom[4,1]`  | `r glm.byFoodSecurity[[2]]$lincom[4,2]` | `r round(glm.byFoodSecurity[[2]]$lincom[4,4:5],2)` | `r glm.byFoodSecurity[[2]]$lincom[4,7]`
-Handwashing |`r glm.byFoodSecurity[[3]]$lincom[1,1]` | `r glm.byFoodSecurity[[3]]$lincom[1,2]` | `r round(glm.byFoodSecurity[[3]]$lincom[1,4:5],2)` | `r glm.byFoodSecurity[[3]]$lincom[1,7]`
-- |`r glm.byFoodSecurity[[3]]$lincom[2,1]`  | `r glm.byFoodSecurity[[3]]$lincom[2,2]` | `r round(glm.byFoodSecurity[[3]]$lincom[2,4:5],2)` | `r glm.byFoodSecurity[[3]]$lincom[2,7]`
-- |`r glm.byFoodSecurity[[3]]$lincom[3,1]`  | `r glm.byFoodSecurity[[3]]$lincom[3,2]` | `r round(glm.byFoodSecurity[[3]]$lincom[3,4:5],2)` | `r glm.byFoodSecurity[[3]]$lincom[3,7]`
-- |`r glm.byFoodSecurity[[3]]$lincom[4,1]`  | `r glm.byFoodSecurity[[3]]$lincom[4,2]` | `r round(glm.byFoodSecurity[[3]]$lincom[4,4:5],2)` | `r glm.byFoodSecurity[[3]]$lincom[4,7]`
-Nutrition |`r glm.byFoodSecurity[[4]]$lincom[1,1]` | `r glm.byFoodSecurity[[4]]$lincom[1,2]` | `r round(glm.byFoodSecurity[[4]]$lincom[1,4:5],2)` | `r glm.byFoodSecurity[[4]]$lincom[1,7]`
-- |`r glm.byFoodSecurity[[4]]$lincom[2,1]`  | `r glm.byFoodSecurity[[4]]$lincom[2,2]` | `r round(glm.byFoodSecurity[[4]]$lincom[2,4:5],2)` | `r glm.byFoodSecurity[[4]]$lincom[2,7]`
-- |`r glm.byFoodSecurity[[4]]$lincom[3,1]`  | `r glm.byFoodSecurity[[4]]$lincom[3,2]` | `r round(glm.byFoodSecurity[[4]]$lincom[3,4:5],2)` | `r glm.byFoodSecurity[[4]]$lincom[3,7]`
-- |`r glm.byFoodSecurity[[4]]$lincom[4,1]`  | `r glm.byFoodSecurity[[4]]$lincom[4,2]` | `r round(glm.byFoodSecurity[[4]]$lincom[4,4:5],2)` | `r glm.byFoodSecurity[[4]]$lincom[4,7]`
-WSH |`r glm.byFoodSecurity[[5]]$lincom[1,1]` | `r glm.byFoodSecurity[[5]]$lincom[1,2]` | `r round(glm.byFoodSecurity[[5]]$lincom[1,4:5],2)` | `r glm.byFoodSecurity[[5]]$lincom[1,7]`
-- |`r glm.byFoodSecurity[[5]]$lincom[2,1]`  | `r glm.byFoodSecurity[[5]]$lincom[2,2]` | `r round(glm.byFoodSecurity[[5]]$lincom[2,4:5],2)` | `r glm.byFoodSecurity[[5]]$lincom[2,7]`
-- |`r glm.byFoodSecurity[[5]]$lincom[3,1]`  | `r glm.byFoodSecurity[[5]]$lincom[3,2]` | `r round(glm.byFoodSecurity[[5]]$lincom[3,4:5],2)` | `r glm.byFoodSecurity[[5]]$lincom[3,7]`
-- |`r glm.byFoodSecurity[[5]]$lincom[4,1]`  | `r glm.byFoodSecurity[[5]]$lincom[4,2]` | `r round(glm.byFoodSecurity[[5]]$lincom[4,4:5],2)` | `r glm.byFoodSecurity[[5]]$lincom[4,7]`
-WSH + Nutrition |`r glm.byFoodSecurity[[6]]$lincom[1,1]` | `r glm.byFoodSecurity[[6]]$lincom[1,2]` | `r round(glm.byFoodSecurity[[6]]$lincom[1,4:5],2)` | `r glm.byFoodSecurity[[6]]$lincom[1,7]`
-- |`r glm.byFoodSecurity[[6]]$lincom[2,1]`  | `r glm.byFoodSecurity[[6]]$lincom[2,2]` | `r round(glm.byFoodSecurity[[6]]$lincom[2,4:5],2)` | `r glm.byFoodSecurity[[6]]$lincom[2,7]`
-- |`r glm.byFoodSecurity[[6]]$lincom[3,1]`  | `r glm.byFoodSecurity[[6]]$lincom[3,2]` | `r round(glm.byFoodSecurity[[6]]$lincom[3,4:5],2)` | `r glm.byFoodSecurity[[6]]$lincom[3,7]`
-- |`r glm.byFoodSecurity[[6]]$lincom[4,1]`  | `r glm.byFoodSecurity[[6]]$lincom[4,2]` | `r round(glm.byFoodSecurity[[6]]$lincom[4,4:5],2)` | `r glm.byFoodSecurity[[6]]$lincom[4,7]`
-
 
   
 <br>
