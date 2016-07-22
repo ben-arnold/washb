@@ -15,12 +15,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ## ---- results = "hide"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 library(washb)
 
-## ---- eval=FALSE------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- eval=F----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  data(washb_bd_enrol)
 #  data(washb_bd_diar)
 #  
 
-## ---- results="hide", eval=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- results="hide", eval=F------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  # drop svydate and month because they are superceded in the child level diarrhea data
 #    washb_bd_enrol$svydate <- NULL
 #    washb_bd_enrol$month <- NULL
@@ -49,25 +49,13 @@ library(washb)
 #  #Sort the data for perfect replication when using V-fold cross-validation
 #  ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 
-## ---- eval=FALSE, include=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#  #To do: merge in file to de-randomized treatment assignment
-#  
-#  data(washb_bd_diarScrambled)
-#  
-#  data(treatmentAssignment)
-#  #merge datasets
-#  merged <- merge(washb_bd_diarScrambled,treatmentAssignment,by=c("index"),all.x=F,all.y=T)
-#  #drop randomized treatment assignment
-#  
-#  ad<-merged
+## ---- eval=TRUE, include=FALSE----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Load unblinded data into the "ad" object from sysdata
 
-## ---- include=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-data(washb_bd_diarClean)
-ad<-washb_bd_diarClean
+#ad<-loadUnblindedData("washb_bd_diarCleanUnblinded")
 
-## ---- results = "hide" , cache=TRUE, comment=NA-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Ws <- subset(ad,select=c("month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+data(washb_bd_diarCleanUnblinded)
+ad<-washb_bd_diarCleanUnblinded
 
 
 ## ---- comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -80,7 +68,7 @@ h1.contrasts <- list(
   c("Control","Nutrition + WSH")
 )
 
-## ---- eval=FALSE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- eval=F, comment=NA----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  data(washb_bd_anthro)
 #  data(washb_bd_enrol)
 #    washb_bd_enrol$svydate <- NULL
@@ -99,18 +87,12 @@ h1.contrasts <- list(
 #  Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 #  
 
-## ---- warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Create a W variable containing only "hfiacat" for the unadjusted subgroup analysis:
-W_hfiacat <- subset(ad,select=c("hfiacat"))
-
-#Estimate subgroup analysis glm with washb_glm
-glm.C.W.byFoodSecurity <- washb_glm(Y=ad$laz,tr=ad$tr,pair=ad$block, W=W_hfiacat, forcedW=NULL, V="hfiacat", id=ad$clusterid, contrast=c("Control","Water"), family="gaussian", print=FALSE)
-glm.C.W.byFoodSecurity$lincom
-
-
-## ---- eval=TRUE, cache=TRUE, comment=NA-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Extend code to all treatment/control comparisons with lapply
-#Unadjusted:
-unadj.glm.byFoodSecurity <- lapply(h1.contrasts,washb_glm,Y=ad$laz,tr=ad$tr,pair=ad$block, W=W_hfiacat, forcedW=NULL, V="hfiacat", id=ad$clusterid, family="gaussian", print=FALSE)
+## ---- eval=T, include=FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Load unblinded data into the "ad" object from sysdata
+#ad<-loadUnblindedData("washb_bd_diarCleanUnblinded")
+data(washb_bd_anthroCleanUnblinded)
+ad<-washb_bd_anthroCleanUnblinded
+  
+Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
 

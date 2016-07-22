@@ -116,15 +116,13 @@ The data in this vignette is contained in 3 files, included in the package:
 1.  __washb_bd_enrol.Rdata__, an R file of Bangladesh enrollment characteristics  
 2.  __washb_bd_diar.Rdata__, an R file of Bangladesh diarrheal disease data  
 3.  __washb_bd_anthro.Rdata__, an R file of Bangladesh child anthropometry data  
+__Note:__ These datasets have scrambled treatment assignment, and so are still blinded. This allows package users to test functions/code on these datasets at will while still allowing pre-specified analysis plans for any future analysis. The analysis in this vignette uses unblinding data, so the results will closely match the WASH Benefits Bangladesh primary outcomes analysis. 
 
-Alse included in the package are two files of merged, cleaned, and subsetted data (as shown in this vignette) ready for the Bangladesh primary outcome analysis.  
-4.  __washb_bd_diarClean.Rdata__, an R file of merged and clean Bangladesh enrollment and child diarrheal disease data  
-5.  __washb_bd_anthroClean.Rdata__, an R file of merged and clean Bangladesh enrollment and child anthropometry data  
 
 
 These datasets are included in the washb package and can be loaded with the data() command
 Load here:
-```{r, eval=FALSE}
+```{r, eval=F}
 data(washb_bd_enrol)
 data(washb_bd_diar)
 
@@ -132,7 +130,7 @@ data(washb_bd_diar)
   
 
 The following code cleans and merges the enrolment and diarrhea data:
-```{r, results="hide", eval=FALSE}
+```{r, results="hide", eval=F}
 # drop svydate and month because they are superceded in the child level diarrhea data
   washb_bd_enrol$svydate <- NULL
   washb_bd_enrol$month <- NULL
@@ -162,24 +160,17 @@ ad$month <- factor(ad$month)
 ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 ```
 
-```{r, eval=FALSE, include=FALSE}
-#To do: merge in file to de-randomized treatment assignment 
+```{r, eval=TRUE, include=FALSE}
+#Load unblinded data into the "ad" object from sysdata
 
-data(washb_bd_diarScrambled)
+#ad<-loadUnblindedData("washb_bd_diarCleanUnblinded")
 
-data(treatmentAssignment)
-#merge datasets
-merged <- merge(washb_bd_diarScrambled,treatmentAssignment,by=c("index"),all.x=F,all.y=T)
-#drop randomized treatment assignment
+data(washb_bd_diarCleanUnblinded)
+ad<-washb_bd_diarCleanUnblinded
 
-ad<-merged
 ```
 
 
-```{r, include=FALSE}
-data(washb_bd_diarClean)
-ad<-washb_bd_diarClean
-```
 Now that the dataset is cleaned and merged, the washb package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis. (With the exception that the primary outcome analysis used TMLE, targeted maximum likelihood estimation, rather than GLM models in estimating the adjusted treatment effects.)  
 
 <br>
@@ -501,7 +492,7 @@ washb_lincom(varlist=varlist,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildTy
 #LAZ Outcome Analysis  
   
 Load and merge the anthropometry and enrollment datasets. and clean as for the diarheal disease analysis shown above.
-```{r, eval=FALSE, comment=NA}
+```{r, eval=F, comment=NA}
 data(washb_bd_anthro)
 data(washb_bd_enrol)
   washb_bd_enrol$svydate <- NULL
@@ -521,11 +512,14 @@ Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","mom
 
 ```
 
-```{r, include=FALSE, eval=TRUE, cache=TRUE, comment=NA}
-data(washb_bd_anthroClean)
-ad<-washb_bd_anthroClean
-
+```{r, eval=T, include=FALSE}
+#Load unblinded data into the "ad" object from sysdata
+#ad<-loadUnblindedData("washb_bd_diarCleanUnblinded")
+data(washb_bd_anthroCleanUnblinded)
+ad<-washb_bd_anthroCleanUnblinded
+  
 Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+
 ```
 
 <br>
