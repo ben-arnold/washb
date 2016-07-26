@@ -53,9 +53,11 @@ library(washb)
 #Load unblinded data into the "ad" object from sysdata
 
 #ad<-loadUnblindedData("washb_bd_diarCleanUnblinded")
+setwd("C:/Users/andre/Documents/washb/data")
 
-data(washb_bd_diarCleanUnblinded)
+  load("washb_bd_diarCleanUnblinded.RData")
 ad<-washb_bd_diarCleanUnblinded
+#data(washb_bd_diarCleanUnblinded)
 
 
 ## ---- comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -84,15 +86,18 @@ h1.contrasts <- list(
 #  ad$month <- factor(ad$month)
 #  ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 #  
-#  Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+#  Ws <- subset(ad,select=c("month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 #  
 
 ## ---- eval=T, include=FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #Load unblinded data into the "ad" object from sysdata
 #ad<-loadUnblindedData("washb_bd_diarCleanUnblinded")
-data(washb_bd_anthroCleanUnblinded)
+#data(washb_bd_anthroCleanUnblinded)
+#ad<-washb_bd_anthroCleanUnblinded
+setwd("C:/Users/andre/Documents/washb/data")
+load("washb_bd_anthroCleanUnblinded.Rdata")
 ad<-washb_bd_anthroCleanUnblinded
   
-Ws <- subset(ad,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
+Ws <- subset(ad, select=c("month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
 
 
