@@ -4,13 +4,10 @@
 \alias{washb_lincom}
 \title{washb_lincom}
 \usage{
-washb_lincom(lc = NULL, varlist = NULL, fit, vcv, measure = "RR",
-  flag = NULL)
+washb_lincom(lc = NULL, fit, vcv, measure = "RR", flag = NULL)
 }
 \arguments{
 \item{lc}{: Index vector of coefficients from glm modellinear combination of coefficients}
-
-\item{varlist}{: Character vector of variables to include. Alternative to lc. If lc is specified, this arguement is ignored.}
 
 \item{fit}{: Model object returned from coeftest (class=coeftest) command within the washb_glm function. Accessed with $fit from washb_glm output.}
 
@@ -29,6 +26,69 @@ Function to get Estimates, SEs, CIs, and P-values for Pr>|Z| from a linear combi
 }
 \examples{
 library(washb)
-data(washb_anthroClean)
+data(washb_anthro)
+data(washb_bd_enrol)
+
+ # drop svydate and month because they are superceded in the child level diarrhea data
+washb_bd_enrol$svydate <- NULL
+washb_bd_enrol$month <- NULL
+
+# merge the baseline dataset to the follow-up dataset
+ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+
+# subset to the relevant measurement
+# Year 1 or Year 2
+ad <- subset(ad,svy==1|svy==2)
+
+#subset the diarrhea to children <36 mos at enrollment
+### (exlude new births that are not target children)
+ad <- subset(ad,sibnewbirth==0)
+ad <- subset(ad,gt36mos==0)
+
+# Exclude children with missing data
+ad <- subset(ad,!is.na(ad$diar7d))
+
+#Re-order the tr factor for convenience
+ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
+
+#Ensure that month is coded as a factor
+ad$month <- factor(ad$month)
+
+#Sort the data for perfect replication when using V-fold cross-validation
+ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
+
+#Estimate subgroup analysis glm with washb_glm
+glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild, V="tchild", id=ad$clusterid, contrast=c("Control","Nutrition"), family=binomial(link='log'), print=FALSE)
+
+
+#The lincom function is called within washb_glm, so for standard subgroup analysis, there is no need to use the lincom()
+#function separately. But it can be used on its own to create a custom combination of regression coefficients
+
+
+#Examine the treatment effect across subgroups with `objectname'$lincom
+glm.C.N.byChildType$lincom
+
+#Below is an example of using the `lincom()` function to externally replicate the target child/sibling subgroup analysis of the diarrheal disease outcome. First, recall the glm model contrasting diarrheal disease prevalence ratio between target child and sibling fitted to diarrheal disease:
+
+glm.C.N.byChildType$lincom
+
+
+#Next, use the lincom function to verify the subgroup analysis calculated within the `washb_glm()` function. `washb_lincom()` takes as argements the fit and variance-covariance matrix returned by the glm function, and an index vector `lc`.
+#`lc`= vector indexing coefficients to be linearly combined. If a single coefficient is chosen, it will return the same coefficient and confidence interval as the glm coefficient. Example:
+#Create lc vector of 0's equal in length to the number of coefficients from the glm model.
+lc=rep(0,nrow(glm.C.N.byChildType$fit))
+#Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.
+glm.C.N.byChildType$fit[1:6,]
+#Replace the second and fourth position in the vector with 1 (the positions of the treatment coefficient and interaction term in the model)
+lc[c(2,4)]<-1
+
+#Run the lincom function and compare output to the $lincom output from the GLM model.
+washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR")
+
+  The `lincom()` function can also be used to calculate risk difference
+#Calculate risk difference using the risk difference output from the washb_glm function:
+washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, measure="RD")
+#Compare to RD by subgroup from the washb_glm function:
+glm.C.N.byChildType$lincomRD
 }
 

@@ -26,9 +26,25 @@ The arguments Y,tr,strat, below need to be from the same dataset:
 \examples{
  #The washb_ttest function
 
- #Load in Bangladesh cleaned anthropometry data. (See vignette for specific cleaning steps).
- data(washb_bd_anthroClean)
- ad<-washb_bd_anthroClean
+ #Load in Bangladesh  anthropometry data.
+ data(washb_bd_anthro)
+ data(washb_bd_enrol)
+
+ washb_bd_enrol$svydate <- NULL
+ washb_bd_enrol$month <- NULL
+ laz <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+
+ # subset to the endline target children
+ laz <- subset(laz,svy==2)
+ laz <- subset(laz,tchild=="Target child")
+
+ # Drop children with extreme LAZ values
+ laz <- subset(laz,laz_x!=1)
+
+ laz$tr <- factor(laz$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
+ laz$month <- factor(laz$month)
+ laz <- laz[order(laz$block,laz$clusterid,laz$dataid,laz$childid),]
+
 
  #Run paired ttest function for water vs. control comparison:
  washb_ttest(Y=ad$laz,tr=ad$tr,strat=ad$block, contrast=c("Control","Water"))

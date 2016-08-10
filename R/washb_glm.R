@@ -4,8 +4,17 @@
 #' Generalized linear model function for WASH Benefits study.
 #' washb_glm
 #'
+#' Note that in the WASH Benefits diarrheal disease primary outcome analysis, the glm model is fit with a log link,
+#'  `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`,
+#'  to estimate the odds ratio.
+#'
+#'  Occasionally, a glm model with a non-canonical link function like `family=binomial(link='log')` will fail to converge.
+#'  If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument `family=poisson(link='log')`.
+#'  See [Zou 2004](http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf) for details.
+#'
 #' @usage
 #' washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE)
+#'
 #'
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
 #' @param tr Binary treatment group variable (ideally a factor), comparison group first
@@ -73,7 +82,28 @@
 #'   c("Control","Nutrition + WSH")
 #' )
 #'
-#' #Need to flesh out glm use in the vignette and then add below:
+#'
+#'
+#' ###Unadjusted GLM estimates for diarrheal disease outcome.
+#' #As an example, the following code applies the washb_glm function to compare 7-day recall diarrheal disease prevalence between the sanitation and control arms. Notice that the glm model is fit with a log link, `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`, to estimate the odds ratio.
+#'
+#' Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
+#'
+#' On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$RDfit` returns the risk difference instead of the risk ratio for all covariates (not applicable when the glm  model is gaussian).
+#' Diar.glm.C.S$RDfit[1:2,]
+#'
+#' #Note, the `[1:2,]` index at the end is added here so that only the intercept and treatment effect estimates are printed to save space. Running the code `Diar.glm.C.W$RDfit` outputs all 89 estimated point estimates and confidence intervals for the 89 pair-matched block dummy variables (because there are 90 blocks).
+#'
+#' #All returned objects are:
+#' #`'objectname'$TR` to return the treatment effect.
+#' #`'objectname$fit` to return full glm model estimates.
+#' #`'objectname$RDfit` to return the risk difference of the treatment (and all covariates, including block pairs).
+#' #`'objectname$vcv` to return the variance-covariance matrix.
+#' #`'objectname$rowdropped` to return the vector list of observations included in the model fit.
+#' #`'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
+#' #`'objectname$lincomRD` to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.
+
+
 
 
 

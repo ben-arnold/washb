@@ -83,21 +83,21 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
 
     if(class(dmat$V)=="factor"){
 
-      fit<-fit[c(1:(length(levels(dmat$V))+1),(nrow(fit)+2-length(unique(dmat$V))):(nrow(fit)),(length(levels(dmat$V))+2):(nrow(fit)-(length(unique(dmat$V))-1))),]
-      if(family[1]!="gaussian"){ RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(RDfit)+2-length(unique(dmat$V))):(nrow(RDfit)),(length(levels(dmat$V))+2):(nrow(RDfit)-(length(unique(dmat$V))-1))),]}
+      #fit<-fit[c(1:(length(levels(dmat$V))+1),(nrow(fit)+2-length(unique(dmat$V))):(nrow(fit)),(length(levels(dmat$V))+2):(nrow(fit)-(length(unique(dmat$V))-1))),]
+      #if(family[1]!="gaussian"){ RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(RDfit)+2-length(unique(dmat$V))):(nrow(RDfit)),(length(levels(dmat$V))+2):(nrow(RDfit)-(length(unique(dmat$V))-1))),]}
 
       lincom<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))
       if(family[1]!="gaussian"){lincomRD<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))}
       lincom_index<-matrix(0,nrow=length(levels(dmat$V)),ncol=nrow(fit))
 
       for(i in 1:length(levels(dmat$V))){
-        temp<-rep(0, length(Subgroups))
+        temp<-rep(0, nrow(fit))
         temp[2]=1
         if(i!=1){
-          temp[i+length(levels(dmat$V))]<-1
+          temp[nrow(fit)-length(levels(dmat$V))+i]<-1
         }
 
-        lincom_index[i,1:(length(Subgroups))]<-temp
+        lincom_index[i,]<-temp
 
         if(family[1]=="gaussian"){lincom[i,] <- suppressWarnings(washb_lincom(lc=lincom_index[i,],fit=fit,vcv=vcovCL, measure="RD",flag=1))}
         if(family[1]!="gaussian"){
