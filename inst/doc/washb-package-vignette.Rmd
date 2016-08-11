@@ -240,7 +240,7 @@ __Arguments:__
 
 __Usage:__  
 ```{r, eval=FALSE}
-washb_prescreen(Y=ad$diar7d,Ws=,family="binomial", pval=0.2, print=TRUE)
+washb_prescreen(Y=ad$diar7d,Ws=W,family="binomial", pval=0.2, print=TRUE)
 ```
 
 <br>
@@ -531,25 +531,38 @@ permute.C.S <- washb_permute(Y=ad$diar7d, tr=ad$tr, pair=ad$block, contrast=c("C
 <br>
 
 ###Adjusted permutation tests  
-The permutation test can also test for independence of Y and tr, conditional on W, by applying the `washb_permute` function to the residuals of an adjusted model. The adjusted permutation test works better on outcomes with greater variability, so will be applied to the LAZ outcome here. 
+The permutation test can also test for independence of $Y$ and $tr$, conditional on $W$, by applying the `washb_permute` function to the residuals of an adjusted model (adjusted for $W$, but not $tr$). The adjusted permutation test works better on outcomes with greater variability, so will be applied to the LAZ outcome here. 
 
 #(BEN, WHY IS THIS?)
 ```{r, eval=T, include=T, comment=NA}
+#Use the washb_prescreen function to select adjustment covariates associated with the outcome
+adj.W<-washb_prescreen(Y=laz$laz,Ws_laz,family="gaussian", pval=0.2)
+
 #Subset the laz dataset to control and sanitation arms:
       laz.subset=laz[which(laz$tr=="Control"|laz$tr=="Sanitation"),]
 
+#Subset the LAZ dataset to the selected adjustment covariates and LAZ, as well as tr and block, which will be needed in the permutation test
+perm.adj.data <- subset(laz.subset,select=c(adj.W, "laz", "tr", "block"))
+
+#Subset to complete cases
+perm.adj.data<-perm.adj.data[complete.cases(perm.adj.data),]
+
+Wselect <- subset(perm.adj.data,select=c(adj.W, "laz"))
+#fit the glm model 
+fit <- glm(laz~., family="gaussian", data=Wselect)
+
 #Use the predict to return predicted LAZ from the adjusted glm model, and subtract it from the observed LAZ outcome
-residuals<-laz.subset$laz-predict(LAZ.glm.C.S$glmModel)
+residuals<-Wselect$laz-predict(fit)
 
 #run the permutation test function
-permute.adj.C.S <- washb_permute(Y=residuals,tr=laz.subset$tr,pair=laz.subset$block,contrast=c("Control","Sanitation"), nreps=100000,seed=1241353)
-
+permute.adj.C.S <- washb_permute(Y=residuals,tr=perm.adj.data$tr,pair=perm.adj.data$block,contrast=c("Control","Sanitation"), nreps=100000,seed=1241353)
 ```
 
 <br>
 
+
+```{r, eval=F, include=F, comment=NA}
 Superlearner could alo be used to fit a more flexible adjustment model. Code is provided below but not run to save computing time.
-```{r, eval=F, include=T, comment=NA}
 # pre-screen the covariates for those associated with the outcome (LR test P<0.2)
 # see Wprescreen() and design.matrix() in the base functions
 Wscreen <- Wprescreen(Y=LAZ$Y,Ws=LAZ[,5:ncol(LAZ)],family="gaussian")

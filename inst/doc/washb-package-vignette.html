@@ -287,6 +287,9 @@ The package will be updated periodically. When a new package version is availabl
 <span class="kw">install.packages</span>(<span class="st">&quot;metafor&quot;</span>)</code></pre></div>
 <p>Once packages are installed for the first time, they will be automatically loaded along with the <code>washb</code> package when the following code is run:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(washb)</code></pre></div>
+<pre><code>## Welcome to the washb package
+## Use the command browseVignettes(&quot;washb&quot;) to open the package vignette
+## and learn how to use all the package functions.</code></pre>
 <p>The <code>library()</code> command can be used to load any installed package. It is not needed for any of the required packages listed above, but it is for suggested packages. For example, to fit a negative binomial glm model, the “MASS” package is required, and can be installed once with <code>install.packages(&quot;MASS&quot;)</code> and loaded each time R is opened with <code>library(&quot;MASS&quot;)</code>.</p>
 <p><br></p>
 </div>
@@ -391,7 +394,7 @@ due to missing values in the outcome
 <code>print</code> Logical for whether to print function output, defaults to TRUE.</p>
 <p><br></p>
 <p><strong>Usage:</strong></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">washb_prescreen</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">Ws=</span>,<span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="dt">pval=</span><span class="fl">0.2</span>, <span class="dt">print=</span><span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">washb_prescreen</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">Ws=</span>W,<span class="dt">family=</span><span class="st">&quot;binomial&quot;</span>, <span class="dt">pval=</span><span class="fl">0.2</span>, <span class="dt">print=</span><span class="ot">TRUE</span>)</code></pre></div>
 <p><br></p>
 <div id="subset-to-new-dataframes-the-variables-to-be-screened-for-inclusion-in-adjusted-glm-models" class="section level3">
 <h3>Subset to new dataframes the variables to be screened for inclusion in adjusted glm models:</h3>
@@ -824,48 +827,95 @@ alternative hypothesis: true mu is not equal to 0</code></pre>
 </div>
 <div id="adjusted-permutation-tests" class="section level3">
 <h3>Adjusted permutation tests</h3>
-<p>The permutation test can also test for independence of Y and tr, conditional on W, by applying the <code>washb_permute</code> function to the residuals of an adjusted model. The adjusted permutation test works better on outcomes with greater variability, so will be applied to the LAZ outcome here.</p>
+<p>The permutation test can also test for independence of <span class="math inline">\(Y\)</span> and <span class="math inline">\(tr\)</span>, conditional on <span class="math inline">\(W\)</span>, by applying the <code>washb_permute</code> function to the residuals of an adjusted model (adjusted for <span class="math inline">\(W\)</span>, but not <span class="math inline">\(tr\)</span>). The adjusted permutation test works better on outcomes with greater variability, so will be applied to the LAZ outcome here.</p>
 </div>
 </div>
 <div id="ben-why-is-this" class="section level1">
 <h1>(BEN, WHY IS THIS?)</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Use the washb_prescreen function to select adjustment covariates associated with the outcome</span>
+adj.W&lt;-<span class="kw">washb_prescreen</span>(<span class="dt">Y=</span>laz$laz,Ws_laz,<span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>, <span class="dt">pval=</span><span class="fl">0.2</span>)</code></pre></div>
+<pre><code>
+Likelihood Ratio Test P-values:
+      [,1]             [,2]       
+ [1,] &quot;fracode&quot;        &quot;P = 0.002&quot;
+ [2,] &quot;month&quot;          &quot;P = 0.000&quot;
+ [3,] &quot;aged&quot;           &quot;P = 0.697&quot;
+ [4,] &quot;sex&quot;            &quot;P = 0.415&quot;
+ [5,] &quot;birthord&quot;       &quot;P = 0.000&quot;
+ [6,] &quot;momage&quot;         &quot;P = 0.262&quot;
+ [7,] &quot;momedu&quot;         &quot;P = 0.000&quot;
+ [8,] &quot;momheight&quot;      &quot;P = 0.000&quot;
+ [9,] &quot;hfiacat&quot;        &quot;P = 0.000&quot;
+[10,] &quot;Nlt18&quot;          &quot;P = 0.000&quot;
+[11,] &quot;Ncomp&quot;          &quot;P = 0.001&quot;
+[12,] &quot;watmin&quot;         &quot;P = 0.743&quot;
+[13,] &quot;elec&quot;           &quot;P = 0.000&quot;
+[14,] &quot;floor&quot;          &quot;P = 0.000&quot;
+[15,] &quot;walls&quot;          &quot;P = 0.638&quot;
+[16,] &quot;roof&quot;           &quot;P = 0.023&quot;
+[17,] &quot;asset_wardrobe&quot; &quot;P = 0.000&quot;
+[18,] &quot;asset_table&quot;    &quot;P = 0.000&quot;
+[19,] &quot;asset_chair&quot;    &quot;P = 0.000&quot;
+[20,] &quot;asset_khat&quot;     &quot;P = 0.000&quot;
+[21,] &quot;asset_chouki&quot;   &quot;P = 0.000&quot;
+[22,] &quot;asset_tv&quot;       &quot;P = 0.000&quot;
+[23,] &quot;asset_refrig&quot;   &quot;P = 0.000&quot;
+[24,] &quot;asset_bike&quot;     &quot;P = 0.000&quot;
+[25,] &quot;asset_moto&quot;     &quot;P = 0.000&quot;
+[26,] &quot;asset_sewmach&quot;  &quot;P = 0.000&quot;
+[27,] &quot;asset_mobile&quot;   &quot;P = 0.000&quot;
+
+
+Covariates selected (P&lt;0.20):
+      [,1]             [,2]       
+ [1,] &quot;fracode&quot;        &quot;P = 0.002&quot;
+ [2,] &quot;month&quot;          &quot;P = 0.000&quot;
+ [3,] &quot;birthord&quot;       &quot;P = 0.000&quot;
+ [4,] &quot;momedu&quot;         &quot;P = 0.000&quot;
+ [5,] &quot;momheight&quot;      &quot;P = 0.000&quot;
+ [6,] &quot;hfiacat&quot;        &quot;P = 0.000&quot;
+ [7,] &quot;Nlt18&quot;          &quot;P = 0.000&quot;
+ [8,] &quot;Ncomp&quot;          &quot;P = 0.001&quot;
+ [9,] &quot;elec&quot;           &quot;P = 0.000&quot;
+[10,] &quot;floor&quot;          &quot;P = 0.000&quot;
+[11,] &quot;roof&quot;           &quot;P = 0.023&quot;
+[12,] &quot;asset_wardrobe&quot; &quot;P = 0.000&quot;
+[13,] &quot;asset_table&quot;    &quot;P = 0.000&quot;
+[14,] &quot;asset_chair&quot;    &quot;P = 0.000&quot;
+[15,] &quot;asset_khat&quot;     &quot;P = 0.000&quot;
+[16,] &quot;asset_chouki&quot;   &quot;P = 0.000&quot;
+[17,] &quot;asset_tv&quot;       &quot;P = 0.000&quot;
+[18,] &quot;asset_refrig&quot;   &quot;P = 0.000&quot;
+[19,] &quot;asset_bike&quot;     &quot;P = 0.000&quot;
+[20,] &quot;asset_moto&quot;     &quot;P = 0.000&quot;
+[21,] &quot;asset_sewmach&quot;  &quot;P = 0.000&quot;
+[22,] &quot;asset_mobile&quot;   &quot;P = 0.000&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Subset the laz dataset to control and sanitation arms:</span>
       laz.subset=laz[<span class="kw">which</span>(laz$tr==<span class="st">&quot;Control&quot;</span>|laz$tr==<span class="st">&quot;Sanitation&quot;</span>),]
 
+<span class="co">#Subset the LAZ dataset to the selected adjustment covariates and LAZ, as well as tr and block, which will be needed in the permutation test</span>
+perm.adj.data &lt;-<span class="st"> </span><span class="kw">subset</span>(laz.subset,<span class="dt">select=</span><span class="kw">c</span>(adj.W, <span class="st">&quot;laz&quot;</span>, <span class="st">&quot;tr&quot;</span>, <span class="st">&quot;block&quot;</span>))
+
+<span class="co">#Subset to complete cases</span>
+perm.adj.data&lt;-perm.adj.data[<span class="kw">complete.cases</span>(perm.adj.data),]
+
+Wselect &lt;-<span class="st"> </span><span class="kw">subset</span>(perm.adj.data,<span class="dt">select=</span><span class="kw">c</span>(adj.W, <span class="st">&quot;laz&quot;</span>))
+<span class="co">#fit the glm model </span>
+fit &lt;-<span class="st"> </span><span class="kw">glm</span>(laz~., <span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>, <span class="dt">data=</span>Wselect)
+
 <span class="co">#Use the predict to return predicted LAZ from the adjusted glm model, and subtract it from the observed LAZ outcome</span>
-residuals&lt;-laz.subset$laz-<span class="kw">predict</span>(LAZ.glm.C.S$glmModel)
+residuals&lt;-Wselect$laz-<span class="kw">predict</span>(fit)
 
 <span class="co">#run the permutation test function</span>
-permute.adj.C.S &lt;-<span class="st"> </span><span class="kw">washb_permute</span>(<span class="dt">Y=</span>residuals,<span class="dt">tr=</span>laz.subset$tr,<span class="dt">pair=</span>laz.subset$block,<span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">nreps=</span><span class="dv">100000</span>,<span class="dt">seed=</span><span class="dv">1241353</span>)</code></pre></div>
+permute.adj.C.S &lt;-<span class="st"> </span><span class="kw">washb_permute</span>(<span class="dt">Y=</span>residuals,<span class="dt">tr=</span>perm.adj.data$tr,<span class="dt">pair=</span>perm.adj.data$block,<span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">nreps=</span><span class="dv">100000</span>,<span class="dt">seed=</span><span class="dv">1241353</span>)</code></pre></div>
 <pre><code>
     Approximative Wilcoxon-Pratt Signed-Rank Test
 
 data:  y by x (pos, neg) 
      stratified by block
-Z = 0.046272, p-value = 0.9665
+Z = -0.23539, p-value = 0.8158
 alternative hypothesis: true mu is not equal to 0</code></pre>
 <p><br></p>
-<p>Superlearner could alo be used to fit a more flexible adjustment model. Code is provided below but not run to save computing time.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># pre-screen the covariates for those associated with the outcome (LR test P&lt;0.2)</span>
-<span class="co"># see Wprescreen() and design.matrix() in the base functions</span>
-Wscreen &lt;-<span class="st"> </span><span class="kw">Wprescreen</span>(<span class="dt">Y=</span>LAZ$Y,<span class="dt">Ws=</span>LAZ[,<span class="dv">5</span>:<span class="kw">ncol</span>(LAZ)],<span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>)
-Wselect &lt;-<span class="st"> </span><span class="kw">subset</span>(LAZ,<span class="dt">select=</span>Wscreen)
-Wselect &lt;-<span class="st"> </span><span class="kw">design.matrix</span>(Wselect)
-
-<span class="co"># algorithmic fit of the outcome as a function of selected covariates</span>
-<span class="co">#set.seed(209448)</span>
-<span class="kw">set.seed</span>(<span class="dv">589320</span>)
-SLfit1 &lt;-<span class="st"> </span><span class="kw">SuperLearner</span>(<span class="dt">Y=</span>LAZ$Y,<span class="dt">X=</span>Wselect,<span class="dt">id=</span>LAZ$id,
-                       <span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>,
-                       <span class="dt">SL.library=</span><span class="kw">c</span>(<span class="st">&quot;SL.mean&quot;</span>,<span class="st">&quot;SL.glm&quot;</span>,<span class="st">&quot;SL.bayesglm&quot;</span>,<span class="st">&quot;SL.gam&quot;</span>,<span class="st">&quot;SL.glmnet&quot;</span>)
-                       )
-SLfit1
-LAZ$pY &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">predict</span>(SLfit1)$pred)
-LAZ$r &lt;-<span class="st"> </span>LAZ$Y-LAZ$pY
-
-
-<span class="co"># Hypothesis 1 permutation tests</span>
-permute.super.C.S &lt;-<span class="st"> </span><span class="kw">washb_permute</span>(<span class="dt">Y=</span>SLd$r,<span class="dt">tr=</span>SLd$tr,<span class="dt">block=</span>SLd$block,<span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>),<span class="dt">seed=</span><span class="dv">1241353</span>)</code></pre></div>
 <p><br> <br> <br></p>
 </div>
 <div id="function-washb_lincom" class="section level1">
