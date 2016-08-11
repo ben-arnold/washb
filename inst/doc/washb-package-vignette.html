@@ -11,7 +11,7 @@
 
 <meta name="author" content="Andrew Mertens" />
 
-<meta name="date" content="2016-07-25" />
+<meta name="date" content="2016-08-11" />
 
 <title>washb-package-vignette</title>
 
@@ -224,7 +224,7 @@ div.tocify {
 
 <h1 class="title">washb-package-vignette</h1>
 <h4 class="author"><em>Andrew Mertens</em></h4>
-<h4 class="date"><em>2016-07-25</em></h4>
+<h4 class="date"><em>2016-08-11</em></h4>
 
 </div>
 
@@ -235,7 +235,7 @@ div.tocify {
 <p><br></p>
 <div id="wash-benefits-bangladesh-primary-outcome-analysis-using-the-washb-r-package-functions." class="section level3">
 <h3>WASH Benefits Bangladesh primary outcome analysis using the washb R package functions.</h3>
-<p>Calculates unadjusted and adjusted differences in diarrheal disease and length-for-age z-score between treatment arms for pre-specified hypothesis 1 (Treatment arms vs. Control arm), and for unspecified subgroup analyses (by target child/sibling for diarrhea outcome and by food security status for LAZ ouctome).</p>
+<p>This vignette applies package functions to the Bangladesh Wash Benefits trial data to calculate several unadjusted and adjusted estimates of differences in diarrheal disease and length-for-age z-score between treatment arms. Subgroup analysis between tzrget children and siblings is also calculated.</p>
 <p><br></p>
 </div>
 <div id="list-and-description-of-the-functions-documented-in-this-vignette" class="section level3">
@@ -269,8 +269,8 @@ div.tocify {
 <p><br> <br> <br></p>
 </div>
 </div>
-<div id="package-and-data-loading" class="section level1">
-<h1>Package and Data Loading</h1>
+<div id="package-loading" class="section level1">
+<h1>Package Loading</h1>
 <div id="install-package-from-github" class="section level3">
 <h3>Install package from Github</h3>
 <p>The WASH Benefits R package is easiest to access by directly installing it from Ben Arnold’s <code>washb</code> <a href="https://github.com/ben-arnold/washb">Github page</a>. To download the R package from the R console, first the <code>devtools</code> package is needed. This can be installed into the R library with the code: <code>install.packages(&quot;devtools&quot;)</code>. This only needs to occur once (per computer). Each time R is started, the package needs to be loaded into R environment with <code>library(devtools)</code>. Once the <code>devtools</code> package is attached, the <code>washb</code> package can be installed with the code: <code>install_github(&quot;ben-arnold/washb&quot;)</code>.<br />
@@ -293,25 +293,11 @@ The package will be updated periodically. When a new package version is availabl
 <div id="package-documentation" class="section level3">
 <h3>Package documentation</h3>
 <p>Use <code>??washb</code> to see full list of package documentation, or use <code>?(function name)</code> to see help documentation for any specific package. For example, <code>?washb_glm</code> returns the help page for the washb_glm function.</p>
-<p><br></p>
-</div>
-<div id="package-datasets" class="section level3">
-<h3>Package datasets</h3>
-<p>The data in this vignette is contained in 3 files, included in the package:<br />
- * <code>washb_bd_enrol.Rdata</code>, an R file of Bangladesh enrollment characteristics<br />
- * <code>washb_bd_diar.Rdata</code>, an R file of Bangladesh diarrheal disease data<br />
- * <code>washb_bd_anthro.Rdata</code>, an R file of Bangladesh child anthropometry data<br />
-<strong>Note:</strong> These datasets have scrambled treatment assignment, and so are still blinded. This allows package users to test functions/code on these datasets at will while still allowing pre-specified analysis plans for any future analysis. The analysis in this vignette uses unblinding data, so the results will closely match the WASH Benefits Bangladesh primary outcomes analysis.</p>
-<p><br></p>
-<p>These datasets are included in the washb package and can be loaded with the <code>data()</code> command Load here:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(washb_bd_enrol)
-<span class="kw">data</span>(washb_bd_diar)
-<span class="kw">data</span>(washb_bd_anthro)</code></pre></div>
-<p><br> <br></p>
+<p><br> <br> <br></p>
 </div>
 <div id="diarrheal-disease-outcome-data-cleaning" class="section level3">
 <h3>Diarrheal disease outcome data cleaning</h3>
-<p>The following code cleans and merges the enrolment and diarrhea data:</p>
+<p>The following code cleans and merges the enrolment and diarrhea data (not included with the package, but used here for teaching purposes):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># drop svydate and month because they are superceded in the child level diarrhea data</span>
   washb_bd_enrol$svydate &lt;-<span class="st"> </span><span class="ot">NULL</span>
   washb_bd_enrol$month &lt;-<span class="st"> </span><span class="ot">NULL</span>
@@ -360,7 +346,7 @@ laz &lt;-<span class="st"> </span><span class="kw">subset</span>(laz,laz_x!=<spa
 laz$tr &lt;-<span class="st"> </span><span class="kw">factor</span>(laz$tr,<span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Water&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>,<span class="st">&quot;Handwashing&quot;</span>,<span class="st">&quot;WSH&quot;</span>,<span class="st">&quot;Nutrition&quot;</span>,<span class="st">&quot;Nutrition + WSH&quot;</span>))
 laz$month &lt;-<span class="st"> </span><span class="kw">factor</span>(laz$month)
 laz &lt;-<span class="st"> </span>laz[<span class="kw">order</span>(laz$block,laz$clusterid,laz$dataid,laz$childid),]</code></pre></div>
-<p>Now that the dataset is cleaned and merged, the washb package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis. (With the exception that the primary outcome analysis used TMLE, targeted maximum likelihood estimation, rather than GLM models in estimating the adjusted treatment effects.) Tables of the estimated treatment effects the primary Bangladesh outcomes (diarrheal disease and length-for-age Z-score), estimated using the functions in this package, are included at the end of this vignette.</p>
+<p>Now that the dataset is cleaned and merged, the washb package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis. (With the exception that the primary outcome analysis used TMLE, targeted maximum likelihood estimation, rather than GLM models in estimating the adjusted treatment effects.)</p>
 <p><br> <br> <br></p>
 </div>
 </div>
@@ -376,7 +362,7 @@ laz &lt;-<span class="st"> </span>laz[<span class="kw">order</span>(laz$block,la
 <p><strong>Usage:</strong></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">washb_mean</span>(Y,id,<span class="dt">print=</span><span class="ot">TRUE</span>)</code></pre></div>
 <p><br></p>
-<p>If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use <code>washb_ttest()</code> (for T-test of unadjusted continuous outcomes), or <code>washb_mh()</code> (for Mantel-Hanzel test on unadjusted binary outcomes), or <code>washb_glm()</code> for unadjusted or adjusted generalized linear models. As the unadjusted glm function is asymptotically equivalent to the Mantel-Hanzel or t-test results( for logistic and linear regressions, respectively), the <code>washb_glm()</code> will probably be the most used an important function in the document.</p>
+<p>If you wish to compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use <code>washb_ttest()</code> (for T-test of unadjusted continuous outcomes), or <code>washb_mh()</code> (for Mantel-Hanzel test on unadjusted binary outcomes), or <code>washb_glm()</code> for unadjusted or adjusted generalized linear models. As the unadjusted glm function is asymptotically equivalent to the Mantel-Hanzel or t-test results( for logistic and linear regressions, respectively), the <code>washb_glm()</code> will probably be the most used an important function in the document.</p>
 <p><br></p>
 <p>Using the WASH Benefits enrollment survey data and the <code>washb_mean</code> function, the means and 95% confidence intervals of several maternal characteristics are calculated below:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomAge&lt;-<span class="kw">washb_mean</span>(<span class="dt">Y=</span>washb_bd_enrol$momage,<span class="dt">id=</span>washb_bd_enrol$clusterid,<span class="dt">print=</span><span class="ot">TRUE</span>)</code></pre></div>
@@ -413,7 +399,7 @@ due to missing values in the outcome
 Ws_diar &lt;-<span class="st"> </span><span class="kw">subset</span>(ad,<span class="dt">select=</span><span class="kw">c</span>(<span class="st">&quot;month&quot;</span>,<span class="st">&quot;agedays&quot;</span>,<span class="st">&quot;sex&quot;</span>,<span class="st">&quot;momage&quot;</span>,<span class="st">&quot;momedu&quot;</span>,<span class="st">&quot;momheight&quot;</span>,<span class="st">&quot;hfiacat&quot;</span>,<span class="st">&quot;Nlt18&quot;</span>,<span class="st">&quot;Ncomp&quot;</span>,<span class="st">&quot;watmin&quot;</span>,<span class="st">&quot;elec&quot;</span>,<span class="st">&quot;floor&quot;</span>,<span class="st">&quot;walls&quot;</span>,<span class="st">&quot;roof&quot;</span>,<span class="st">&quot;asset_wardrobe&quot;</span>,<span class="st">&quot;asset_table&quot;</span>,<span class="st">&quot;asset_chair&quot;</span>,<span class="st">&quot;asset_khat&quot;</span>,<span class="st">&quot;asset_chouki&quot;</span>,<span class="st">&quot;asset_tv&quot;</span>,<span class="st">&quot;asset_refrig&quot;</span>,<span class="st">&quot;asset_bike&quot;</span>,<span class="st">&quot;asset_moto&quot;</span>,<span class="st">&quot;asset_sewmach&quot;</span>,<span class="st">&quot;asset_mobile&quot;</span>))
 
 <span class="co">#Subset the LAZ dataset to covariates to be screened for inclusion in adjusted glm models</span>
-Ws_laz &lt;-<span class="st"> </span><span class="kw">subset</span>(laz,<span class="dt">select=</span><span class="kw">c</span>(<span class="st">&quot;month&quot;</span>,<span class="st">&quot;aged&quot;</span>,<span class="st">&quot;sex&quot;</span>,<span class="st">&quot;birthord&quot;</span>,<span class="st">&quot;momage&quot;</span>,<span class="st">&quot;momedu&quot;</span>,<span class="st">&quot;momheight&quot;</span>,<span class="st">&quot;hfiacat&quot;</span>,<span class="st">&quot;Nlt18&quot;</span>,<span class="st">&quot;Ncomp&quot;</span>,<span class="st">&quot;watmin&quot;</span>,<span class="st">&quot;elec&quot;</span>,<span class="st">&quot;floor&quot;</span>,<span class="st">&quot;walls&quot;</span>,<span class="st">&quot;roof&quot;</span>,<span class="st">&quot;asset_wardrobe&quot;</span>,<span class="st">&quot;asset_table&quot;</span>,<span class="st">&quot;asset_chair&quot;</span>,<span class="st">&quot;asset_khat&quot;</span>,<span class="st">&quot;asset_chouki&quot;</span>,<span class="st">&quot;asset_tv&quot;</span>,<span class="st">&quot;asset_refrig&quot;</span>,<span class="st">&quot;asset_bike&quot;</span>,<span class="st">&quot;asset_moto&quot;</span>,<span class="st">&quot;asset_sewmach&quot;</span>,<span class="st">&quot;asset_mobile&quot;</span>))</code></pre></div>
+Ws_laz &lt;-<span class="st"> </span><span class="kw">subset</span>(laz,<span class="dt">select=</span><span class="kw">c</span>(<span class="st">&quot;fracode&quot;</span>,<span class="st">&quot;month&quot;</span>,<span class="st">&quot;aged&quot;</span>,<span class="st">&quot;sex&quot;</span>,<span class="st">&quot;birthord&quot;</span>,<span class="st">&quot;momage&quot;</span>,<span class="st">&quot;momedu&quot;</span>,<span class="st">&quot;momheight&quot;</span>,<span class="st">&quot;hfiacat&quot;</span>,<span class="st">&quot;Nlt18&quot;</span>,<span class="st">&quot;Ncomp&quot;</span>,<span class="st">&quot;watmin&quot;</span>,<span class="st">&quot;elec&quot;</span>,<span class="st">&quot;floor&quot;</span>,<span class="st">&quot;walls&quot;</span>,<span class="st">&quot;roof&quot;</span>,<span class="st">&quot;asset_wardrobe&quot;</span>,<span class="st">&quot;asset_table&quot;</span>,<span class="st">&quot;asset_chair&quot;</span>,<span class="st">&quot;asset_khat&quot;</span>,<span class="st">&quot;asset_chouki&quot;</span>,<span class="st">&quot;asset_tv&quot;</span>,<span class="st">&quot;asset_refrig&quot;</span>,<span class="st">&quot;asset_bike&quot;</span>,<span class="st">&quot;asset_moto&quot;</span>,<span class="st">&quot;asset_sewmach&quot;</span>,<span class="st">&quot;asset_mobile&quot;</span>))</code></pre></div>
 <p><br></p>
 </div>
 <div id="run-the-washb_prescreen-function" class="section level3">
@@ -506,8 +492,11 @@ prescreened_vars[<span class="dv">1</span>:<span class="dv">5</span>,<span class
  <strong>Usage:</strong></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">washb_glm</span>(Y,tr,pair,<span class="dt">W=</span><span class="ot">NULL</span>, <span class="dt">forcedW=</span><span class="ot">NULL</span>, <span class="dt">V=</span><span class="ot">NULL</span>, id,contrast,<span class="dt">family=</span><span class="st">&quot;binonial(link='log')&quot;</span>, <span class="dt">pval=</span><span class="fl">0.2</span>, <span class="dt">print=</span><span class="ot">TRUE</span>)</code></pre></div>
 <p><br />
- ###Unadjusted GLM estimates for diarrheal disease outcome.</p>
-<p>As an example, the following code applies the washb_glm function to compare 7-day recall diarrheal disease prevalence between the sanitation and control arms. Notice that the glm model is fit with a log link, <code>family=binomial(link='log')</code>, to estimate prevalence ratios rather than with a logit link, <code>family=&quot;binomial&quot;</code>, to estimate the odds ratio.</p>
+</p>
+</div>
+<div id="unadjusted-glm-estimates-for-diarrheal-disease-outcome." class="section level3">
+<h3>Unadjusted GLM estimates for diarrheal disease outcome.</h3>
+<p>As an example, the following code applies the washb_glm function to compare 7-day recall diarrheal disease prevalence between the sanitation and control arms. Notice that the glm model is fit with a log link, <code>family=binomial(link='log')</code>, to estimate prevalence ratios rather than with a logit link, <code>family=&quot;binomial&quot;</code>, to estimate the odds ratio. Occasionally, a glm model with a non-canonical link function like <code>family=binomial(link='log')</code> will fail to converge. If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument <code>family=poisson(link='log')</code>. See <a href="http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf">Zou 2004</a> for details.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Diar.glm.C.S &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">tr=</span>ad$tr,<span class="dt">pair=</span>ad$block, <span class="dt">id=</span>ad$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">'log'</span>))</code></pre></div>
 <pre><code>
 
@@ -526,7 +515,9 @@ trSanitation -0.02200495 -0.03326159 -0.0107483
  Type &quot;`modelname'$fit&quot; to return full glm model estimates.
  Type &quot;`modelname'$RDfit&quot; to return the risk difference of the treatment (and all covariates, including block pairs).
  Type &quot;`modelname'$vcv&quot; to return the variance-covariance matrix.
- Type &quot;`modelname'$rowdropped&quot; to return the vector list of observations included in the model fit</code></pre>
+ Type &quot;`modelname'$rowdropped&quot; to return the vector list of observations included in the model fit
+ Type &quot;`modelname'$glmModel&quot; to return the glm model fit to be used with predict() to return model predictions of the outcome
+ Type &quot;`modelname'$glmModelRD&quot; to return the risk-difference glm model fit to be used with predict() to return model predictions of the outcome</code></pre>
 <p>On top of the function’s auto-printed output, the washb_glm function contains a number of objects. For example, <code>'objectname'$RDfit</code> returns the risk difference instead of the risk ratio for all covariates (not applicable when the glm model is gaussian).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Diar.glm.C.S$RDfit[<span class="dv">1</span>:<span class="dv">2</span>,]</code></pre></div>
 <pre><code>                      RD        2.5%       97.5%  Std. Error   t value     Pr(&gt;|t|)
@@ -534,43 +525,50 @@ trSanitation -0.02200495 -0.03326159 -0.0107483
 trSanitation -0.02200495 -0.03326159 -0.01074830 0.005743186 -3.831488 0.0001288764</code></pre>
 <p>Note, the <code>[1:2,]</code> index at the end is added here so that only the intercept and treatment effect estimates are printed to save space. Running the code <code>Diar.glm.C.W$RDfit</code> outputs all 89 estimated point estimates and confidence intervals for the 89 pair-matched block dummy variables (because there are 90 blocks).</p>
 <p><br />
- All returned objects are:<br />
- * <code>'objectname'$TR</code> to return the treatment effect.<br />
- * <code>'objectname$fit</code> to return full glm model estimates.<br />
- * <code>'objectname$RDfit</code> to return the risk difference of the treatment (and all covariates, including block pairs).<br />
- * <code>'objectname$vcv</code> to return the variance-covariance matrix.<br />
- * <code>'objectname$rowdropped</code> to return the vector list of observations included in the model fit.<br />
- * <code>'objectname$lincom</code> to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.<br />
- * <code>'objectname$lincomRD</code> to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.</p>
+ All returned objects are:</p>
+<ul>
+<li><code>'objectname'$TR</code> to return the treatment effect.<br />
+</li>
+<li><code>'objectname$fit</code> to return full glm model estimates.<br />
+</li>
+<li><code>'objectname$RDfit</code> to return the risk difference of the treatment (and all covariates, including block pairs).<br />
+</li>
+<li><code>'objectname$vcv</code> to return the variance-covariance matrix.<br />
+</li>
+<li><code>'objectname$rowdropped</code> to return the vector list of observations included in the model fit.<br />
+</li>
+<li><code>'objectname$lincom</code> to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.<br />
+</li>
+<li><code>'objectname$lincomRD</code> to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.<br />
+</li>
+<li><code>'objectname$glmModel</code> to return the glm model fit to be used with <code>predict()</code> to return model predictions of the outcome. Note that this is the glm model fit without <code>coeftest()</code> applied, so does not have robust standard errors, and should not be used for inference.<br />
+</li>
+<li><code>'objectname$glmModelRD</code> to return the risk differenc glm model fit to be used with <code>predict()</code> to return model predictions of the outcome. The same caveat as for <code>$glmModel</code> applies; the sandwich estimator function has not been applied to the model so the standard errors are incorrect.</li>
+</ul>
 <p><br></p>
 </div>
 <div id="length-for-age-z-score-glm-models" class="section level3">
 <h3>Length-for-Age Z-score glm models</h3>
 <p>For the continuous LAZ outcome analysis, the code is the same, except the <code>family=&quot;gaussian&quot;</code> argument is used.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LAZ.glm.C.S &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">tr=</span>ad$tr,<span class="dt">pair=</span>ad$block, <span class="dt">id=</span>ad$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">'log'</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LAZ.glm.C.S &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>laz$laz,<span class="dt">tr=</span>laz$tr,<span class="dt">pair=</span>laz$block, <span class="dt">id=</span>laz$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>)</code></pre></div>
 <pre><code>
 
 -----------------------------------------
  GLM Fit: Control vs. Sanitation 
 -----------------------------------------
-                    PR      2.5%     97.5%   Estimate Std. Error   z value     Pr(&gt;|z|)
-trSanitation 0.6109162 0.4677257 0.7979433 -0.4927955  0.1362642 -3.616472 0.0002986455
-
-
- RD of treatment
-                      RD        2.5%      97.5%
-trSanitation -0.02200495 -0.03326159 -0.0107483
+                   Coef.       2.5%     97.5% Std. Error    z value  Pr(&gt;|z|)
+trSanitation -0.01862361 -0.1080533 0.0708061  0.0456274 -0.4081673 0.6831509
 
  Type &quot;`modelname'$TR&quot; to return the treatment effect.
  Type &quot;`modelname'$fit&quot; to return full glm model estimates.
- Type &quot;`modelname'$RDfit&quot; to return the risk difference of the treatment (and all covariates, including block pairs).
  Type &quot;`modelname'$vcv&quot; to return the variance-covariance matrix.
- Type &quot;`modelname'$rowdropped&quot; to return the vector list of observations included in the model fit</code></pre>
+ Type &quot;`modelname'$rowdropped&quot; to return the vector list of observations included in the model fit
+ Type &quot;`modelname'$glmModel&quot; to return the glm model fit to be used with predict() to return model predictions of the outcome</code></pre>
 <p><br></p>
 </div>
 <div id="covariate-adjusted-glm-model" class="section level3">
 <h3>Covariate-adjusted glm model</h3>
-<p>Use the <code>W=</code> argement and a dataframe of potential adjustment covariates (here, <code>Ws_diar</code>) to fit an adjusted glm model. The covariates in the <code>W</code> dataframe will be prescreened with the <code>washb_prescreen</code> function and variables with a p-value from a likelihood-ratio test lower than 0.2 are included as adjustment covariates in the final model. The <code>pval=</code> argument can be used to alter the p-value threshold for inclusion.</p>
+<p>Use the <code>W=</code> argument and a dataframe of potential adjustment covariates (here, <code>Ws_diar</code>) to fit an adjusted glm model. The covariates in the <code>W</code> dataframe will be prescreened with the <code>washb_prescreen</code> function and variables with a p-value from a likelihood-ratio test lower than 0.2 are included as adjustment covariates in the final model. The <code>pval=</code> argument can be used to alter the p-value threshold for inclusion.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">adj.Diar.glm.C.S &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">tr=</span>ad$tr,<span class="dt">pair=</span>ad$block, <span class="dt">W=</span>Ws_diar, <span class="dt">id=</span>ad$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">'log'</span>))</code></pre></div>
 <pre><code>
 -----------------------------------------
@@ -669,146 +667,37 @@ asset_khat                      0.8254681 0.6216595 1.0960946
  Type &quot;`modelname'$fit&quot; to return full glm model estimates.
  Type &quot;`modelname'$RDfit&quot; to return the risk difference of the treatment (and all covariates, including block pairs).
  Type &quot;`modelname'$vcv&quot; to return the variance-covariance matrix.
- Type &quot;`modelname'$rowdropped&quot; to return the vector list of observations included in the model fit</code></pre>
+ Type &quot;`modelname'$rowdropped&quot; to return the vector list of observations included in the model fit
+ Type &quot;`modelname'$glmModel&quot; to return the glm model fit to be used with predict() to return model predictions of the outcome
+ Type &quot;`modelname'$glmModelRD&quot; to return the risk-difference glm model fit to be used with predict() to return model predictions of the outcome</code></pre>
 <p><br></p>
 </div>
 <div id="forcing-covariates-into-the-glm-model-regardless-of-prescreening-p-value" class="section level3">
 <h3>Forcing covariates into the glm model regardless of prescreening p-value</h3>
-<p>If there are certain variables to include in the glm model, regardless of prescreening results, use the <code>forcedW</code> option. This argument takes a variable name or a vector of variable names. These variables must already be in the W dataframe of potential adjustment covariates. For example, if adjustment by age and sex is standard, force them into the glm model:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glm.C.S &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">tr=</span>ad$tr,<span class="dt">pair=</span>ad$block, <span class="dt">W=</span>Ws_diar, <span class="dt">forcedW=</span><span class="kw">c</span>(<span class="st">&quot;agedays&quot;</span>,<span class="st">&quot;sex&quot;</span>), <span class="dt">id=</span>ad$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">'log'</span>))</code></pre></div>
-<pre><code>
------------------------------------------
-Dropping 67 observations due to missing values in 1 or more variables
- Final sample size: 5210 
------------------------------------------
-
------------------------------------------
-Include the following adjustment covariates without screening:
------------------------------------------
-[1] &quot;agedays&quot; &quot;sex&quot;    
-
------------------------------------------
-Pre-screening the adjustment covariates:
------------------------------------------
-
-Likelihood Ratio Test P-values:
-      [,1]             [,2]       
- [1,] &quot;month&quot;          &quot;P = 0.000&quot;
- [2,] &quot;momage&quot;         &quot;P = 0.958&quot;
- [3,] &quot;momedu&quot;         &quot;P = 0.000&quot;
- [4,] &quot;momheight&quot;      &quot;P = 0.471&quot;
- [5,] &quot;hfiacat&quot;        &quot;P = 0.026&quot;
- [6,] &quot;Nlt18&quot;          &quot;P = 0.414&quot;
- [7,] &quot;Ncomp&quot;          &quot;P = 0.725&quot;
- [8,] &quot;watmin&quot;         &quot;P = 0.075&quot;
- [9,] &quot;elec&quot;           &quot;P = 0.006&quot;
-[10,] &quot;floor&quot;          &quot;P = 0.056&quot;
-[11,] &quot;walls&quot;          &quot;P = 0.637&quot;
-[12,] &quot;roof&quot;           &quot;P = 0.949&quot;
-[13,] &quot;asset_wardrobe&quot; &quot;P = 0.107&quot;
-[14,] &quot;asset_table&quot;    &quot;P = 0.074&quot;
-[15,] &quot;asset_chair&quot;    &quot;P = 0.432&quot;
-[16,] &quot;asset_khat&quot;     &quot;P = 0.002&quot;
-[17,] &quot;asset_chouki&quot;   &quot;P = 0.606&quot;
-[18,] &quot;asset_tv&quot;       &quot;P = 0.430&quot;
-[19,] &quot;asset_refrig&quot;   &quot;P = 0.025&quot;
-[20,] &quot;asset_bike&quot;     &quot;P = 0.480&quot;
-[21,] &quot;asset_moto&quot;     &quot;P = 0.288&quot;
-[22,] &quot;asset_sewmach&quot;  &quot;P = 0.138&quot;
-[23,] &quot;asset_mobile&quot;   &quot;P = 0.599&quot;
-
-
-Covariates selected (P&lt;0.20):
-      [,1]             [,2]       
- [1,] &quot;month&quot;          &quot;P = 0.000&quot;
- [2,] &quot;momedu&quot;         &quot;P = 0.000&quot;
- [3,] &quot;hfiacat&quot;        &quot;P = 0.026&quot;
- [4,] &quot;watmin&quot;         &quot;P = 0.075&quot;
- [5,] &quot;elec&quot;           &quot;P = 0.006&quot;
- [6,] &quot;floor&quot;          &quot;P = 0.056&quot;
- [7,] &quot;asset_wardrobe&quot; &quot;P = 0.107&quot;
- [8,] &quot;asset_table&quot;    &quot;P = 0.074&quot;
- [9,] &quot;asset_khat&quot;     &quot;P = 0.002&quot;
-[10,] &quot;asset_refrig&quot;   &quot;P = 0.025&quot;
-[11,] &quot;asset_sewmach&quot;  &quot;P = 0.138&quot;
-
-
------------------------------------------
- GLM Fit: Control vs. Sanitation 
------------------------------------------
-                    PR      2.5%     97.5%   Estimate Std. Error   z value      Pr(&gt;|z|)
-trSanitation 0.5847484 0.4473223 0.7643945 -0.5365736  0.1366849 -3.925625 0.00008650483
-
-
- RD of treatment
-                      RD        2.5%       97.5%
-trSanitation -0.02368199 -0.03529529 -0.01206869
-
- RR of covariates
-                                       PR      2.5%     97.5%
-trSanitation                    0.5847484 0.4473223 0.7643945
-agedays                         0.9993945 0.9990633 0.9997259
-sexmale                         0.9991030 0.7616703 1.3105498
-month2                          0.4849484 0.1415027 1.6619819
-month3                          0.4043968 0.1615580 1.0122482
-month4                          1.1955974 0.5982208 2.3895074
-month5                          1.0342857 0.4349656 2.4593830
-month6                          2.0377791 0.7636719 5.4376012
-month7                          1.1736033 0.4253388 3.2382295
-month8                          1.6672885 0.6127804 4.5364550
-month9                          0.3258044 0.1107348 0.9585830
-month10                         0.2834577 0.1091513 0.7361185
-month11                         0.5983104 0.1398073 2.5604916
-month12                         0.6922687 0.1593723 3.0070209
-momeduPrimary (1-5y)            1.2508399 0.8211047 1.9054822
-momeduSecondary (&gt;5y)           0.9340191 0.5768368 1.5123715
-hfiacatMildly Food Insecure     1.1718797 0.7215877 1.9031670
-hfiacatModerately Food Insecure 1.1108493 0.8104317 1.5226280
-hfiacatSeverely Food Insecure   1.3249358 0.7536143 2.3293810
-watmin                          0.9383588 0.8235262 1.0692037
-elec                            0.8751449 0.6641084 1.1532435
-floor                           1.2401087 0.7130610 2.1567155
-asset_wardrobe                  1.0590718 0.6851276 1.6371156
-asset_table                     0.9294398 0.7110521 1.2149014
-asset_khat                      0.8254342 0.6208087 1.0975064
-
- Type &quot;`modelname'$TR&quot; to return the treatment effect.
- Type &quot;`modelname'$fit&quot; to return full glm model estimates.
- Type &quot;`modelname'$RDfit&quot; to return the risk difference of the treatment (and all covariates, including block pairs).
- Type &quot;`modelname'$vcv&quot; to return the variance-covariance matrix.
- Type &quot;`modelname'$rowdropped&quot; to return the vector list of observations included in the model fit</code></pre>
+<p>If there are certain variables to include in the glm model, regardless of prescreening results, use the <code>forcedW</code> option. This argument takes a variable name or a vector of variable names. These variables must already be in the W dataframe of potential adjustment covariates. For example, if adjustment by age and sex is standard, force them into the glm model. The <code>print=FALSE</code> is only used to suppress output and save vignette space. You may want to use this option if you are saving output into an R object and only want to extract some of the information.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glm.C.S &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">tr=</span>ad$tr,<span class="dt">pair=</span>ad$block, <span class="dt">W=</span>Ws_diar, <span class="dt">forcedW=</span><span class="kw">c</span>(<span class="st">&quot;agedays&quot;</span>,<span class="st">&quot;sex&quot;</span>), <span class="dt">id=</span>ad$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">'log'</span>), <span class="dt">print=</span><span class="ot">FALSE</span>)</code></pre></div>
 <p><br></p>
 </div>
 <div id="subgroup-analysis-with-washb_glm" class="section level3">
 <h3>Subgroup analysis with washb_glm</h3>
-<p>The <code>V</code> arguement can be used to create an interaction term with <code>tr</code>, the treatment variable. <code>V</code> is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of sanitation treatment on diarrheal disease, stratified by target child (vs. sibling).</p>
+<p>The <code>V</code> arguement can be used to create an interaction term with <code>tr</code>, the treatment variable. <code>V</code> is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of nutrition treatment on diarrheal disease, stratified by target child (vs. sibling).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Create a W variable containing &quot;tchild&quot; and other potential covariates:</span>
 W_tchild &lt;-<span class="st"> </span><span class="kw">subset</span>(ad,<span class="dt">select=</span><span class="kw">c</span>(<span class="st">&quot;tchild&quot;</span>))
 
 <span class="co">#Estimate subgroup analysis glm with washb_glm</span>
-glm.C.S.byChildType &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">tr=</span>ad$tr,<span class="dt">pair=</span>ad$block, <span class="dt">W=</span>W_tchild, <span class="dt">V=</span><span class="st">&quot;tchild&quot;</span>, <span class="dt">id=</span>ad$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">'log'</span>), <span class="dt">print=</span><span class="ot">FALSE</span>)
+glm.C.N.byChildType &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>ad$diar7d,<span class="dt">tr=</span>ad$tr,<span class="dt">pair=</span>ad$block, <span class="dt">W=</span>W_tchild, <span class="dt">V=</span><span class="st">&quot;tchild&quot;</span>, <span class="dt">id=</span>ad$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Nutrition&quot;</span>), <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">'log'</span>), <span class="dt">print=</span><span class="ot">FALSE</span>)
 
 <span class="co">#Examine the treatment effect across subgroups with `objectname'$lincom</span>
-glm.C.S.byChildType$lincom</code></pre></div>
+glm.C.N.byChildType$lincom</code></pre></div>
 <pre><code>  Tr vs. C by Subgroup    est se.est est.lb est.ub       Z      P
-1              Sibling 0.5358 0.3103 0.2917 0.9844 -2.0108 0.0443
-2         Target child 0.6259 0.9517 0.0969 4.0422 -0.4924 0.6225</code></pre>
+1              Sibling 0.6255 0.3028 0.3455 1.1324 -1.5494 0.1213
+2         Target child 0.6421 0.1645 0.4651 0.8865 -2.6926 0.0071</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Examine the risk difference</span>
+glm.C.N.byChildType$lincomRD</code></pre></div>
+<pre><code>  Tr vs. C by Subgroup     est se.est  est.lb  est.ub       Z      P
+1              Sibling -0.0144 0.0095 -0.0331  0.0043 -1.5112 0.1307
+2         Target child -0.0226 0.0076 -0.0375 -0.0076 -2.9566 0.0031</code></pre>
 <p><br></p>
-</div>
-<div id="subgroup-analysis-with-multi-level-factor" class="section level3">
-<h3>Subgroup analysis with multi-level factor</h3>
-<p>The <code>V</code> argument can be used with multilevel factors. Here is code for a subgroup analysis of the effect of sanitation treatment on child endline LAZ, by household food security levels.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Create a W variable containing only &quot;hfiacat&quot; for the unadjusted subgroup analysis:</span>
-W_hfiacat &lt;-<span class="st"> </span><span class="kw">subset</span>(laz,<span class="dt">select=</span><span class="kw">c</span>(<span class="st">&quot;hfiacat&quot;</span>))
-
-<span class="co">#Estimate subgroup analysis glm with washb_glm</span>
-glm.C.S.byFoodSecurity &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>laz$laz,<span class="dt">tr=</span>laz$tr,<span class="dt">pair=</span>laz$block, <span class="dt">W=</span>W_hfiacat, <span class="dt">forcedW=</span><span class="ot">NULL</span>, <span class="dt">V=</span><span class="st">&quot;hfiacat&quot;</span>, <span class="dt">id=</span>laz$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>, <span class="dt">print=</span><span class="ot">FALSE</span>)
-glm.C.S.byFoodSecurity$lincom</code></pre></div>
-<pre><code>      Tr vs. C by Subgroup     est se.est  est.lb est.ub       Z      P
-1              Food Secure  0.0197 0.0606 -0.0990 0.1383  0.3248 0.7454
-2     Mildly Food Insecure -0.1554 0.2952 -0.7341 0.4233 -0.5264 0.5986
-3 Moderately Food Insecure -0.0360 0.2110 -0.4495 0.3776 -0.1705 0.8646
-4   Severely Food Insecure -0.2613 0.2809 -0.8119 0.2892 -0.9303 0.3522</code></pre>
 <p><br> <br> <br></p>
 </div>
 </div>
@@ -887,12 +776,20 @@ Nutrition + WSH v C  0.12918914  0.01658610 0.24179218  2.2796549 0.025018572196
 <p><br></p>
 <div id="asymptotic-equivalence-with-unadjusted-linear-regression-model" class="section level3">
 <h3>Asymptotic equivalence with unadjusted linear regression model:</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LAZ.glm.C.S$TR</code></pre></div>
-<pre><code>                    PR      2.5%     97.5%   Estimate Std. Error   z value     Pr(&gt;|z|)
-trSanitation 0.6109162 0.4677257 0.7979433 -0.4927955  0.1362642 -3.616472 0.0002986455</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LAZ.glm.C.W &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>laz$laz,<span class="dt">tr=</span>laz$tr,<span class="dt">pair=</span>laz$block, <span class="dt">id=</span>laz$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Water&quot;</span>), <span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>, <span class="dt">print=</span><span class="ot">FALSE</span>)
+LAZ.glm.C.W$TR</code></pre></div>
+<pre><code>              Coef.       2.5%      97.5% Std. Error   z value   Pr(&gt;|z|)
+trWater -0.07792003 -0.1677571 0.01191706 0.04583525 -1.700002 0.08913051</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">LAZ.glm.C.WSH &lt;-<span class="st"> </span><span class="kw">washb_glm</span>(<span class="dt">Y=</span>laz$laz,<span class="dt">tr=</span>laz$tr,<span class="dt">pair=</span>laz$block, <span class="dt">id=</span>laz$clusterid, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;WSH&quot;</span>), <span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>, <span class="dt">print=</span><span class="ot">FALSE</span>)
+LAZ.glm.C.WSH$TR</code></pre></div>
+<pre><code>           Coef.        2.5%     97.5% Std. Error   z value  Pr(&gt;|z|)
+trWSH 0.02735767 -0.05973609 0.1144514 0.04443559 0.6156702 0.5381122</code></pre>
 <p>The <code>washb_ttest()</code> estimate and the <code>washb_glm()</code> unadjusted estimate with a <code>family=gaussian</code> link are asymptomatically equivalent. As sample size increases to infinity, the estimates should converge. As seen above, the estimates using the Bangladesh LAZ data are functionally the same.</p>
-<p><br> <br> <br></p>
 </div>
+</div>
+<div id="ben-i-know-theoretically-these-are-asymptotically-equivalent-but-the-estimates-seem-diff-enough-in-the-bangladesh-data-more-than-rounding-errors.-should-we-encourage-one-function-over-the-other" class="section level1">
+<h1>BEN: I know theoretically these are asymptotically equivalent, but the estimates seem diff enough in the Bangladesh data… more than rounding errors. Should we encourage one function over the other?</h1>
+<p><br> <br> <br></p>
 </div>
 <div id="function-washb_permute" class="section level1">
 <h1>Function: washb_permute</h1>
@@ -907,8 +804,9 @@ trSanitation 0.6109162 0.4677257 0.7979433 -0.4927955  0.1362642 -3.616472 0.000
 <code>nreps</code>= Number of permutations to run.<br />
 <code>seed</code>= Number for psuedo-random number generation in R.</p>
 <p><br></p>
-<p><strong>Usage:</strong> <code>washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)</code><br />
-<strong>References:</strong><br />
+<p><strong>Usage:</strong> <code>washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)</code></p>
+<p><br></p>
+<p><strong>References:</strong><br />
 1. Gail, M. H., Mark, S. D., Carroll, R. J., Green, S. B. &amp; Pee, D. On Design Considerations and Randomization-Based Inference for Community Intervention Trials. Statist. Med. 15, 1069–1092 (1996). <a href="http://onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0258(19960615)15:11%3c1069::AID-SIM220%3e3.0.CO%3b2-Q/full">Link</a><br />
 2. Braun, T. M. &amp; Feng, Z. Optimal Permutation Tests for the Analysis of Group Randomized Trials. Journal of the American Statistical Association 96, 1424–1432 (2001). <a href="http://www.tandfonline.com/doi/abs/10.1198/016214501753382336">Link</a><br />
 3. Rosenbaum, P. R. Covariance Adjustment in Randomized Experiments and Observational Studies. Statist. Sci. 17, 286–327 (2002). <a href="http://projecteuclid.org/euclid.ss/1042727942">Link</a></p>
@@ -922,8 +820,53 @@ data:  y by x (pos, neg)
      stratified by block
 Z = 3.551, p-value = 0.00032
 alternative hypothesis: true mu is not equal to 0</code></pre>
-<p><br> <br> <br></p>
+<p><br></p>
 </div>
+<div id="adjusted-permutation-tests" class="section level3">
+<h3>Adjusted permutation tests</h3>
+<p>The permutation test can also test for independence of Y and tr, conditional on W, by applying the <code>washb_permute</code> function to the residuals of an adjusted model. The adjusted permutation test works better on outcomes with greater variability, so will be applied to the LAZ outcome here.</p>
+</div>
+</div>
+<div id="ben-why-is-this" class="section level1">
+<h1>(BEN, WHY IS THIS?)</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Subset the laz dataset to control and sanitation arms:</span>
+      laz.subset=laz[<span class="kw">which</span>(laz$tr==<span class="st">&quot;Control&quot;</span>|laz$tr==<span class="st">&quot;Sanitation&quot;</span>),]
+
+<span class="co">#Use the predict to return predicted LAZ from the adjusted glm model, and subtract it from the observed LAZ outcome</span>
+residuals&lt;-laz.subset$laz-<span class="kw">predict</span>(LAZ.glm.C.S$glmModel)
+
+<span class="co">#run the permutation test function</span>
+permute.adj.C.S &lt;-<span class="st"> </span><span class="kw">washb_permute</span>(<span class="dt">Y=</span>residuals,<span class="dt">tr=</span>laz.subset$tr,<span class="dt">pair=</span>laz.subset$block,<span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>), <span class="dt">nreps=</span><span class="dv">100000</span>,<span class="dt">seed=</span><span class="dv">1241353</span>)</code></pre></div>
+<pre><code>
+    Approximative Wilcoxon-Pratt Signed-Rank Test
+
+data:  y by x (pos, neg) 
+     stratified by block
+Z = 0.046272, p-value = 0.9665
+alternative hypothesis: true mu is not equal to 0</code></pre>
+<p><br></p>
+<p>Superlearner could alo be used to fit a more flexible adjustment model. Code is provided below but not run to save computing time.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># pre-screen the covariates for those associated with the outcome (LR test P&lt;0.2)</span>
+<span class="co"># see Wprescreen() and design.matrix() in the base functions</span>
+Wscreen &lt;-<span class="st"> </span><span class="kw">Wprescreen</span>(<span class="dt">Y=</span>LAZ$Y,<span class="dt">Ws=</span>LAZ[,<span class="dv">5</span>:<span class="kw">ncol</span>(LAZ)],<span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>)
+Wselect &lt;-<span class="st"> </span><span class="kw">subset</span>(LAZ,<span class="dt">select=</span>Wscreen)
+Wselect &lt;-<span class="st"> </span><span class="kw">design.matrix</span>(Wselect)
+
+<span class="co"># algorithmic fit of the outcome as a function of selected covariates</span>
+<span class="co">#set.seed(209448)</span>
+<span class="kw">set.seed</span>(<span class="dv">589320</span>)
+SLfit1 &lt;-<span class="st"> </span><span class="kw">SuperLearner</span>(<span class="dt">Y=</span>LAZ$Y,<span class="dt">X=</span>Wselect,<span class="dt">id=</span>LAZ$id,
+                       <span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>,
+                       <span class="dt">SL.library=</span><span class="kw">c</span>(<span class="st">&quot;SL.mean&quot;</span>,<span class="st">&quot;SL.glm&quot;</span>,<span class="st">&quot;SL.bayesglm&quot;</span>,<span class="st">&quot;SL.gam&quot;</span>,<span class="st">&quot;SL.glmnet&quot;</span>)
+                       )
+SLfit1
+LAZ$pY &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">predict</span>(SLfit1)$pred)
+LAZ$r &lt;-<span class="st"> </span>LAZ$Y-LAZ$pY
+
+
+<span class="co"># Hypothesis 1 permutation tests</span>
+permute.super.C.S &lt;-<span class="st"> </span><span class="kw">washb_permute</span>(<span class="dt">Y=</span>SLd$r,<span class="dt">tr=</span>SLd$tr,<span class="dt">block=</span>SLd$block,<span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>,<span class="st">&quot;Sanitation&quot;</span>),<span class="dt">seed=</span><span class="dv">1241353</span>)</code></pre></div>
+<p><br> <br> <br></p>
 </div>
 <div id="function-washb_lincom" class="section level1">
 <h1>Function: washb_lincom</h1>
@@ -935,67 +878,53 @@ alternative hypothesis: true mu is not equal to 0</code></pre>
 <div id="target-child-v.-sibling-subgroup-analysis" class="section level3">
 <h3>Target child v. sibling subgroup analysis</h3>
 <p>Below is an example of using the <code>lincom()</code> function to externally replicate the target child/sibling subgroup analysis of the diarrheal disease outcome. First, recall the glm model contrasting diarrheal disease prevalence ratio between target child and sibling fitted to diarrheal disease:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glm.C.S.byChildType$lincom</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glm.C.N.byChildType$lincom</code></pre></div>
 <pre><code>  Tr vs. C by Subgroup    est se.est est.lb est.ub       Z      P
-1              Sibling 0.5358 0.3103 0.2917 0.9844 -2.0108 0.0443
-2         Target child 0.6259 0.9517 0.0969 4.0422 -0.4924 0.6225</code></pre>
+1              Sibling 0.6255 0.3028 0.3455 1.1324 -1.5494 0.1213
+2         Target child 0.6421 0.1645 0.4651 0.8865 -2.6926 0.0071</code></pre>
 <p>Next, use the lincom function to verify the subgroup analysis calculated within the <code>washb_glm()</code> function. <code>washb_lincom()</code> takes as argements the fit and variance-covariance matrix returned by the glm function, and an index vector <code>lc</code>.<br />
 <code>lc</code>= vector indexing coefficients to be linearly combined. If a single coefficient is chosen, it will return the same coefficient and confidence interval as the glm coefficient. Example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="co">#Create lc vector of 0's equal in length to the number of coefficients from the glm model.</span>
-lc=<span class="kw">rep</span>(<span class="dv">0</span>,<span class="kw">nrow</span>(glm.C.S.byChildType$fit))
+lc=<span class="kw">rep</span>(<span class="dv">0</span>,<span class="kw">nrow</span>(glm.C.N.byChildType$fit))
 <span class="co">#Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.</span>
-glm.C.S.byChildType$fit[<span class="dv">1</span>:<span class="dv">6</span>,]</code></pre></div>
-<pre><code>                                   PR       2.5%       97.5%   Estimate Std. Error    z value        Pr(&gt;|z|)
-(Intercept)                0.01323819 0.00238017  0.07362887 -4.3246498  0.8754754 -4.9397731 0.0000007821353
-trSanitation               0.53584118 0.29169007  0.98435222 -0.6239175  0.3102786 -2.0108301 0.0443434028933
-VTarget child              1.56973525 1.11023130  2.21941927  0.4509070  0.1767034  2.5517735 0.0107176156714
-trSanitation:VTarget child 1.16800807 0.58580869  2.32881974  0.1552998  0.3520723  0.4411019 0.6591392075396
-pair2                      4.43911606 0.75991004 25.93168972  1.4904553  0.9005156  1.6551133 0.0979015182204
-pair3                      1.23513131 0.11936780 12.78024219  0.2111773  1.1922057  0.1771316 0.8594050284835</code></pre>
+glm.C.N.byChildType$fit[<span class="dv">1</span>:<span class="dv">3</span>,]</code></pre></div>
+<pre><code>                     PR       2.5%      97.5%   Estimate Std. Error   z value       Pr(&gt;|z|)
+(Intercept)   0.0138250 0.00255654 0.07476143 -4.2812768  0.8611345 -4.971670 0.000000663786
+trNutrition   0.6255283 0.34554354 1.13237715 -0.4691588  0.3027948 -1.549428 0.121278884763
+VTarget child 1.6236081 1.14428485 2.30371258  0.4846509  0.1785056  2.715045 0.006626669997</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="co">#Replace the second position in the vector with 1 (the position of the treatment coefficient in the model)</span>
 lc[<span class="dv">2</span>]&lt;-<span class="dv">1</span>
   <span class="co">#Run the lincom function and compare output to the treatment effect from the GLM model.</span>
-<span class="kw">washb_lincom</span>(<span class="dt">lc=</span>lc,<span class="dt">fit=</span>glm.C.S.byChildType$fit,<span class="dt">vcv=</span>glm.C.S.byChildType$vcv, <span class="dt">measure=</span><span class="st">&quot;RR&quot;</span>) </code></pre></div>
+<span class="kw">washb_lincom</span>(<span class="dt">lc=</span>lc,<span class="dt">fit=</span>glm.C.N.byChildType$fit,<span class="dt">vcv=</span>glm.C.N.byChildType$vcv, <span class="dt">measure=</span><span class="st">&quot;RR&quot;</span>) </code></pre></div>
 <pre><code>
 Linear combination of coefficients:
-[1] &quot;trSanitation&quot;</code></pre>
+[1] &quot;trNutrition&quot;</code></pre>
 <pre><code>         RR  se.RR  RR.lb  RR.ub       Z      P
-[1,] 0.5358 0.3103 0.2917 0.9844 -2.0108 0.0443</code></pre>
+[1,] 0.6255 0.3028 0.3455 1.1324 -1.5494 0.1213</code></pre>
 <p>Because sibling is the reference level of the <code>VTarget child</code> term, running the <code>lincom()</code> function with only the treatment contrast term marked in the <code>lc</code> index vector equals both the prevalence ratio of the <code>trSanitation</code> term and the prevalence ratio of the sibling subgroup returned in the <code>glm.C.S.byChildType$lincom</code> object. TO estimate the PR from the target child subgroup, the ineraction term <code>trSanitation:VTarget child</code> needs to be marked in the <code>lc</code> index.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Add a 1 at the 4th position in the lc vector to include the 4th coefficient, the interaction term, in the linear combination.</span>
 lc[<span class="dv">4</span>]&lt;-<span class="dv">1</span>
-<span class="kw">washb_lincom</span>(<span class="dt">lc=</span>lc,<span class="dt">fit=</span>glm.C.S.byChildType$fit,<span class="dt">vcv=</span>glm.C.S.byChildType$vcv, <span class="dt">measure=</span><span class="st">&quot;RR&quot;</span>) </code></pre></div>
+<span class="kw">washb_lincom</span>(<span class="dt">lc=</span>lc,<span class="dt">fit=</span>glm.C.N.byChildType$fit,<span class="dt">vcv=</span>glm.C.N.byChildType$vcv, <span class="dt">measure=</span><span class="st">&quot;RR&quot;</span>) </code></pre></div>
 <pre><code>
 Linear combination of coefficients:
-[1] &quot;trSanitation + trSanitation:VTarget child&quot;</code></pre>
-<pre><code>         RR  se.RR  RR.lb  RR.ub       Z      P
-[1,] 0.6259 0.9517 0.0969 4.0422 -0.4924 0.6225</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Alternatively, use a character vector of coefficient names rather than an index vector of variable positions.</span>
-varlist&lt;-<span class="kw">c</span>(<span class="st">&quot;VTarget child&quot;</span>,<span class="st">&quot;trSanitation:VTarget child&quot;</span>)
-<span class="kw">washb_lincom</span>(<span class="dt">varlist=</span>varlist,<span class="dt">fit=</span>glm.C.S.byChildType$RDfit,<span class="dt">vcv=</span>glm.C.S.byChildType$vcvRD, <span class="dt">measure=</span><span class="st">&quot;RR&quot;</span>) </code></pre></div>
-<pre><code>
-Linear combination of coefficients:
-function (object, ...) 
-UseMethod(&quot;coef&quot;)
-&lt;bytecode: 0x000000000c1e2470&gt;
-&lt;environment: namespace:stats&gt;</code></pre>
-<pre><code>         RR  se.RR RR.lb  RR.ub      Z     P
-[1,] 1.0216 0.0227 0.977 1.0682 0.9384 0.348</code></pre>
+[1] &quot;trNutrition + pair2&quot;</code></pre>
+<pre><code>         RR  se.RR  RR.lb   RR.ub      Z      P
+[1,] 3.4565 0.9551 0.5317 22.4722 1.2986 0.1941</code></pre>
 <p>This estimate equals the target child PR estimated in the <code>washb_glm</code> estimate with the <code>V</code> argument specified. Note that the coefficient for the <code>VTarget child</code> term is not included in this linear combination calculation. Including that term would calculate the prevalence ratio between sanitation arm target children and control arm siblings, whereas in a subgroup analysis the prevalence ratio between treatments within, rather than across, the groups is desired.</p>
 <p><br></p>
 <p>The <code>lincom()</code> function can also be used to calculate risk difference</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Calculate risk difference using the risk difference output from the washb_glm function:</span>
-<span class="kw">washb_lincom</span>(<span class="dt">lc=</span>lc,<span class="dt">fit=</span>glm.C.S.byChildType$RDfit,<span class="dt">vcv=</span>glm.C.S.byChildType$vcvRD, <span class="dt">measure=</span><span class="st">&quot;RD&quot;</span>) </code></pre></div>
+<span class="kw">washb_lincom</span>(<span class="dt">lc=</span>lc,<span class="dt">fit=</span>glm.C.N.byChildType$RDfit,<span class="dt">vcv=</span>glm.C.N.byChildType$vcvRD, <span class="dt">measure=</span><span class="st">&quot;RD&quot;</span>) </code></pre></div>
 <pre><code>
 Linear combination of coefficients:
-[1] &quot;trSanitation + trSanitation:VTarget child&quot;</code></pre>
-<pre><code>        est se.est  est.lb est.ub       Z      P
-[1,] -0.024 0.0234 -0.0697 0.0218 -1.0261 0.3048</code></pre>
+[1] &quot;trNutrition + pair2&quot;</code></pre>
+<pre><code>        est se.est est.lb est.ub      Z      P
+[1,] 0.0632 0.0296 0.0052 0.1212 2.1349 0.0328</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Compare to RD by subgroup from the washb_glm function:</span>
-glm.C.S.byChildType$lincomRD</code></pre></div>
+glm.C.N.byChildType$lincomRD</code></pre></div>
 <pre><code>  Tr vs. C by Subgroup     est se.est  est.lb  est.ub       Z      P
-1              Sibling -0.0193 0.0095 -0.0380 -0.0006 -2.0275 0.0426
-2         Target child -0.0240 0.0234 -0.0697  0.0218 -1.0261 0.3048</code></pre>
+1              Sibling -0.0144 0.0095 -0.0331  0.0043 -1.5112 0.1307
+2         Target child -0.0226 0.0076 -0.0375 -0.0076 -2.9566 0.0031</code></pre>
 <p><br> <br> <br></p>
 </div>
 </div>
