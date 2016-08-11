@@ -38,7 +38,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### WASH Benefits Bangladesh primary outcome analysis using the washb R package functions.  
   
-Calculates unadjusted and adjusted differences in diarrheal disease and length-for-age z-score between treatment arms for pre-specified hypothesis 1 (Treatment arms vs. Control arm), and for unspecified subgroup analyses (by target child/sibling for diarrhea outcome and by food security status for LAZ ouctome).
+This vignette applies package functions to the Bangladesh Wash Benefits trial data to calculate several unadjusted and adjusted estimates of differences in diarrheal disease and length-for-age z-score between treatment arms. Subgroup analysis between tzrget children and siblings is also calculated.
+
 
 <br>
  
@@ -71,7 +72,7 @@ For new users of R, the following sources are helpful learning resources:
 <br>
 <br>
 
-#Package and Data Loading  
+#Package Loading  
 ###Install package from Github  
 The WASH Benefits R package is easiest to access by directly installing it from Ben Arnold's `washb` [Github page](https://github.com/ben-arnold/washb). To download the R package from the R console, first the `devtools` package is needed. This can be installed into the R library with the code: `install.packages("devtools")`. This only needs to occur once (per computer). Each time R is started, the package needs to be loaded into R environment with `library(devtools)`. Once the `devtools` package is attached, the `washb` package can be installed with the code: `install_github("ben-arnold/washb")`.  
 The package will be updated periodically. When a new package version is available, an email will be sent out to the team, and the code `install_github("ben-arnold/washb")` will need to be run again to install the new version.
@@ -101,30 +102,11 @@ The `library()` command can be used to load any installed package. It is not nee
 Use `??washb` to see full list of package documentation, or use `?(function name)` to see help documentation for any specific package. For example, `?washb_glm` returns the help page for the washb\_glm function.
 
 <br>
-
-###Package datasets  
-The data in this vignette is contained in 3 files, included in the package:  
- * `washb_bd_enrol.Rdata`, an R file of Bangladesh enrollment characteristics  
- * `washb_bd_diar.Rdata`, an R file of Bangladesh diarrheal disease data  
- * `washb_bd_anthro.Rdata`, an R file of Bangladesh child anthropometry data  
-__Note:__ These datasets have scrambled treatment assignment, and so are still blinded. This allows package users to test functions/code on these datasets at will while still allowing pre-specified analysis plans for any future analysis. The analysis in this vignette uses unblinding data, so the results will closely match the WASH Benefits Bangladesh primary outcomes analysis. 
-
-<br>
-
-These datasets are included in the washb package and can be loaded with the `data()` command
-Load here:
-```{r, eval=T}
-data(washb_bd_enrol)
-data(washb_bd_diar)
-data(washb_bd_anthro)
-
-```
-
 <br>
 <br>
 
 ###Diarrheal disease outcome data cleaning
-The following code cleans and merges the enrolment and diarrhea data:
+The following code cleans and merges the enrolment and diarrhea data (not included with the package, but used here for teaching purposes):
 ```{r, results="hide", eval=F}
 # drop svydate and month because they are superceded in the child level diarrhea data
   washb_bd_enrol$svydate <- NULL
@@ -203,8 +185,8 @@ laz<-washb_bd_anthroCleanUnblinded
 
 ```
 
-Now that the dataset is cleaned and merged, the washb package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis. (With the exception that the primary outcome analysis used TMLE, targeted maximum likelihood estimation, rather than GLM models in estimating the adjusted treatment effects.) Tables of the estimated treatment effects the primary Bangladesh outcomes (diarrheal disease and length-for-age Z-score), estimated using the functions in this package, are included at the end of this vignette.
-  
+Now that the dataset is cleaned and merged, the washb package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis. (With the exception that the primary outcome analysis used TMLE, targeted maximum likelihood estimation, rather than GLM models in estimating the adjusted treatment effects.) 
+
 <br>
 <br>
 <br>
@@ -228,7 +210,7 @@ washb_mean(Y,id,print=TRUE)
 
 <br>
 
-If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use `washb_ttest()` (for T-test of unadjusted continuous outcomes), or `washb_mh()` (for Mantel-Hanzel test on unadjusted binary outcomes), or `washb_glm()` for unadjusted or adjusted generalized linear models. As the unadjusted glm function is asymptotically equivalent to the Mantel-Hanzel or t-test results( for logistic and linear regressions, respectively), the `washb_glm()` will probably be the most used an important function in the document.
+If you wish to compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use `washb_ttest()` (for T-test of unadjusted continuous outcomes), or `washb_mh()` (for Mantel-Hanzel test on unadjusted binary outcomes), or `washb_glm()` for unadjusted or adjusted generalized linear models. As the unadjusted glm function is asymptotically equivalent to the Mantel-Hanzel or t-test results( for logistic and linear regressions, respectively), the `washb_glm()` will probably be the most used an important function in the document.
 
 <br>
   
@@ -326,7 +308,9 @@ washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="binonial(l
 ```
 \
 
-###Unadjusted GLM estimates for diarrheal disease outcome.
+
+###Unadjusted GLM estimates for diarrheal disease outcome.  
+
 
 As an example, the following code applies the washb\_glm function to compare 7-day recall diarrheal disease prevalence between the sanitation and control arms. Notice that the glm model is fit with a log link, `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`, to estimate the odds ratio. Occasionally, a glm model with a non-canonical link function like `family=binomial(link='log')` will fail to converge. If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument `family=poisson(link='log')`. See [Zou 2004](http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf) for details.
 
@@ -343,26 +327,32 @@ Note, the `[1:2,]` index at the end is added here so that only the intercept and
 \
 
 All returned objects are:  
+
  * `'objectname'$TR` to return the treatment effect.  
- * `'objectname$fit` to return full glm model estimates.  
+ * `'objectname$fit` to return full glm model estimates.    
  * `'objectname$RDfit` to return the risk difference of the treatment (and all covariates, including block pairs).  
  * `'objectname$vcv` to return the variance-covariance matrix.  
  * `'objectname$rowdropped` to return the vector list of observations included in the model fit.  
  * `'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.  
  * `'objectname$lincomRD` to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.    
+ * `'objectname$glmModel`  to return the glm model fit to be used with `predict()` to return model predictions of the outcome. Note that this is the glm model fit without `coeftest()` applied, so does not have robust standard errors, and should not be used for inference.   
+ * `'objectname$glmModelRD` to return the risk differenc glm model fit to be used with `predict()` to return model predictions of the outcome. The same caveat as for `$glmModel` applies; the sandwich estimator function has not been applied to the model so the standard errors are incorrect.   
+ 
+
+ 
 
 <br>
 
 ###Length-for-Age Z-score glm models
 For the continuous  LAZ outcome analysis, the code is the same, except the `family="gaussian"` argument is used.
 ```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
-LAZ.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
+LAZ.glm.C.S <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, id=laz$clusterid, contrast=c("Control","Sanitation"), family="gaussian")
 ```
 
 <br>
 
 ###Covariate-adjusted glm model
-Use the `W=` argement and a dataframe of potential adjustment covariates (here, `Ws_diar`) to fit an adjusted glm model. The covariates in the `W` dataframe will be prescreened with the `washb_prescreen` function and variables with a p-value from a likelihood-ratio test lower than 0.2 are included as adjustment covariates in the final model. The `pval=` argument can be used to alter the p-value threshold for inclusion.
+Use the `W=` argument and a dataframe of potential adjustment covariates (here, `Ws_diar`) to fit an adjusted glm model. The covariates in the `W` dataframe will be prescreened with the `washb_prescreen` function and variables with a p-value from a likelihood-ratio test lower than 0.2 are included as adjustment covariates in the final model. The `pval=` argument can be used to alter the p-value threshold for inclusion.
 ```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
 adj.Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
 ```
@@ -370,7 +360,7 @@ adj.Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, id=
 <br>
 
 ###Forcing covariates into the glm model regardless of prescreening p-value
-If there are certain variables to include in the glm model, regardless of prescreening results, use the `forcedW` option. This argument takes a variable name or a vector of variable names. These variables must already be in the W dataframe of potential adjustment covariates. For example, if adjustment by age and sex is standard, force them into the glm model. The `print=FALSE` is only used to suppress output and save vignette space.  
+If there are certain variables to include in the glm model, regardless of prescreening results, use the `forcedW` option. This argument takes a variable name or a vector of variable names. These variables must already be in the W dataframe of potential adjustment covariates. For example, if adjustment by age and sex is standard, force them into the glm model. The `print=FALSE` is only used to suppress output and save vignette space. You may want to use this option if you are saving output into an R object and only want to extract some of the information.
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
 glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, forcedW=c("agedays","sex"), id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'), print=FALSE)
 ```
@@ -378,7 +368,7 @@ glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, forcedW=c("a
 <br>
 
 ###Subgroup analysis with washb_glm
-The `V` arguement can be used to create an interaction term with `tr`, the treatment variable. `V` is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of sanitation treatment on diarrheal disease, stratified by target child (vs. sibling). 
+The `V` arguement can be used to create an interaction term with `tr`, the treatment variable. `V` is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of nutrition treatment on diarrheal disease, stratified by target child (vs. sibling). 
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
 #Create a W variable containing "tchild" and other potential covariates:
 W_tchild <- subset(ad,select=c("tchild"))
@@ -397,9 +387,11 @@ glm.C.N.byChildType$lincomRD
 
 <br>
 
+
+```{r, include=FALSE, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
 ###Subgroup analysis with multi-level factor
-The `V` argument can be used with multilevel factors. Here is code for a subgroup analysis of the effect of sanitation treatment on child endline LAZ, by household food security levels. 
-```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
+#The `V` argument can be used with multilevel factors. Here is code for a subgroup analysis of the effect of sanitation #treatment on child endline LAZ, by household food security levels. 
+
 #Create a W variable containing only "hfiacat" for the unadjusted subgroup analysis:
 W_hfiacat <- subset(laz,select=c("hfiacat"))
 
@@ -493,9 +485,15 @@ print(diff.h1LAZ)
 
 ###Asymptotic equivalence with unadjusted linear regression model:  
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
-LAZ.glm.C.S$TR
+LAZ.glm.C.W <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, id=laz$clusterid, contrast=c("Control","Water"), family="gaussian", print=FALSE)
+LAZ.glm.C.W$TR
+
+LAZ.glm.C.WSH <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, id=laz$clusterid, contrast=c("Control","WSH"), family="gaussian", print=FALSE)
+LAZ.glm.C.WSH$TR
 ```
 The `washb_ttest()` estimate and the `washb_glm()` unadjusted estimate with a `family=gaussian` link are asymptomatically equivalent. As sample size increases to infinity, the estimates should converge. As seen above, the estimates using the Bangladesh LAZ data are functionally the same.  
+
+#BEN: I know theoretically these are asymptotically equivalent, but the estimates seem diff enough in the Bangladesh data... more than rounding errors. Should we encourage one function over the other?
 
 <br>
 <br>
@@ -515,6 +513,9 @@ __Arguments:__
 <br>
 
 __Usage:__ `washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)`  
+
+<br>
+
 __References:__  
 1.	Gail, M. H., Mark, S. D., Carroll, R. J., Green, S. B. & Pee, D. On Design Considerations and Randomization-Based Inference for Community Intervention Trials. Statist. Med. 15, 1069–1092 (1996). [Link](http://onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0258(19960615)15:11%3c1069::AID-SIM220%3e3.0.CO%3b2-Q/full)  
 2.	Braun, T. M. & Feng, Z. Optimal Permutation Tests for the Analysis of Group Randomized Trials. Journal of the American Statistical Association 96, 1424–1432 (2001). [Link](http://www.tandfonline.com/doi/abs/10.1198/016214501753382336)  
@@ -527,14 +528,48 @@ Apply the washb_permute function to the Sanitation-Control arm comparison:
 permute.C.S <- washb_permute(Y=ad$diar7d, tr=ad$tr, pair=ad$block, contrast=c("Control","Sanitation"), nreps=100000, seed=242524)
 ```
 
-```{r, eval=T, include=F}
-#Use sapply to apply the function across all arm comparisons, and assign results to matrices for hypothesis 1 and hypothesis 2 comparisons:
-permute.diff.h1<-t(sapply(h1.contrasts,washb_permute, Y=ad$diar7d, tr=ad$tr, pair=ad$block, nreps=10000, seed=12345))
-rownames(permute.diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
+<br>
+
+###Adjusted permutation tests  
+The permutation test can also test for independence of Y and tr, conditional on W, by applying the `washb_permute` function to the residuals of an adjusted model. The adjusted permutation test works better on outcomes with greater variability, so will be applied to the LAZ outcome here. 
+
+#(BEN, WHY IS THIS?)
+```{r, eval=T, include=T, comment=NA}
+#Subset the laz dataset to control and sanitation arms:
+      laz.subset=laz[which(laz$tr=="Control"|laz$tr=="Sanitation"),]
+
+#Use the predict to return predicted LAZ from the adjusted glm model, and subtract it from the observed LAZ outcome
+residuals<-laz.subset$laz-predict(LAZ.glm.C.S$glmModel)
+
+#run the permutation test function
+permute.adj.C.S <- washb_permute(Y=residuals,tr=laz.subset$tr,pair=laz.subset$block,contrast=c("Control","Sanitation"), nreps=100000,seed=1241353)
+
+```
+
+<br>
+
+Superlearner could alo be used to fit a more flexible adjustment model. Code is provided below but not run to save computing time.
+```{r, eval=F, include=T, comment=NA}
+# pre-screen the covariates for those associated with the outcome (LR test P<0.2)
+# see Wprescreen() and design.matrix() in the base functions
+Wscreen <- Wprescreen(Y=LAZ$Y,Ws=LAZ[,5:ncol(LAZ)],family="gaussian")
+Wselect <- subset(LAZ,select=Wscreen)
+Wselect <- design.matrix(Wselect)
+
+# algorithmic fit of the outcome as a function of selected covariates
+#set.seed(209448)
+set.seed(589320)
+SLfit1 <- SuperLearner(Y=LAZ$Y,X=Wselect,id=LAZ$id,
+                       family="gaussian",
+                       SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet")
+                       )
+SLfit1
+LAZ$pY <- as.vector(predict(SLfit1)$pred)
+LAZ$r <- LAZ$Y-LAZ$pY
 
 
-#Examing the output across treatment arms:
-#permute.diff.h1
+# Hypothesis 1 permutation tests
+permute.super.C.S <- washb_permute(Y=SLd$r,tr=SLd$tr,block=SLd$block,contrast=c("Control","Sanitation"),seed=1241353)
 ```
 
 <br>
@@ -569,7 +604,7 @@ Next, use the lincom function to verify the subgroup analysis calculated within 
   #Create lc vector of 0's equal in length to the number of coefficients from the glm model.
 lc=rep(0,nrow(glm.C.N.byChildType$fit))
 #Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.
-glm.C.N.byChildType$fit[1:6,]
+glm.C.N.byChildType$fit[1:3,]
   #Replace the second position in the vector with 1 (the position of the treatment coefficient in the model)
 lc[2]<-1
   #Run the lincom function and compare output to the treatment effect from the GLM model.

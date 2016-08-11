@@ -3,6 +3,8 @@
 #'
 #'Internal package function used to format the output of glm objects.
 #'
+#' @param glmModel glm model fit passed through the function and added to the output list
+#' @param glmModelRD glm risk-difference model fit passed through the function and added to the output list
 #' @param rfit output from coeftest with fit and sandwich SE
 #' @param RDfit glm fit object with the identity link used to estimate risk differences.
 #' @param dmat dataframe used within the washb_glm function to fit data
@@ -26,7 +28,8 @@
 
 
 
-washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL, print=print) {
+washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL, print=print) {
+
 
 
   #Create formatted dataframe with risk ratios and risk differences and corresponding 95% CI.
@@ -143,6 +146,7 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
       print(RR[2:(nrow(RR)-(length(unique(pair))+1)),])
     }
 
+
     cat("\n Type \"`modelname'$TR\" to return the treatment effect.")
     cat("\n Type \"`modelname'$fit\" to return full glm model estimates.")
     if(family[1]!="gaussian"){
@@ -156,22 +160,26 @@ washb_glmFormat <- function(rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, 
         cat("\n Type \"`modelname'$lincomRD\" to return subgroup-specific conditional risk difference estimates if a subgroup V is specified")
       }
     }
+    cat("\n Type \"`modelname'$glmModel\" to return the glm model fit to be used with predict() to return model predictions of the outcome")
+    if(family[1]!="gaussian"){
+      cat("\n Type \"`modelname'$glmModelRD\" to return the risk-difference glm model fit to be used with predict() to return model predictions of the outcome")
+    }
   }
 
 
 
   if(family[1]=="gaussian"){
     if(!is.null(V)&class(dmat$V)=="factor"){
-      modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, lincom=lincom)
+      modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, glmModel=glmModel, lincom=lincom)
     }else{
-      modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped)
+      modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, glmModel=glmModel)
       }
 
   }else{
     if(!is.null(V)&class(dmat$V)=="factor"){
-    modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, lincom=lincom, lincomRD=lincomRD)
+    modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, glmModel=glmModel,glmModelRD=glmModelRD, lincom=lincom, lincomRD=lincomRD)
     }else{
-      modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped)
+      modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, glmModel=glmModel,glmModelRD=glmModelRD)
     }
   }
   return(modelfit)

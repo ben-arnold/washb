@@ -35,78 +35,13 @@ Returns a list of the risk ratios or risk differences, the variance-covariance m
         used to fit the glm model
 }
 \description{
-Generalized linear model function for WASH Benefits study.
-washb_glm
+Note that in the WASH Benefits diarrheal disease primary outcome analysis, the glm model is fit with a log link,
+ `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`,
+ to estimate the odds ratio.
 }
-\examples{
-
-#washb_glm function applied to the Bangladesh diarrheal disease outcome to determine both unadjusted and adjusted
-#prevalence ratios between intervention and control arms.
-
-
-Cleans and merge the enrollment and diarrhea data:
-library(washb)
-data(washb_bd_enrol)
-data(washb_bd_diar)
-
-# drop svydate and month because they are superceded in the child level diarrhea data
-#washb_bd_enrol$svydate <- NULL
-#washb_bd_enrol$month <- NULL
-
-# merge the baseline dataset to the follow-up dataset
-ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
-
-# subset to the relevant measurement
-# Year 1 or Year 2
-ad <- subset(ad,svy==1|svy==2)
-
-#subset the diarrhea to children <36 mos at enrollment
-### (exlude new births that are not target children)
-ad <- subset(ad,sibnewbirth==0)
-ad <- subset(ad,gt36mos==0)
-
-# Exclude children with missing data
-ad <- subset(ad,!is.na(ad$diar7d))
-
-#Re-order the tr factor for convenience
-ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
-
-#Ensure that month is coded as a factor
-ad$month <- factor(ad$month)
-
-#Sort the data for perfect replication when using V-fold cross-validation
-ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
-
-###Create vector of contrasts for each hypothesis to facilitate comparisons between arms.
-#Hypothesis 1: Each intervention arm vs. Control
-h1.contrasts <- list(
-  c("Control","Water"),
-  c("Control","Sanitation"),
-  c("Control","Handwashing"),
-  c("Control","WSH"),
-  c("Control","Nutrition"),
-  c("Control","Nutrition + WSH")
-)
-
-
-
-###Unadjusted GLM estimates for diarrheal disease outcome.
-#As an example, the following code applies the washb_glm function to compare 7-day recall diarrheal disease prevalence between the sanitation and control arms. Notice that the glm model is fit with a log link, `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`, to estimate the odds ratio.
-
-Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
-
-On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$RDfit` returns the risk difference instead of the risk ratio for all covariates (not applicable when the glm  model is gaussian).
-Diar.glm.C.S$RDfit[1:2,]
-
-#Note, the `[1:2,]` index at the end is added here so that only the intercept and treatment effect estimates are printed to save space. Running the code `Diar.glm.C.W$RDfit` outputs all 89 estimated point estimates and confidence intervals for the 89 pair-matched block dummy variables (because there are 90 blocks).
-
-#All returned objects are:
-#`'objectname'$TR` to return the treatment effect.
-#`'objectname$fit` to return full glm model estimates.
-#`'objectname$RDfit` to return the risk difference of the treatment (and all covariates, including block pairs).
-#`'objectname$vcv` to return the variance-covariance matrix.
-#`'objectname$rowdropped` to return the vector list of observations included in the model fit.
-#`'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
-#`'objectname$lincomRD` to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.
+\details{
+Occasionally, a glm model with a non-canonical link function like `family=binomial(link='log')` will fail to converge.
+ If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument `family=poisson(link='log')`.
+ See [Zou 2004](http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf) for details.
 }
 

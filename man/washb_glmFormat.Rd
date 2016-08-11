@@ -4,11 +4,15 @@
 \alias{washb_glmFormat}
 \title{washb_glmFormat}
 \usage{
-washb_glmFormat(rfit, RDfit = NULL, dmat, rowdropped, contrast, pair, vcovCL,
-  vcovCL.rd = NULL, family = "gaussian", V = NULL, Subgroups = NULL,
-  print = print)
+washb_glmFormat(glmModel = glmModel, glmModelRD = NULL, rfit,
+  RDfit = NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd = NULL,
+  family = "gaussian", V = NULL, Subgroups = NULL, print = print)
 }
 \arguments{
+\item{glmModel}{glm model fit passed through the function and added to the output list}
+
+\item{glmModelRD}{glm risk-difference model fit passed through the function and added to the output list}
+
 \item{rfit}{output from coeftest with fit and sandwich SE}
 
 \item{RDfit}{glm fit object with the identity link used to estimate risk differences.}

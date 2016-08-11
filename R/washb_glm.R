@@ -95,13 +95,13 @@
 #' #Note, the `[1:2,]` index at the end is added here so that only the intercept and treatment effect estimates are printed to save space. Running the code `Diar.glm.C.W$RDfit` outputs all 89 estimated point estimates and confidence intervals for the 89 pair-matched block dummy variables (because there are 90 blocks).
 #'
 #' #All returned objects are:
-#' #`'objectname'$TR` to return the treatment effect.
-#' #`'objectname$fit` to return full glm model estimates.
-#' #`'objectname$RDfit` to return the risk difference of the treatment (and all covariates, including block pairs).
-#' #`'objectname$vcv` to return the variance-covariance matrix.
-#' #`'objectname$rowdropped` to return the vector list of observations included in the model fit.
-#' #`'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
-#' #`'objectname$lincomRD` to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.
+#` 'objectname'$TR` to return the treatment effect.
+#' 'objectname$fit` to return full glm model estimates.
+#' 'objectname$RDfit` to return the risk difference of the treatment (and all covariates, including block pairs).
+#' 'objectname$vcv` to return the variance-covariance matrix.
+#' 'objectname$rowdropped` to return the vector list of observations included in the model fit.
+#' 'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
+#' 'objectname$lincomRD` to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.
 
 
 
@@ -217,7 +217,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       RDfit <- coeftest(fit.rd, vcovCL.rd)
     }
 
-    modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
+    modelfit<-washb_glmFormat(glmModel=fit, glmModelRD=fit.rd, rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
     return(modelfit)
   } else{
       if(family[1]=="gaussian"){
@@ -233,7 +233,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
 
-        modelfit<-washb_glmFormat(rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print)
+        modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print)
         return(modelfit)
 
       }else{
@@ -267,7 +267,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         RDfit <- coeftest(fit.rd, vcovCL.rd)
       }
 
-      modelfit<-washb_glmFormat(rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
+      modelfit<-washb_glmFormat(glmModel=fit, glmModelRD=fit.rd,rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
 
       if(print==TRUE)cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
 
