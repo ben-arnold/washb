@@ -45,7 +45,7 @@ This vignette applies package functions to the Bangladesh Wash Benefits trial da
  
 ###List and description of the functions documented in this vignette:  
  * `washb_prescreen()`  Function to pre-screen adjustment covariates -- restrict to those with a LR test P<0.2.  
- * `washb_means()`   Means estimated with robust standard errors for the WASH Benefits trials. Calculate means for a variable along with robust sandwich SEs and 95% confidence intervals that account for clustering within id.
+ * `washb_mean()`   Means estimated with robust standard errors for the WASH Benefits trials. Calculate means for a variable along with robust sandwich SEs and 95% confidence intervals that account for clustering within id.
  * `washb_glm()`  Function to run glm models with robust standard errors for unadjusted and adjusted estimates. Includes conversions of coefficients to relative risks and risk differences, calculates confidence intervals, and prescreens possible adjustment variables using __washb_prescreen__. Can be used for subgroup analysis. As the unadjusted glm function is asymptotically equivalent to the `washb_mh()` or `washb_ttest()` results (for logistic and linear regressions, respectively), the `washb_glm()` will probably be the most used an important function in the document.
  * `washb_ttest()`  Wrapper function to call the paired t-test for two different arms of the study.  
  * `washb_mh()`  Estimates the Mantel-Haenszel prevalence ratio. Note: strata with no outcomes (i.e., missing PR) are dropped. This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates. The arguments Y,tr,strat, below need to be from the same dataset. 
@@ -493,7 +493,6 @@ LAZ.glm.C.WSH$TR
 ```
 The `washb_ttest()` estimate and the `washb_glm()` unadjusted estimate with a `family=gaussian` link are asymptomatically equivalent. As sample size increases to infinity, the estimates should converge. As seen above, the estimates using the Bangladesh LAZ data are functionally the same.  
 
-#BEN: I know theoretically these are asymptotically equivalent, but the estimates seem diff enough in the Bangladesh data... more than rounding errors. Should we encourage one function over the other?
 
 <br>
 <br>
@@ -533,7 +532,6 @@ permute.C.S <- washb_permute(Y=ad$diar7d, tr=ad$tr, pair=ad$block, contrast=c("C
 ###Adjusted permutation tests  
 The permutation test can also test for independence of $Y$ and $tr$, conditional on $W$, by applying the `washb_permute` function to the residuals of an adjusted model (adjusted for $W$, but not $tr$). The adjusted permutation test works better on outcomes with greater variability, so will be applied to the LAZ outcome here. 
 
-#(BEN, WHY IS THIS?)
 ```{r, eval=T, include=T, comment=NA}
 #Use the washb_prescreen function to select adjustment covariates associated with the outcome
 adj.W<-washb_prescreen(Y=laz$laz,Ws_laz,family="gaussian", pval=0.2)
