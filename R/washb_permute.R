@@ -95,15 +95,33 @@ washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL) {
     pair<-factor(pair)
   }
 
+
+
+
   require(coin)
   require(plyr)
   pd <- data.frame(Y=Y,tr=tr,pair=pair)
   pd <- subset(pd,tr==contrast[1]|tr==contrast[2])
   pd$tr <- factor(pd$tr,levels=contrast[1:2])
+
+    #Drop blocks missing comparing arm 1
+    activeOnly<-((subset(pd,tr==contrast[1])))
+    nomissblock1<-(unique(activeOnly$strat))
+    nomiss<-sort((nomissblock1))
+    pd<-pd[which((pd$strat %in% nomiss)),]
+    #Drop blocks missing comparing arm 2
+    activeOnly<-((subset(pd,tr==contrast[2])))
+    nomissblock2<-(unique(activeOnly$strat))
+    nomiss<-sort((nomissblock2))
+    pd<-pd[which((pd$strat %in% nomiss)),]
+
+
   pd <- ddply(pd,c("pair","tr"),summarise,Y=mean(Y))
+    #refactor to eliminate empty levels
+    pd$pair<-factor(pd$pair)
+
   if(!is.null(seed)) set.seed(seed)
   W <- wilcoxsign_test(Y~tr|pair,data=pd,distribution = approximate(B=nreps),zero.method="Pratt" )
-
   show(W)
 
   # now pull out some of the useful information, for convenience since coin() uses S4
