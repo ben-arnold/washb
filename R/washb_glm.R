@@ -146,6 +146,13 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   n.sub  <- dim(glmdat)[1]
   if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\nDropping",n.orig-n.sub,"observations due to missing values in 1 or more variables\n","Final sample size:",n.sub,"\n-----------------------------------------\n")
 
+  #Drop blocks missing active control
+  if(contrast[1]=="Control"|contrast[2]=="Control"){
+    activeOnly<-((subset(glmdat,tr=="Control")))
+    nomissblock1<-(unique(activeOnly$strat))
+    nomiss<-sort((nomissblock1))
+    glmdat<-glmdat[which((glmdat$strat %in% nomiss)),]
+  }
 
 
   #split W into screened and forced adjustment covariates

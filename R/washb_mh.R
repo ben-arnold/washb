@@ -93,8 +93,19 @@ washb_mh <- function(Y,tr,strat,contrast,measure="RR") {
                       tr=tr[tr==contrast[1]|tr==contrast[2]],
                       strat=strat[tr==contrast[1]|tr==contrast[2]])
   mhdat$tr <- factor(mhdat$tr,levels=contrast[2:1])
+
+
+  if(contrast[1]=="Control"|contrast[2]=="Control"){
+    activeOnly<-((subset(mhdat,tr=="Control")))
+    nomissblock1<-(unique(activeOnly$strat))
+    nomiss<-sort((nomissblock1))
+    mhdat<-mhdat[which((mhdat$strat %in% nomiss)),]
+  }
+
+
   mhtab <- table(mhdat$tr,mhdat$Y,mhdat$strat)
   mhtab <- mhtab[,c(2:1),] # re-order to be consistent w/ metafor table orientation
+
 
   # suppress warning about yi/vi values being NA -- we know there are sparse tables
   # and a straum with no cases in it is effectively dropped from any fixed-effect estimator
