@@ -68,7 +68,9 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
   # Ws  : data frame of candidate covariates to screen
   # family : exponential model family (gaussian for continuous outcomes, binomial for binary outcomes, poisson for counts, and neg.binom for negative binomial models)
   require(lmtest)
-  require(MASS)
+  if(family[1]=="neg.binom"){
+    require(MASS)
+  }
 
   #Check pvalue
   if(pval>0.99|pval<0){
@@ -103,7 +105,7 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
   if(print==TRUE){
     cat("\nLikelihood Ratio Test P-values:\n")
     print(cbind(names(Ws),paste("P =",sprintf("%1.3f",LRp))))
-    cat("\n\nCovariates selected (P<0.20):\n")
+    cat(paste("\n\nCovariates selected (P<",pval,"):\n",sep=""))
     print(cbind(names(Ws)[p20==1],paste("P =",sprintf("%1.3f",LRp[p20==1]))))
     }
   return(names(Ws)[p20==1])
