@@ -17,6 +17,7 @@
 #' @param V Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.
 #' @param Subgroups Names of subgroups created by the interaction between treatment and V factor.
 #' @param print Logical for whether to print function output
+#' @param print Logical for whether to print names and descriptions of returned list objects
 #'
 #' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
 #'         used to fit the glm model
@@ -28,7 +29,7 @@
 
 
 
-washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL, print=print) {
+washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL, print=print, verbose=verbose) {
 
 
 
@@ -123,10 +124,10 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
   if(print==TRUE){
     #Print formatted glm model output.
     if(!is.null(V)&class(dmat$V)=="factor"){
-      cat("\n\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2])," by Subgroup: \'",V,"\'\n-----------------------------------------\n")
+      cat("\n\n-----------------------------------------\n",paste("GLM Fit:",contrast[2],"vs.",contrast[1])," by Subgroup: \'",V,"\'\n-----------------------------------------\n")
       print(lincom)
     }else{
-      cat("\n\n-----------------------------------------\n",paste("GLM Fit:",contrast[1],"vs.",contrast[2]),"\n-----------------------------------------\n")
+      cat("\n\n-----------------------------------------\n",paste("GLM Fit:",contrast[2],"vs.",contrast[1]),"\n-----------------------------------------\n")
       print(TR)
     }
 
@@ -143,9 +144,10 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
     if(ncol(dmat)>3&is.null(V)|ncol(dmat)>4){
       if(family[1]=="gaussian"){cat("\n Coef of covariates\n")}
       if(family[1]!="gaussian"){cat("\n RR of covariates\n")}
-      print(RR[2:(nrow(RR)-(length(unique(pair))+1)),])
+      print(RR[2:(nrow(RR)-(length(unique(dmat$pair))+1)),])
     }
 
+    if(verbose==TRUE){
 
     cat("\n Type \"`modelname'$TR\" to return the treatment effect.")
     cat("\n Type \"`modelname'$fit\" to return full glm model estimates.")
@@ -163,9 +165,9 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
     cat("\n Type \"`modelname'$glmModel\" to return the glm model fit to be used with predict() to return model predictions of the outcome")
     if(family[1]!="gaussian"){
       cat("\n Type \"`modelname'$glmModelRD\" to return the risk-difference glm model fit to be used with predict() to return model predictions of the outcome")
+        }
+      }
     }
-  }
-
 
 
   if(family[1]=="gaussian"){

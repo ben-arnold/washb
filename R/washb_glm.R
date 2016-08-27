@@ -27,6 +27,7 @@
 #' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.
 #' @param pval The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2
 #' @param print Logical for whether to print function output, defaults to TRUE.
+#' @param print Logical for whether to print names and descriptions of returned list objects
 #'
 #' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
 #'         used to fit the glm model
@@ -107,7 +108,7 @@
 
 
 
-washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE) {
+washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE, verbose=TRUE) {
   require(sandwich)
   require(lmtest)
   options(scipen=20)
@@ -138,6 +139,30 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   glmdat$pair <- factor(glmdat$pair)
 
 
+  #####
+  #Block Dropping
+  #####
+
+  #Drop blocks missing comparing arm 1
+  n.orig <- dim(glmdat)[1]
+  miss<-NULL
+  activeOnly<-((subset(glmdat,tr==contrast[1])))
+  nomiss<-sort(unique(activeOnly$pair))
+  miss1<-(unique(pair)[which(!( unique(pair)%in%(nomiss) ))])
+
+  #Drop blocks missing comparing arm 2
+  activeOnly2<-((subset(glmdat,tr==contrast[2])))
+  nomiss2<-sort(unique(activeOnly2$pair))
+  #print(which(!( unique(glmdat$pair)%in%(nomiss2) )))
+  miss2<-(unique(pair)[which(!( unique(pair)%in%(nomiss2) ))])
+  miss<-append(miss1,miss2)
+  glmdat<-subset(glmdat,!(pair %in% miss))
+  n.sub  <- dim(glmdat)[1]
+  if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Starting N:\n",n.orig,"\nN after block dropping:",n.sub,"observations due to missing pairs.")
+  if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Pairs dropped due to missingness in at least one treatment level:\n",sort(unique(miss)),"\n\nDropping",n.orig-n.sub,"observations due to missing pairs.","\n-----------------------------------------\n")
+
+
+
   # restrict to complete cases and save a vector indexing observations dropped
   n.orig <- dim(glmdat)[1]
   rowdropped<-rep(1,nrow(glmdat))
@@ -146,13 +171,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   n.sub  <- dim(glmdat)[1]
   if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\nDropping",n.orig-n.sub,"observations due to missing values in 1 or more variables\n","Final sample size:",n.sub,"\n-----------------------------------------\n")
 
-  #Drop blocks missing active control
-  if(contrast[1]=="Control"|contrast[2]=="Control"){
-    activeOnly<-((subset(glmdat,tr=="Control")))
-    nomissblock1<-(unique(activeOnly$strat))
-    nomiss<-sort((nomissblock1))
-    glmdat<-glmdat[which((glmdat$strat %in% nomiss)),]
-  }
+
 
 
   #split W into screened and forced adjustment covariates
@@ -224,7 +243,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       RDfit <- coeftest(fit.rd, vcovCL.rd)
     }
 
-    modelfit<-washb_glmFormat(glmModel=fit, glmModelRD=fit.rd, rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
+    modelfit<-washb_glmFormat(glmModel=fit, glmModelRD=fit.rd, rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
     return(modelfit)
   } else{
       if(family[1]=="gaussian"){
@@ -240,7 +259,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
 
-        modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print)
+        modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
         return(modelfit)
 
       }else{
@@ -274,7 +293,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         RDfit <- coeftest(fit.rd, vcovCL.rd)
       }
 
-      modelfit<-washb_glmFormat(glmModel=fit, glmModelRD=fit.rd,rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print)
+      modelfit<-washb_glmFormat(glmModel=fit, glmModelRD=fit.rd,rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
 
       if(print==TRUE)cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
 
