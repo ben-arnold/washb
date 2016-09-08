@@ -158,8 +158,8 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   miss<-append(miss1,miss2)
   glmdat<-subset(glmdat,!(pair %in% miss))
   n.sub  <- dim(glmdat)[1]
-  if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Starting N:\n",n.orig,"\nN after block dropping:",n.sub,"observations due to missing pairs.")
-  if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Pairs dropped due to missingness in at least one treatment level:\n",sort(unique(miss)),"\n\nDropping",n.orig-n.sub,"observations due to missing pairs.","\n-----------------------------------------\n")
+  if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Starting N:  ",n.orig,"\nN after block dropping: ",n.sub)
+  if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Pairs/blocks dropped due to missingness in at least one treatment level:\n",sort(unique(miss)),"\n\nDropping",n.orig-n.sub,"observations due to missing pairs.","\n-----------------------------------------\n")
 
 
 

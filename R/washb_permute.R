@@ -106,15 +106,17 @@ washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL) {
 
     #Drop blocks missing comparing arm 1
     activeOnly<-((subset(pd,tr==contrast[1])))
-    nomissblock1<-(unique(activeOnly$strat))
+    nomissblock1<-(unique(activeOnly$pair))
     nomiss<-sort((nomissblock1))
-    pd<-pd[which((pd$strat %in% nomiss)),]
+    pd<-pd[which((pd$pair %in% nomiss)),]
     #Drop blocks missing comparing arm 2
     activeOnly<-((subset(pd,tr==contrast[2])))
-    nomissblock2<-(unique(activeOnly$strat))
+    nomissblock2<-(unique(activeOnly$pair))
     nomiss<-sort((nomissblock2))
-    pd<-pd[which((pd$strat %in% nomiss)),]
+    pd<-pd[which((pd$pair %in% nomiss)),]
 
+    #check dropped blocks
+    which(!(levels(pd$pair) %in% unique(pd$pair)))
 
   pd <- ddply(pd,c("pair","tr"),summarise,Y=mean(Y))
     #refactor to eliminate empty levels

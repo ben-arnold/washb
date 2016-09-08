@@ -6,7 +6,8 @@
 \usage{
 washb_glmFormat(glmModel = glmModel, glmModelRD = NULL, rfit,
   RDfit = NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd = NULL,
-  family = "gaussian", V = NULL, Subgroups = NULL, print = print)
+  family = "gaussian", V = NULL, Subgroups = NULL, print = print,
+  verbose = verbose)
 }
 \arguments{
 \item{glmModel}{glm model fit passed through the function and added to the output list}
@@ -36,6 +37,8 @@ washb_glmFormat(glmModel = glmModel, glmModelRD = NULL, rfit,
 \item{Subgroups}{Names of subgroups created by the interaction between treatment and V factor.}
 
 \item{print}{Logical for whether to print function output}
+
+\item{print}{Logical for whether to print names and descriptions of returned list objects}
 }
 \value{
 Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations

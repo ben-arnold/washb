@@ -29,6 +29,8 @@ washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian",
 \item{pval}{The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2}
 
 \item{print}{Logical for whether to print function output, defaults to TRUE.}
+
+\item{print}{Logical for whether to print names and descriptions of returned list objects}
 }
 \value{
 Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Andrew Mertens" />
 
-<meta name="date" content="2016-08-11" />
+<meta name="date" content="2016-08-17" />
 
 <title>washb-package-vignette</title>
 
@@ -224,7 +224,7 @@ div.tocify {
 
 <h1 class="title">washb-package-vignette</h1>
 <h4 class="author"><em>Andrew Mertens</em></h4>
-<h4 class="date"><em>2016-08-11</em></h4>
+<h4 class="date"><em>2016-08-17</em></h4>
 
 </div>
 
@@ -788,11 +788,8 @@ LAZ.glm.C.WSH$TR</code></pre></div>
 <pre><code>           Coef.        2.5%     97.5% Std. Error   z value  Pr(&gt;|z|)
 trWSH 0.02735767 -0.05973609 0.1144514 0.04443559 0.6156702 0.5381122</code></pre>
 <p>The <code>washb_ttest()</code> estimate and the <code>washb_glm()</code> unadjusted estimate with a <code>family=gaussian</code> link are asymptomatically equivalent. As sample size increases to infinity, the estimates should converge. As seen above, the estimates using the Bangladesh LAZ data are functionally the same.</p>
-</div>
-</div>
-<div id="ben-i-know-theoretically-these-are-asymptotically-equivalent-but-the-estimates-seem-diff-enough-in-the-bangladesh-data-more-than-rounding-errors.-should-we-encourage-one-function-over-the-other" class="section level1">
-<h1>BEN: I know theoretically these are asymptotically equivalent, but the estimates seem diff enough in the Bangladesh data… more than rounding errors. Should we encourage one function over the other?</h1>
 <p><br> <br> <br></p>
+</div>
 </div>
 <div id="function-washb_permute" class="section level1">
 <h1>Function: washb_permute</h1>
@@ -828,10 +825,6 @@ alternative hypothesis: true mu is not equal to 0</code></pre>
 <div id="adjusted-permutation-tests" class="section level3">
 <h3>Adjusted permutation tests</h3>
 <p>The permutation test can also test for independence of <span class="math inline">\(Y\)</span> and <span class="math inline">\(tr\)</span>, conditional on <span class="math inline">\(W\)</span>, by applying the <code>washb_permute</code> function to the residuals of an adjusted model (adjusted for <span class="math inline">\(W\)</span>, but not <span class="math inline">\(tr\)</span>). The adjusted permutation test works better on outcomes with greater variability, so will be applied to the LAZ outcome here.</p>
-</div>
-</div>
-<div id="ben-why-is-this" class="section level1">
-<h1>(BEN, WHY IS THIS?)</h1>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Use the washb_prescreen function to select adjustment covariates associated with the outcome</span>
 adj.W&lt;-<span class="kw">washb_prescreen</span>(<span class="dt">Y=</span>laz$laz,Ws_laz,<span class="dt">family=</span><span class="st">&quot;gaussian&quot;</span>, <span class="dt">pval=</span><span class="fl">0.2</span>)</code></pre></div>
 <pre><code>
@@ -917,6 +910,7 @@ Z = -0.23539, p-value = 0.8158
 alternative hypothesis: true mu is not equal to 0</code></pre>
 <p><br></p>
 <p><br> <br> <br></p>
+</div>
 </div>
 <div id="function-washb_lincom" class="section level1">
 <h1>Function: washb_lincom</h1>
