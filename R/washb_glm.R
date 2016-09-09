@@ -90,19 +90,15 @@
 #'
 #' Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
 #'
-#' On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$RDfit` returns the risk difference instead of the risk ratio for all covariates (not applicable when the glm  model is gaussian).
-#' Diar.glm.C.S$RDfit[1:2,]
+#' On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$vcv` returns the variance-covariance matrix.
 #'
-#' #Note, the `[1:2,]` index at the end is added here so that only the intercept and treatment effect estimates are printed to save space. Running the code `Diar.glm.C.W$RDfit` outputs all 89 estimated point estimates and confidence intervals for the 89 pair-matched block dummy variables (because there are 90 blocks).
 #'
 #' #All returned objects are:
 #` 'objectname'$TR` to return the treatment effect.
 #' 'objectname$fit` to return full glm model estimates.
-#' 'objectname$RDfit` to return the risk difference of the treatment (and all covariates, including block pairs).
 #' 'objectname$vcv` to return the variance-covariance matrix.
 #' 'objectname$rowdropped` to return the vector list of observations included in the model fit.
 #' 'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
-#' 'objectname$lincomRD` to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.
 
 
 
@@ -218,7 +214,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         }
       }
 
-  if(family[1]=="binomial"|family[1]=="poisson"){
+  if(family[1]=="binomial"|family[1]=="poisson"|family[1]=="gaussian"){
 
     if(!is.null(V)){
       colnames(dmat)[which(colnames(dmat)==V)]<-"V"
@@ -227,42 +223,15 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
-
-      #fit OLS risk difference model
-      fit.rd<-lm(Y~tr*V+.,data=dmat)
-      vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
-      RDfit <- coeftest(fit.rd, vcovCL.rd)
     }else{
       suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
       vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
       rfit <- coeftest(fit, vcovCL)
-
-      #fit OLS risk difference model
-      fit.rd<-lm(Y~.,data=dmat)
-      vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
-      RDfit <- coeftest(fit.rd, vcovCL.rd)
     }
 
-    modelfit<-washb_glmFormat(glmModel=fit, glmModelRD=fit.rd, rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
+    modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
     return(modelfit)
-  } else{
-      if(family[1]=="gaussian"){
-        if(!is.null(V)){
-          colnames(dmat)[which(colnames(dmat)==V)]<-"V"
-          Subgroups<-levels(dmat$tr:dmat$V)
-          if( class(dmat$V)!="factor") warning('V is not a factor variable within the W covariate data frame. An interaction term will be added to the model but not linear combination of coefficients will be calculated.')
-          suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
-        }else{
-          suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
-        }
-
-        vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
-        rfit <- coeftest(fit, vcovCL)
-
-        modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
-        return(modelfit)
-
-      }else{
+    }else{
         if(family[1]=="neg.binom"){
           require(MASS)
           if (!requireNamespace("MASS", quietly = TRUE)) {
@@ -279,21 +248,21 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         rfit <- coeftest(fit, vcovCL)
 
         #fit OLS risk difference model
-        fit.rd<-lm(Y~tr*V+.,data=dmat)
-        vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
-        RDfit <- coeftest(fit.rd, vcovCL.rd)
+        #fit.rd<-lm(Y~tr*V+.,data=dmat)
+        #vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
+        #RDfit <- coeftest(fit.rd, vcovCL.rd)
       }else{
         suppressWarnings(fit<- glm.nb(Y ~., data = dmat))
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
 
         #fit OLS risk difference model
-        fit.rd<-lm(Y~.,data=dmat)
-        vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
-        RDfit <- coeftest(fit.rd, vcovCL.rd)
+        #fit.rd<-lm(Y~.,data=dmat)
+        #vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
+        #RDfit <- coeftest(fit.rd, vcovCL.rd)
       }
 
-      modelfit<-washb_glmFormat(glmModel=fit, glmModelRD=fit.rd,rfit=rfit, RDfit=RDfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, vcovCL.rd=vcovCL.rd, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
+      modelfit<-washb_glmFormat(glmModel=fit,rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
 
       if(print==TRUE)cat("\n-----------------------------------------\nAssess whether conditional mean is equal to conditional variance:\n-----------------------------------------\n")
 
@@ -316,5 +285,5 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       }
     }
   }
-}
+
 

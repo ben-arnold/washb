@@ -4,20 +4,17 @@
 #'Internal package function used to format the output of glm objects.
 #'
 #' @param glmModel glm model fit passed through the function and added to the output list
-#' @param glmModelRD glm risk-difference model fit passed through the function and added to the output list
 #' @param rfit output from coeftest with fit and sandwich SE
-#' @param RDfit glm fit object with the identity link used to estimate risk differences.
 #' @param dmat dataframe used within the washb_glm function to fit data
 #' @param rowdropped dummy vector indexing rows of data dropped because a var contained missing data, to be read through the function and added to the formatted output.
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
 #' @param pair Pair-matched randomization ID variable (in WASH Benefits: block)
 #' @param vcovCL sandwichSE function output
-#' @param vcovCL.rd sandwichSE function output for OLS RD model
 #' @param family GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.
 #' @param V Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.
 #' @param Subgroups Names of subgroups created by the interaction between treatment and V factor.
 #' @param print Logical for whether to print function output
-#' @param print Logical for whether to print names and descriptions of returned list objects
+#' @param verbose Logical for whether to print names and descriptions of returned list objects
 #'
 #' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
 #'         used to fit the glm model
@@ -29,7 +26,7 @@
 
 
 
-washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd=NULL, family="gaussian", V=NULL, Subgroups=NULL, print=print, verbose=verbose) {
+washb_glmFormat <- function(glmModel=glmModel, rfit, dmat, rowdropped, contrast, pair, vcovCL, family=family, V=NULL, Subgroups=NULL, print=print, verbose=verbose) {
 
 
 
@@ -37,8 +34,6 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
     if(family[1]=="binomial"|family[1]=="poisson"|family[1]=="neg.binom"){
     expcoef<-round(exp(rfit[,1]),8)
     RR<-data.frame(round(exp(rfit[,1]),8), round(exp(rfit[,1]-1.96*rfit[,2]),8),round(exp(rfit[,1]+1.96*rfit[,2]),8))
-    RD<-data.frame(round((RDfit[,1]),8), round((RDfit[,1]-1.96*RDfit[,2]),8),round((RDfit[,1]+1.96*RDfit[,2]),8))
-    colnames(RD)<-c("RD","2.5%","97.5%")
     }else{
       if(family[1]=="gaussian"){
       RR<-data.frame(round((rfit[,1]),8), round((rfit[,1]-1.96*rfit[,2]),8),round((rfit[,1]+1.96*rfit[,2]),8))
@@ -54,10 +49,7 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
         colnames(RR)<-c("PR","2.5%","97.5%")
       }
     } else{
-      if(family[1]=="poisson") {
-        colnames(RR)<-c("CIR","2.5%","97.5%")
-      }
-      if(family[1]=="neg.binom") {
+      if(family[1]=="poisson"|family[1]=="neg.binom") {
         colnames(RR)<-c("IRR","2.5%","97.5%")
       }
       else{
@@ -73,7 +65,6 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
   }else{
     fit<-cbind(RR,(rfit[,]))
     TR<-fit[2,]
-    RDfit<-cbind(RD,(RDfit[,2:4]))
   }
 
 
@@ -82,16 +73,11 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
     #sort rfit output to put interactions before pair factors
     if(class(dmat$V)!="factor"){
       fit<-fit[c(1:3,nrow(fit),4:(nrow(fit)-1)),]
-      if(family[1]!="gaussian"){ RDfit<-RDfit[c(1:3,nrow(RDfit),4:(nrow(RDfit)-1)),]}
     }
 
     if(class(dmat$V)=="factor"){
 
-      #fit<-fit[c(1:(length(levels(dmat$V))+1),(nrow(fit)+2-length(unique(dmat$V))):(nrow(fit)),(length(levels(dmat$V))+2):(nrow(fit)-(length(unique(dmat$V))-1))),]
-      #if(family[1]!="gaussian"){ RDfit<-RDfit[c(1:(length(levels(dmat$V))+1),(nrow(RDfit)+2-length(unique(dmat$V))):(nrow(RDfit)),(length(levels(dmat$V))+2):(nrow(RDfit)-(length(unique(dmat$V))-1))),]}
-
       lincom<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))
-      if(family[1]!="gaussian"){lincomRD<-(matrix(0,nrow=length(levels(dmat$V)),ncol=6))}
       lincom_index<-matrix(0,nrow=length(levels(dmat$V)),ncol=nrow(fit))
 
       for(i in 1:length(levels(dmat$V))){
@@ -106,16 +92,11 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
         if(family[1]=="gaussian"){lincom[i,] <- suppressWarnings(washb_lincom(lc=lincom_index[i,],fit=fit,vcv=vcovCL, measure="RD",flag=1))}
         if(family[1]!="gaussian"){
           lincom[i,] <- suppressWarnings(washb_lincom(lc=lincom_index[i,],fit=fit,vcv=vcovCL, measure="RR",flag=1))
-          lincomRD[i,] <- suppressWarnings(washb_lincom(lc=lincom_index[i,],fit=RDfit,vcv=vcovCL.rd, measure="RD",flag=1))
         }
       }
 
       lincom<-data.frame(levels(dmat$V),lincom)
       colnames(lincom) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
-      if(family[1]!="gaussian"){
-        lincomRD<-data.frame(levels(dmat$V),lincomRD)
-        colnames(lincomRD) <- c("Tr vs. C by Subgroup","est","se.est","est.lb","est.ub","Z","P")
-        }
       }
     }
 
@@ -132,14 +113,6 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
     }
 
 
-    if(family[1]!="gaussian"){
-      cat("\n\n RD of treatment\n")
-      if(!is.null(V)&class(dmat$V)=="factor"){
-        print(lincomRD)
-      }else{
-        print(RD[2,])
-      }
-    }
 
     if(ncol(dmat)>3&is.null(V)|ncol(dmat)>4){
       if(family[1]=="gaussian"){cat("\n Coef of covariates\n")}
@@ -151,38 +124,21 @@ washb_glmFormat <- function(glmModel=glmModel,glmModelRD=NULL, rfit, RDfit=NULL,
 
     cat("\n Type \"`modelname'$TR\" to return the treatment effect.")
     cat("\n Type \"`modelname'$fit\" to return full glm model estimates.")
-    if(family[1]!="gaussian"){
-      cat("\n Type \"`modelname'$RDfit\" to return the risk difference of the treatment (and all covariates, including block pairs).")
-    }
     cat("\n Type \"`modelname'$vcv\" to return the variance-covariance matrix.")
     cat("\n Type \"`modelname'$rowdropped\" to return the vector list of observations included in the model fit")
     if(!is.null(V)){
       cat("\n Type \"`modelname'$lincom\" to return subgroup-specific conditional relative risk estimates if a subgroup V is specified")
-      if(family[1]!="gaussian"){
-        cat("\n Type \"`modelname'$lincomRD\" to return subgroup-specific conditional risk difference estimates if a subgroup V is specified")
-      }
     }
     cat("\n Type \"`modelname'$glmModel\" to return the glm model fit to be used with predict() to return model predictions of the outcome")
-    if(family[1]!="gaussian"){
-      cat("\n Type \"`modelname'$glmModelRD\" to return the risk-difference glm model fit to be used with predict() to return model predictions of the outcome")
-        }
       }
     }
 
 
-  if(family[1]=="gaussian"){
     if(!is.null(V)&class(dmat$V)=="factor"){
       modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, glmModel=glmModel, lincom=lincom)
     }else{
       modelfit=list(TR=TR, fit=fit, vcv=vcovCL, rowdropped=rowdropped, glmModel=glmModel)
       }
 
-  }else{
-    if(!is.null(V)&class(dmat$V)=="factor"){
-    modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, glmModel=glmModel,glmModelRD=glmModelRD, lincom=lincom, lincomRD=lincomRD)
-    }else{
-      modelfit=list(TR=TR, fit=fit, RDfit=RDfit, vcv=vcovCL, vcvRD=vcovCL.rd, rowdropped=rowdropped, glmModel=glmModel,glmModelRD=glmModelRD)
-    }
-  }
   return(modelfit)
 }
