@@ -50,14 +50,6 @@ washb_ttest <- function(Y,tr,strat,contrast) {
                       tr=tr[tr==contrast[1]|tr==contrast[2]],
                       strat=strat[tr==contrast[1]|tr==contrast[2]])
 
-  #Drop blocks missing active control
-  if(contrast[1]=="Control"|contrast[2]=="Control"){
-    activeOnly<-((subset(ttdat,tr=="Control")))
-    nomissblock1<-(unique(activeOnly$strat))
-    nomiss<-sort((nomissblock1))
-    ttdat<-ttdat[which((ttdat$strat %in% nomiss)),]
-  }
-
 
   ttdat$tr <- factor(ttdat$tr,levels=contrast[1:2])
   blockmeans <- tapply(ttdat$Y,list(ttdat$strat,ttdat$tr),function(x) mean(x))
