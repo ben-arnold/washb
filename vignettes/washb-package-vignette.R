@@ -91,28 +91,6 @@ laz<-washb_bd_anthroCleanUnblinded
 ## ---- eval=F----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="binonial(link='log')", pval=0.2, print=TRUE)
 
-## ---- warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
-
-## ---- warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Diar.glm.C.S$RDfit[1:2,]
-
-## ---- warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-LAZ.glm.C.S <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, id=laz$clusterid, contrast=c("Control","Sanitation"), family="gaussian")
-
-## ---- results = "hide" , cache=TRUE, comment=NA-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Subset dataset to covariates to be screened 
-Ws_diar <- subset(ad,select=c("month","agedays","sex","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
-
-#Subset the LAZ dataset to covariates to be screened for inclusion in adjusted glm models
-Ws_laz <- subset(laz,select=c("fracode","month","aged","sex","birthord","momage","momedu","momheight","hfiacat","Nlt18","Ncomp","watmin","elec","floor","walls","roof","asset_wardrobe","asset_table","asset_chair","asset_khat","asset_chouki","asset_tv","asset_refrig","asset_bike","asset_moto","asset_sewmach","asset_mobile"))
-
-## ---- warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-adj.Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, forcedW=c("agedays","sex"), id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'), print=FALSE)
-
 ## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #Create a W variable containing "tchild" and other potential covariates:
 W_tchild <- subset(ad,select=c("tchild"))
@@ -122,64 +100,6 @@ glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild,
 
 #Examine the treatment effect across subgroups with `objectname'$lincom
 glm.C.N.byChildType$lincom
-
-#Examine the risk difference
-glm.C.N.byChildType$lincomRD
-
-
-
-## ---- include=FALSE, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-###Subgroup analysis with multi-level factor
-#The `V` argument can be used with multilevel factors. Here is code for a subgroup analysis of the effect of sanitation #treatment on child endline LAZ, by household food security levels. 
-
-#Create a W variable containing only "hfiacat" for the unadjusted subgroup analysis:
-W_hfiacat <- subset(laz,select=c("hfiacat"))
-
-#Estimate subgroup analysis glm with washb_glm
-glm.C.N.byFoodSecurity <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, W=W_hfiacat, forcedW=NULL, V="hfiacat", id=laz$clusterid, contrast=c("Control","Nutrition"), family="gaussian", print=FALSE)
-glm.C.N.byFoodSecurity$lincom
-
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-mh.CvS<-washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Sanitation"), strat=ad$block,measure="RR")
-print(round(mh.CvS,4))
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-round(washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Sanitation"), strat=ad$block,measure="RD"),4)
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Create vector of contrasts  for the pre-specified hypothesis 1 (each intervention arm vs. control) to facilitate comparisons between arms.
-h1.contrasts <- list(c("Control","Water"), c("Control","Sanitation"), c("Control","Handwashing"), c("Control","WSH"), c("Control","Nutrition"), c("Control","Nutrition + WSH"))
-
-#Apply sapply to run the function on each comparison in the h1.contrasts list
-diff.h1 <- t(sapply(h1.contrasts,washb_mh,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
-rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-print(round(diff.h1,4))
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#GLM
-Diar.glm.C.S$TR
-#mantel-Haenszel
-print(round(mh.CvS,4))
-
-## ---- cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Run washb_ttest on Nutrition vs. control arm comparison
-washb_ttest(Y=laz$laz,tr=laz$tr,strat=laz$block, contrast=c("Control","Nutrition"))
-
-#Use sapply to apply across all contrasts
-diff.h1LAZ <- t(sapply(h1.contrasts,washb_ttest,Y=laz$laz,tr=laz$tr,strat=laz$block))
-rownames(diff.h1LAZ) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
-print(diff.h1LAZ)
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-LAZ.glm.C.N <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, id=laz$clusterid, contrast=c("Control","Nutrition"), family="gaussian", print=FALSE)
-LAZ.glm.C.N$TR
-
-LAZ.glm.C.WSHN <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, id=laz$clusterid, contrast=c("Control","Nutrition + WSH"), family="gaussian", print=FALSE)
-LAZ.glm.C.WSHN$TR
-
-## ---- eval=TRUE, warning=FALSE, message=FALSE, cache=TRUE, tidy=TRUE, comment=NA--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-permute.C.S <- washb_permute(Y=ad$diar7d, tr=ad$tr, pair=ad$block, contrast=c("Control","Sanitation"), nreps=100000, seed=242524)
 
 ## ---- eval=F, include=T, comment=NA-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  #Use the washb_prescreen function to select adjustment covariates associated with the outcome
@@ -229,40 +149,6 @@ permute.C.S <- washb_permute(Y=ad$diar7d, tr=ad$tr, pair=ad$block, contrast=c("C
 
 ## ---- eval=FALSE------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  washb_prescreen(Y=ad$diar7d,Ws=W,family="binomial", pval=0.2, print=TRUE)
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-prescreened_varnames<-washb_prescreen(Y=ad$diar7d,Ws_diar,family="binomial", pval=0.2)
-
-## ---- warning=FALSE, message=FALSE, cache=TRUE, comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-prescreened_varnames
-prescreened_vars <- subset(Ws_diar,select=prescreened_varnames)
-#Examine the first five observations of the second selected variable, child age in days:
-prescreened_vars[1:5,2]
-
-
-## ---- eval=TRUE, cache=TRUE, comment=NA-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-glm.C.N.byChildType$lincom
-
-## ---- eval=TRUE, cache=TRUE, comment=NA-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  #Create lc vector of 0's equal in length to the number of coefficients from the glm model.
-lc=rep(0,nrow(glm.C.N.byChildType$fit))
-#Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.
-glm.C.N.byChildType$fit[1:3,]
-  #Replace the second position in the vector with 1 (the position of the treatment coefficient in the model)
-lc[2]<-1
-  #Run the lincom function and compare output to the treatment effect from the GLM model.
-washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR") 
-
-## ---- eval=TRUE, cache=TRUE, comment=NA-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Add a 1 at the 4th position in the lc vector to include the 4th coefficient, the interaction term, in the linear combination.
-lc[4]<-1
-washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR") 
-
-## ---- eval=TRUE, cache=TRUE, comment=NA-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#Calculate risk difference using the risk difference output from the washb_glm function:
-washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, measure="RD") 
-#Compare to RD by subgroup from the washb_glm function:
-glm.C.N.byChildType$lincomRD
 
 ## ---- include=FALSE, eval=F, cache=T----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  #Below, run the diar and LAZ primary outcome and subgroup analysis for all contrasts. Not included in the document, but output in the table at the bottom of the document.
