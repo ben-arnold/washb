@@ -14,6 +14,7 @@
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
 #' @param nreps Number of permutations to run.
 #' @param seed Number for psuedo-random number generation in R
+#' @param print If print==FALSE, suppress printed output.
 #'
 #' @references
 #' 1.	Gail, M. H., Mark, S. D., Carroll, R. J., Green, S. B. & Pee, D. On Design Considerations and Randomization-Based Inference for Community Intervention Trials. Statist. Med. 15, 1069–1092 (1996).
@@ -88,7 +89,7 @@
 #' diar_h1_pval_unadj
 
 
-washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL) {
+washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL, print=TRUE) {
 
 #Insure that 'pair' is a factor
   if(class(pair)!="factor"){
@@ -104,19 +105,26 @@ washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL) {
   pd <- subset(pd,tr==contrast[1]|tr==contrast[2])
   pd$tr <- factor(pd$tr,levels=contrast[1:2])
 
-    #Drop blocks missing comparing arm 1
-    activeOnly<-((subset(pd,tr==contrast[1])))
-    nomissblock1<-(unique(activeOnly$pair))
-    nomiss<-sort((nomissblock1))
-    pd<-pd[which((pd$pair %in% nomiss)),]
-    #Drop blocks missing comparing arm 2
-    activeOnly<-((subset(pd,tr==contrast[2])))
-    nomissblock2<-(unique(activeOnly$pair))
-    nomiss<-sort((nomissblock2))
-    pd<-pd[which((pd$pair %in% nomiss)),]
 
-    #check dropped blocks
-    which(!(levels(pd$pair) %in% unique(pd$pair)))
+    #Drop blocks missing comparing arm 1
+    n.orig <- dim(pd)[1]
+    miss<-NULL
+    activeOnly<-((subset(pd,tr==contrast[1])))
+    nomiss<-sort(unique(activeOnly$pair))
+    miss1<-(unique(pair)[which(!( unique(pair)%in%(nomiss) ))])
+
+    #Drop blocks missing comparing arm 2
+    activeOnly2<-((subset(pd,tr==contrast[2])))
+    nomiss2<-sort(unique(activeOnly2$pair))
+    miss2<-(unique(pair)[which(!( unique(pair)%in%(nomiss2) ))])
+    miss<-append(miss1,miss2)
+    pd<-subset(pd,!(pair %in% miss))
+    n.sub  <- dim(pd)[1]
+    if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Starting N:  ",n.orig,"\nN after block dropping: ",n.sub)
+    if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Pairs/blocks dropped due to missingness in at least one treatment level:\n",sort(unique(miss)),"\n\nDropping",n.orig-n.sub,"observations due to missing pairs.","\n-----------------------------------------\n")
+
+
+
 
   pd <- ddply(pd,c("pair","tr"),summarise,Y=mean(Y))
     #refactor to eliminate empty levels
