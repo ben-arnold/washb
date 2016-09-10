@@ -4,19 +4,14 @@
 \alias{washb_glmFormat}
 \title{washb_glmFormat}
 \usage{
-washb_glmFormat(glmModel = glmModel, glmModelRD = NULL, rfit,
-  RDfit = NULL, dmat, rowdropped, contrast, pair, vcovCL, vcovCL.rd = NULL,
-  family = "gaussian", V = NULL, Subgroups = NULL, print = print,
+washb_glmFormat(glmModel = glmModel, rfit, dmat, rowdropped, contrast, pair,
+  vcovCL, family = family, V = NULL, Subgroups = NULL, print = print,
   verbose = verbose)
 }
 \arguments{
 \item{glmModel}{glm model fit passed through the function and added to the output list}
 
-\item{glmModelRD}{glm risk-difference model fit passed through the function and added to the output list}
-
 \item{rfit}{output from coeftest with fit and sandwich SE}
-
-\item{RDfit}{glm fit object with the identity link used to estimate risk differences.}
 
 \item{dmat}{dataframe used within the washb_glm function to fit data}
 
@@ -28,8 +23,6 @@ washb_glmFormat(glmModel = glmModel, glmModelRD = NULL, rfit,
 
 \item{vcovCL}{sandwichSE function output}
 
-\item{vcovCL.rd}{sandwichSE function output for OLS RD model}
-
 \item{family}{GLM model family (gaussian, binomial, poisson, or negative binomial). Use "neg.binom" for Negative binomial.}
 
 \item{V}{Optional vector of variable names for subgroup analyses, which are interacted with 'tr'.}
@@ -38,7 +31,7 @@ washb_glmFormat(glmModel = glmModel, glmModelRD = NULL, rfit,
 
 \item{print}{Logical for whether to print function output}
 
-\item{print}{Logical for whether to print names and descriptions of returned list objects}
+\item{verbose}{Logical for whether to print names and descriptions of returned list objects}
 }
 \value{
 Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
