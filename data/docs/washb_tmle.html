@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>washb_tmle. washb 0.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="index.html">washb 0.1</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="reference.html">Reference</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Target maximum likelihood estimation function for WASH Benefits study.
+washb_tmle</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><span class="functioncall"><a href='washb_tmle.html'>washb_tmle</a></span><span class="keyword">(</span><span class="symbol">Y</span><span class="keyword">,</span> <span class="symbol">tr</span><span class="keyword">,</span> <span class="symbol">strat</span><span class="keyword">,</span> <span class="symbol">W</span><span class="keyword">,</span> <span class="symbol">id</span><span class="keyword">,</span> <span class="symbol">contrast</span><span class="keyword">,</span> <span class="argument">prtr</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="number">0.5</span><span class="keyword">,</span> <span class="number">0.5</span><span class="keyword">)</span><span class="keyword">,</span>
+  <span class="argument">modelfit</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="string">"glm"</span><span class="keyword">,</span> <span class="argument">family</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="string">"gaussian"</span><span class="keyword">,</span> <span class="argument">SL.library</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"SL.mean"</span><span class="keyword">,</span>
+  <span class="string">"SL.glm"</span><span class="keyword">,</span> <span class="string">"SL.bayesglm"</span><span class="keyword">,</span> <span class="string">"SL.gam"</span><span class="keyword">,</span> <span class="string">"SL.glmnet"</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">seed</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">)</span></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>Y</dt>
+      <dd>Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)</dd>
+      <dt>tr</dt>
+      <dd>Binary treatment group variable, comparison group first</dd>
+      <dt>strat</dt>
+      <dd>Stratification variable (here: block)</dd>
+      <dt>W</dt>
+      <dd>Data frame that includes adjustment covariates</dd>
+      <dt>id</dt>
+      <dd>ID variable for independent units (e.g., cluster)</dd>
+      <dt>contrast</dt>
+      <dd>Vector of length 2 that includes the tr groups to contrast</dd>
+      <dt>prtr</dt>
+      <dd>Vector of length 2 that includes the probability of receiving each treatment in the contrast argument for the main trial, the control is double sized (allocation 2:1) so control vs. active intervention should be prtr=c(0.67,0.33). in contrasts where the arms are equally sized (allocation 1:1), then prtr=c(0.5,0.5).</dd>
+      <dt>modelfit</dt>
+      <dd>String variable of value &quot;glm&quot; for a glm prediction of E(Y|A,W) and E(A|W), or &quot;sl&quot; for a SuperLearner prediction.</dd>
+      <dt>family</dt>
+      <dd>Outcome family: gaussian (continuous outcomes, like LAZ) or binomial (binary outcomes like diarrhea or stunting)</dd>
+      <dt>seed</dt>
+      <dd>A seed for the pseudo-random CV split for perfectly reproducible results</dd>
+      <dt>SL.Library</dt>
+      <dd>Library of algorithms to include in the SuperLearner (pre-specified defaults are encoded above)</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+To be filled
+</dl></p>
+
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p># Targeted maximum likelihood estimation (TMLE) for the WASH Benefits intention to treat (ITT) analyses</p>
+
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>The function does the following:</p>
+
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'></div></pre>
+  </div>
+  <div class="span4 sidebar">
+    <!-- <ul>
+      <li>washb_tmle</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+
+
+
+
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>washb_glmFormat. washb 0.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="index.html">washb 0.1</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="reference.html">Reference</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>washb_glmFormat</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><span class="functioncall"><a href='washb_glmFormat.html'>washb_glmFormat</a></span><span class="keyword">(</span><span class="argument">glmModel</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="symbol">glmModel</span><span class="keyword">,</span> <span class="symbol">rfit</span><span class="keyword">,</span> <span class="symbol">dmat</span><span class="keyword">,</span> <span class="symbol">rowdropped</span><span class="keyword">,</span> <span class="symbol">contrast</span><span class="keyword">,</span> <span class="symbol">pair</span><span class="keyword">,</span>
+  <span class="symbol">vcovCL</span><span class="keyword">,</span> <span class="argument">family</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="symbol">family</span><span class="keyword">,</span> <span class="argument">V</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span> <span class="argument">Subgroups</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span> <span class="argument">print</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="symbol">print</span><span class="keyword">,</span>
+  <span class="argument">verbose</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="symbol">verbose</span><span class="keyword">)</span></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>glmModel</dt>
+      <dd>glm model fit passed through the function and added to the output list</dd>
+      <dt>rfit</dt>
+      <dd>output from coeftest with fit and sandwich SE</dd>
+      <dt>dmat</dt>
+      <dd>dataframe used within the washb_glm function to fit data</dd>
+      <dt>rowdropped</dt>
+      <dd>dummy vector indexing rows of data dropped because a var contained missing data, to be read through the function and added to the formatted output.</dd>
+      <dt>contrast</dt>
+      <dd>Vector of length 2 that includes the groups to contrast, e.g., c(&quot;Control&quot;,&quot;Water&quot;)</dd>
+      <dt>pair</dt>
+      <dd>Pair-matched randomization ID variable (in WASH Benefits: block)</dd>
+      <dt>vcovCL</dt>
+      <dd>sandwichSE function output</dd>
+      <dt>family</dt>
+      <dd>GLM model family (gaussian, binomial, poisson, or negative binomial). Use &quot;neg.binom&quot; for Negative binomial.</dd>
+      <dt>V</dt>
+      <dd>Optional vector of variable names for subgroup analyses, which are interacted with &#39;tr&#39;.</dd>
+      <dt>Subgroups</dt>
+      <dd>Names of subgroups created by the interaction between treatment and V factor.</dd>
+      <dt>print</dt>
+      <dd>Logical for whether to print function output</dd>
+      <dt>verbose</dt>
+      <dd>Logical for whether to print names and descriptions of returned list objects</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
+        used to fit the glm model
+</dl></p>
+
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Internal package function used to format the output of glm objects.</p>
+
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'></div></pre>
+  </div>
+  <div class="span4 sidebar">
+    <!-- <ul>
+      <li>washb_glmFormat</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+
+
+
+
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>
