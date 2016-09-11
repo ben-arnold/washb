@@ -39,7 +39,7 @@
 #' #prevalence ratios between intervention and control arms.
 #'
 #'
-#' Cleans and merge the enrollment and diarrhea data:
+#' #Cleans and merge the enrollment and diarrhea data:
 #' library(washb)
 #' data(washb_bd_enrol)
 #' data(washb_bd_diar)
@@ -90,15 +90,15 @@
 #'
 #' Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
 #'
-#' On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$vcv` returns the variance-covariance matrix.
+#' #On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$vcv` returns the variance-covariance matrix.
 #'
 #'
 #' #All returned objects are:
-#` 'objectname'$TR` to return the treatment effect.
-#' 'objectname$fit` to return full glm model estimates.
-#' 'objectname$vcv` to return the variance-covariance matrix.
-#' 'objectname$rowdropped` to return the vector list of observations included in the model fit.
-#' 'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
+#` #'objectname'$TR` to return the treatment effect.
+#' #'objectname$fit` to return full glm model estimates.
+#' #'objectname$vcv` to return the variance-covariance matrix.
+#' #'objectname$rowdropped` to return the vector list of observations included in the model fit.
+#' #'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
 
 
 
@@ -247,19 +247,11 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
 
-        #fit OLS risk difference model
-        #fit.rd<-lm(Y~tr*V+.,data=dmat)
-        #vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
-        #RDfit <- coeftest(fit.rd, vcovCL.rd)
       }else{
         suppressWarnings(fit<- glm.nb(Y ~., data = dmat))
         vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
         rfit <- coeftest(fit, vcovCL)
 
-        #fit OLS risk difference model
-        #fit.rd<-lm(Y~.,data=dmat)
-        #vcovCL.rd <- sandwichSE(dmat,fm=fit.rd,cluster=glmdat$id)
-        #RDfit <- coeftest(fit.rd, vcovCL.rd)
       }
 
       modelfit<-washb_glmFormat(glmModel=fit,rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)

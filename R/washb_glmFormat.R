@@ -113,11 +113,15 @@ washb_glmFormat <- function(glmModel=glmModel, rfit, dmat, rowdropped, contrast,
     }
 
 
+    if(!is.null(V)){
+      cat("\n\n-----------------------------------------\n Significance of effect modification variables \n-----------------------------------------\n")
+        print(fit[(nrow(fit)-length(levels(dmat$V))+2):nrow(fit),c(colnames(RR)[1],"Pr(>|z|)")])
+      }
 
     if(ncol(dmat)>3&is.null(V)|ncol(dmat)>4){
       if(family[1]=="gaussian"){cat("\n Coef of covariates\n")}
       if(family[1]!="gaussian"){cat("\n RR of covariates\n")}
-      print(RR[2:(nrow(RR)-(length(unique(dmat$pair))+1)),])
+      print(RR[2:(nrow(RR)-(length(unique(dmat$pair))-1)),])
     }
 
     if(verbose==TRUE){
