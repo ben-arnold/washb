@@ -13,7 +13,9 @@
 #' @param strat stratification variable (here: block)
 #' @param contrast vector of length 2 that includes the tr groups to contrast
 #'
-#' @return data frame with mean difference ("diff"), 95% confidence intervals ("ci.lb" and "ci.ub"), t-statistic ("t-stat"), and p-value("p")
+#' @return
+#' data frame with mean difference ("diff"), 95% confidence intervals ("ci.lb" and "ci.ub"), t-statistic ("t-stat"), and p-value("p")
+#'
 #' @export
 #'
 #' @examples
@@ -35,8 +37,6 @@
 #'  laz <- subset(laz,laz_x!=1)
 #'
 #'  laz$tr <- factor(laz$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
-#'  laz$month <- factor(laz$month)
-#'  laz <- laz[order(laz$block,laz$clusterid,laz$dataid,laz$childid),]
 #'
 #'
 #'  #Run paired ttest function for water vs. control comparison:

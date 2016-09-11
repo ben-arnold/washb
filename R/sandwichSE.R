@@ -1,15 +1,15 @@
-
 #' sandwichSE
 #'
 #' @param dat Data used to fit the model
 #' @param fm Model fit (object)
 #' @param cluster Vector of cluster ID's
 #'
-#' @return to be written
+#' @return
+#' #variance-covariance matrix vcovCL
 #' @export
 #'
 #' @examples
-#'  to be written
+#'  #to be written
 #'
 
 

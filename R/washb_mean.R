@@ -1,15 +1,18 @@
 
+#' washb_mean
+#'
 #' Means estimated with robust standard errors for the WASH Benefits trials
 #'
 #' Calculate means for a variable along with robust sandwich SEs and 95\% confidence intervals that account for clustering within id
 #'
+#' This function is most useful for calculating variable means and confidence intervals -- for example, calculating average compliance (uptake) within a given intervention arm, or calculating the average LAZ by arm or measurement round. In the WASH Benefits trials, the independent unit is typically the cluster, so the 'id' argument should identify the cluster ID.  If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use washb_glm, washb_ttest(for continuous outcomes), or washb_mh (for binary outcomes).
+#'
 #' @param Y Outcome variable
 #' @param id ID variable for independent units (in WASH Benefits: cluster ID)
-#' @param print Logical. If \code{print=TRUE} (default) the function will print the results.
+#' @param print Logical. If print=TRUE (default) the function will print the results.
 #'
 #' @return Returns a 1x6 matrix that includes the number of observations, outcome mean, standard deviation, robust SE for the mean, lower 95\% CI, upper 95\% CI
-#' @details This function is most useful for calculating variable means and confidence intervals -- for example, calculating average compliance (uptake) within a given intervention arm, or calculating the average LAZ by arm or measurement round. In the WASH Benefits trials, the independent unit is typically the cluster, so the \code{id} argument should identify the cluster ID.  If you wish to actually compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use \code{\link[washb]{washb_glm}}, washb_ttest(TBA for continuous outcomes), or washb_mh (TBA for binary outcomes).
-#' @return matrix containing the following columns: N (number of observations used to calculate mean), Mean, SD, Robust SE (sandwich estimator), and the lower and upper 95% Confidence interval bounds.
+#'
 #' @export
 #'
 #' @examples
@@ -17,8 +20,8 @@
 #'  #Example using the washb_mean function on child LAZ score
 #'
 #'  #Load in Bandladesh anthropometry data and enrollment data
-#'  data(washb_bd_anthro)
-#'  data(washb_bd_enrol)
+#'  #data(washb_bd_anthro)
+#'  #data(washb_bd_enrol)
 #'
 #'  # drop svydate and month because they are superceded in the child level diarrhea data
 #'  washb_bd_enrol$svydate <- NULL

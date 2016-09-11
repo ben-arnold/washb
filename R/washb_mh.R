@@ -3,15 +3,16 @@
 #' Mantel-Haenszel Pooled estimates of the prevalence ratio (PR) or the prevalence
 #' difference (PD) using randomization block as the stratification variable.
 #'
-#' Function to call the M-H estimator for two different arms of the study this relies on
-#' teh rma.mh() function in the metafor package.
-#'
-#' @usage
-#' washb_mh(Y,tr,strat,contrast,measure="RR")
+#' The function calls the M-H estimator for two different arms of the study. It relies on
+#' the rma.mh() function in the metafor package.
 #'
 #' Estimate the Mantel-Haenszel prevalence ratio note: strata with no outcomes (i.e., missing PR) are dropped.
 #' This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates.
-#' The arguments Y,tr,strat, below need to be from the same dataset:
+#' The arguments Y,tr,strat, below need to be from the same dataset.
+#'
+#'
+#' @usage
+#' washb_mh(Y,tr,strat,contrast,measure="RR")
 #'
 #'
 #' @param Y binary outcome variable (here: diar7d)
@@ -20,7 +21,8 @@
 #' @param contrast vector of length 2 that includes the tr groups to contrast (control(reference arm) and then intervention)
 #' @param measure measure of effect. RR = prev ratio, RD = prev difference
 #'
-#' @return to be written
+#' @return
+#' res: Matrix of RD, se.RD, ci.lb, ci.ub, Z, p-value.
 #'
 #' @export
 #'
@@ -29,7 +31,7 @@
 #' #The function will test a matrix of covariates and return those related to child diarrheal disease with
 #' #a <0.2 p-value from a likelihood ratio test.
 #'
-#' Load  diarrhea data
+#' #Load  diarrhea data
 #' library(washb)
 #' data(washb_bd_diar)
 #' data(washb_bd_enrol)
@@ -56,11 +58,6 @@
 #' #Re-order the tr factor for convenience
 #' ad$tr <- factor(ad$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
 #'
-#' #Ensure that month is coded as a factor
-#' ad$month <- factor(ad$month)
-#'
-#' #Sort the data for perfect replication when using V-fold cross-validation
-#' ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 #' ###Create vector of contrasts for each hypothesis to facilitate comparisons between arms.
 #' #Hypothesis 1: Each intervention arm vs. Control
 #' h1.contrasts <- list(
@@ -72,14 +69,14 @@
 #'   c("Control","Nutrition + WSH")
 #' )
 #'
-#' Apply washb_mh to the water vs. control arm contrast.
+#' #Apply washb_mh to the water vs. control arm contrast.
 #' washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
 #'
-#' Return the risk difference instead of the risk ration:
-#' washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RR")
+#' #Return the risk difference instead of the risk ration:
+#' washb_mh(Y=ad$diar7d,tr=ad$tr, contrast=c("Control","Water"), strat=ad$block,measure="RD")
 #'
 #'
-#' Use sapply command to efficiently apply the function to all the treatment arm contrasts
+#' #Use sapply command to efficiently apply the function to all the treatment arm contrasts
 #'
 #' diff.h1 <- t(sapply(h1.contrasts,washb_mh,Y=ad$diar7d,tr=ad$tr,strat=ad$block,measure="RR"))
 #' rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C","Nutrition v C","Nutrition + WSH v C")
