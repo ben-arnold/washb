@@ -14,13 +14,13 @@ sandwichSE(dat, fm, cluster)
 \item{cluster}{Vector of cluster ID's}
 }
 \value{
-to be written
+#variance-covariance matrix vcovCL
 }
 \description{
 sandwichSE
 }
 \examples{
- to be written
+ #to be written
 
 }
 

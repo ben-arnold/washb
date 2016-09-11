@@ -42,8 +42,6 @@ The arguments Y,tr,strat, below need to be from the same dataset:
  laz <- subset(laz,laz_x!=1)
 
  laz$tr <- factor(laz$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
- laz$month <- factor(laz$month)
- laz <- laz[order(laz$block,laz$clusterid,laz$dataid,laz$childid),]
 
 
  #Run paired ttest function for water vs. control comparison:

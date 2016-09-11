@@ -8,7 +8,7 @@ output:
     highlight: haddock
     mode: selfcontained
     toc: true
-    toc_depth: 1
+    toc_depth: 3
     toc_float:
       collapsed: true
       smooth_scroll: true
@@ -50,7 +50,6 @@ This vignette applies package functions to the Bangladesh Wash Benefits trial da
  * `washb_mh()`  Estimates the Mantel-Haenszel prevalence ratio. Note: strata with no outcomes (i.e., missing PR) are dropped. This is consistent with a fixed-effects regression analysis, in which those strata would not contribute to the estimates. The arguments Y,tr,strat, below need to be from the same dataset. 
  * `washb_permute()`  Conducts a permutation test of the indepdence of Y and tr, conditional on randomization block using the Wilcoxon rank-sum test statistic.
  * Interal package functions (only used internally by the main package functions):
-   + `washb_prescreen()`  Function to pre-screen adjustment covariates -- restrict to those with a LR test P<0.2.  
    + `washb_prescreen()`  Function to pre-screen adjustment covariates -- restrict to those with a LR test P<0.2 (or user-set p-value). Called internally in the __washb_glm__ function, or can be called on its own.
    + `sandwichSE()`  Function to calculate the Huber Sandwich Estimator for robust standard errors. [Reference](http://www.stat.berkeley.edu/~census/mlesan.pdf) 
    + `washb_lincom()` Function to get Estimates, SEs, CIs, and P-values for Pr>|Z| from a linear combination of regression coefficients.
@@ -61,11 +60,13 @@ This vignette applies package functions to the Bangladesh Wash Benefits trial da
 ###R resources
 For new users of R, the following sources are helpful learning resources:  
 1. [Calendar of UC Berkeley D-Lab workshops](http://dlab.berkeley.edu/event-host/d-lab) (Look for R bootcamps)  
-2. [Datacamp: R for SAS, SPSS, and Stata users](https://www.datacamp.com/courses/r-for-sas-spss-and-stata-users-r-tutorial) (This course is for those familiar   with statistical programming who only need to learn R-specific syntax. Great GUI learning interface, and free for introductory course, and academic discount for paid courses.)  
-3. [Try R codeschool](http://tryr.codeschool.com/) (An interactive introductory course)  
-4  [UCLA Institute For Digital Research and Education: R resources](http://statistics.ats.ucla.edu/stat/r/) (Great source for topic-specific tutorials)  
-5. [R -tutor introduction](http://www.r-tutor.com/r-introduction)  
-6. [Johns Hopkins Coursera course in R programming](https://www.coursera.org/learn/r-programming)  
+2. [Cookbook for R](http://www.cookbook-r.com/)  
+3. [Datacamp: R for SAS, SPSS, and Stata users](https://www.datacamp.com/courses/r-for-sas-spss-and-stata-users-r-tutorial) (This course is for those familiar   with statistical programming who only need to learn R-specific syntax. Great GUI learning interface, and free for introductory course, and academic discount for paid courses.)  
+4. [Try R codeschool](http://tryr.codeschool.com/) (An interactive introductory course)  
+5. [UCLA Institute For Digital Research and Education: R resources](http://statistics.ats.ucla.edu/stat/r/) (Great source for topic-specific tutorials)  
+6. [R -tutor introduction](http://www.r-tutor.com/r-introduction)  
+7. [Johns Hopkins Coursera course in R programming](https://www.coursera.org/learn/r-programming)  
+
 
   
 <br>
@@ -256,17 +257,17 @@ washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="binonial(l
 ###Example: unadjusted analysis of a binary outcome (diarrhea) 
 
 
-As an example, the following code applies the washb\_glm function to compare 7-day recall diarrheal disease prevalence between the sanitation and control arms. Notice that the glm model is fit with a log link, `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`, to estimate the odds ratio. Occasionally, a glm model with a non-canonical link function like `family=binomial(link='log')` will fail to converge. If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument `family=poisson(link='log')`. See [Zou 2004](http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf) for details.
+As an example, the following code applies the washb\_glm function to compare 7-day recall diarrheal disease prevalence between the sanitation and control arms. Notice that the glm model is fit with a log link, `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`, to estimate the odds ratio. Occasionally, a glm model with a non-canonical link function like `family=binomial(link='log')` will fail to converge. If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument `family=poisson(link='log')`. See [Zou 2004](http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf) for details. The WASH Benefits Kenya primary outcome analysis used modified poisson regressions to estimate prevalence ratios for all adjusted contrasts because the non-canonical `binomial(link='log')` failed to converge for some contrasts. 
 
 ```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
 Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
 ```
 
-On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$RDfit` returns the risk difference instead of the risk ratio for all covariates (not applicable when the glm  model is gaussian).
+On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$TR` returns just the treatment effect of the intervention arm, useful when saving to a row of an R object containing only the treatment effects across all the desired arm contrasts.
 ```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
-Diar.glm.C.S$RDfit[1:2,]
+Diar.glm.C.S$TR
 ```
-Note, the `[1:2,]` index at the end is added here so that only the intercept and treatment effect estimates are printed to save space. Running the code `Diar.glm.C.W$RDfit` outputs all 89 estimated point estimates and confidence intervals for the 89 pair-matched block dummy variables (because there are 90 blocks).  
+ 
 
 \
 
@@ -274,29 +275,34 @@ All returned objects are:
 
  * `'objectname'$TR` to return the treatment effect.  
  * `'objectname$fit` to return full glm model estimates.    
- * `'objectname$RDfit` to return the risk difference of the treatment (and all covariates, including block pairs).  
  * `'objectname$vcv` to return the variance-covariance matrix.  
  * `'objectname$rowdropped` to return the vector list of observations included in the model fit.  
  * `'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.  
- * `'objectname$lincomRD` to return subgroup-specific conditional risk difference estimates if a subgroup V is specified.    
- * `'objectname$glmModel`  to return the glm model fit to be used with `predict()` to return model predictions of the outcome. Note that this is the glm model fit without `coeftest()` applied, so does not have robust standard errors, and should not be used for inference.   
- * `'objectname$glmModelRD` to return the risk differenc glm model fit to be used with `predict()` to return model predictions of the outcome. The same caveat as for `$glmModel` applies; the sandwich estimator function has not been applied to the model so the standard errors are incorrect.   
+ * `'objectname$glmModel`  to return the glm model fit to be used with `predict()` to return model predictions of the outcome. Note that this is the glm model fit __without adjusting the standard errors for repeated measures__ so you should not use it for inference if the data include repeated observations and/or if you have fit a modified Poisson model.  It is safest to use the returned $TR and $fit objects for inference, which are based on robust SEs.
+ 
 <br>
 
 Often, the `washb_glm` function will be used for many contrasts, with the results saved to an object. If you want to avoid printing all the output from the function, use the argument `print=FALSE`. If you still want the results printed, but not the names and descriptions of the returned objects, use `verbose=FALSE`
- 
 
 <br>
 
-###Length-for-Age Z-score glm models
+###Example: Risk difference estimation using gaussian model and robust standard errors.
+To estimate a risk difference of intervention on a binary or count outcome, the code is the same, except the `family="gaussian"` argument is used.
+```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
+RD.Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, contrast=c("Control","Sanitation"), family="gaussian", verbose=FALSE)
+``` 
+
+<br>
+
+###Example: unadjusted analysis of a continuous outcome (LAZ)
 For the continuous  LAZ outcome analysis, the code is the same, except the `family="gaussian"` argument is used.
 ```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
-LAZ.glm.C.S <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, id=laz$clusterid, contrast=c("Control","Sanitation"), family="gaussian")
+LAZ.glm.C.S <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, id=laz$clusterid, contrast=c("Control","Sanitation"), family="gaussian", verbose=FALSE)
 ```
 
 <br>
 
-###Covariate-adjusted glm model
+###Example: adjusted analysis of a binary outcome (diarrhea)
 First, subset to new dataframes the variables to be screened for inclusion in adjusted glm models:
 ```{r , results = "hide" , cache=TRUE, comment=NA}
 #Subset dataset to covariates to be screened 
@@ -310,35 +316,30 @@ Use the `W=` argument and a dataframe of potential adjustment covariates (here, 
 
 <br>
 ```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
-adj.Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'))
+adj.Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'), verbose=FALSE)
 ```
 
 <br>
 
-###Forcing covariates into the glm model regardless of prescreening p-value
-If there are certain variables to include in the glm model, regardless of prescreening results, use the `forcedW` option. This argument takes a variable name or a vector of variable names. These variables must already be in the W dataframe of potential adjustment covariates. For example, if adjustment by age and sex is standard, force them into the glm model. The `print=FALSE` is only used to suppress output and save vignette space. You may want to use this option if you are saving output into an R object and only want to extract some of the information.
+###Example: forcing covariates into the glm model regardless of prescreening p-value
+If there are certain variables to include in the glm model, regardless of prescreening results, use the `forcedW` option. This argument takes a variable name or a vector of variable names. These variables must already be in the W dataframe of potential adjustment covariates. For example, if adjustment by age and sex is standard, force them into the glm model. 
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
-glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, forcedW=c("agedays","sex"), id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'), print=FALSE)
+glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, forcedW=c("agedays","sex"), id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'), verbose=FALSE)
 ```
   
 <br>
 
-###Subgroup analysis with washb_glm
+###Example: subgroup analysis with washb_glm
 The `V` arguement can be used to create an interaction term with `tr`, the treatment variable. `V` is a variable name of a variable that must be within the W matrix. Here is code for a subgroup analysis of the effect of nutrition treatment on diarrheal disease, stratified by target child (vs. sibling). 
-```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
+```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
 #Create a W variable containing "tchild" and other potential covariates:
 W_tchild <- subset(ad,select=c("tchild"))
 
 #Estimate subgroup analysis glm with washb_glm
-glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild, V="tchild", id=ad$clusterid, contrast=c("Control","Nutrition"), family=binomial(link='log'), print=FALSE)
+glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild, V="tchild", id=ad$clusterid, contrast=c("Control","Nutrition"), family=binomial(link='log'), verbose=FALSE)
 
 #Examine the treatment effect across subgroups with `objectname'$lincom
 glm.C.N.byChildType$lincom
-
-#Examine the risk difference
-glm.C.N.byChildType$lincomRD
-
-
 ```
 
 <br>
@@ -352,9 +353,7 @@ glm.C.N.byChildType$lincomRD
 W_hfiacat <- subset(laz,select=c("hfiacat"))
 
 #Estimate subgroup analysis glm with washb_glm
-glm.C.N.byFoodSecurity <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, W=W_hfiacat, forcedW=NULL, V="hfiacat", id=laz$clusterid, contrast=c("Control","Nutrition"), family="gaussian", print=FALSE)
-glm.C.N.byFoodSecurity$lincom
-
+glm.C.N.byFoodSecurity <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, W=W_hfiacat, forcedW=NULL, V="hfiacat", id=laz$clusterid, contrast=c("Control","Nutrition"), family="gaussian", verbose=FALSE)
 ```
 
 
@@ -624,13 +623,13 @@ __Usage:__ `washb_lincom(lc=NULL,varlist=NULL,fit,vcv, measure="RR", flag=NULL)`
 
 ###Target child v. sibling subgroup analysis
 Below is an example of using the `lincom()` function to externally replicate the target child/sibling subgroup analysis of the diarrheal disease outcome. First, recall the glm model contrasting diarrheal disease prevalence ratio between target child and sibling fitted to diarrheal disease:
-```{r, eval=TRUE, cache=TRUE, comment=NA}
+```{r, eval=T, cache=TRUE, comment=NA}
 glm.C.N.byChildType$lincom
 ```
 
 Next, use the lincom function to verify the subgroup analysis calculated within the `washb_glm()` function. `washb_lincom()` takes as argements the fit and variance-covariance matrix returned by the glm function, and an index vector `lc`.  
 `lc`= vector indexing coefficients to be linearly combined. If a single coefficient is chosen, it will return the same coefficient and confidence interval as the glm coefficient. Example:
-```{r, eval=TRUE, cache=TRUE, comment=NA}
+```{r, eval=T, cache=TRUE, comment=NA}
   #Create lc vector of 0's equal in length to the number of coefficients from the glm model.
 lc=rep(0,nrow(glm.C.N.byChildType$fit))
 #Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.
@@ -641,22 +640,12 @@ lc[2]<-1
 washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR") 
 ```
 Because sibling is the reference level of the `VTarget child` term, running the `lincom()` function with only the treatment contrast term marked in the `lc` index vector equals both the prevalence ratio of the `trSanitation` term and the prevalence ratio of the sibling subgroup returned in the `glm.C.S.byChildType$lincom` object. TO estimate the PR from the target child subgroup, the ineraction term `trSanitation:VTarget child` needs to be marked in the `lc` index.
-```{r, eval=TRUE, cache=TRUE, comment=NA}
+```{r, eval=T, cache=TRUE, comment=NA}
 #Add a 1 at the 4th position in the lc vector to include the 4th coefficient, the interaction term, in the linear combination.
 lc[4]<-1
 washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR") 
 ```
 This estimate equals the target child PR estimated in the `washb_glm` estimate with the `V` argument specified. Note that the coefficient for the `VTarget child` term is not included in this linear combination calculation. Including that term would calculate the prevalence ratio between sanitation arm target children and control arm siblings, whereas in a subgroup analysis the prevalence ratio between treatments within, rather than across, the groups is desired.
-
-<br>
-
-The `lincom()` function can also be used to calculate risk difference
-```{r, eval=TRUE, cache=TRUE, comment=NA}
-#Calculate risk difference using the risk difference output from the washb_glm function:
-washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, measure="RD") 
-#Compare to RD by subgroup from the washb_glm function:
-glm.C.N.byChildType$lincomRD
-```
 
 
 <br>

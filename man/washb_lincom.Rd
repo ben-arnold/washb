@@ -69,11 +69,7 @@ glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild,
 glm.C.N.byChildType$lincom
 
 #Below is an example of using the `lincom()` function to externally replicate the target child/sibling subgroup analysis of the diarrheal disease outcome. First, recall the glm model contrasting diarrheal disease prevalence ratio between target child and sibling fitted to diarrheal disease:
-
-glm.C.N.byChildType$lincom
-
-
-#Next, use the lincom function to verify the subgroup analysis calculated within the `washb_glm()` function. `washb_lincom()` takes as argements the fit and variance-covariance matrix returned by the glm function, and an index vector `lc`.
+#Use the lincom function to verify the subgroup analysis calculated within the `washb_glm()` function. `washb_lincom()` takes as argements the fit and variance-covariance matrix returned by the glm function, and an index vector `lc`.
 #`lc`= vector indexing coefficients to be linearly combined. If a single coefficient is chosen, it will return the same coefficient and confidence interval as the glm coefficient. Example:
 #Create lc vector of 0's equal in length to the number of coefficients from the glm model.
 lc=rep(0,nrow(glm.C.N.byChildType$fit))
@@ -85,7 +81,7 @@ lc[c(2,4)]<-1
 #Run the lincom function and compare output to the $lincom output from the GLM model.
 washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR")
 
-  The `lincom()` function can also be used to calculate risk difference
+# The `lincom()` function can also be used to calculate risk difference
 #Calculate risk difference using the risk difference output from the washb_glm function:
 washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, measure="RD")
 #Compare to RD by subgroup from the washb_glm function:

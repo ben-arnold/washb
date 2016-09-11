@@ -18,6 +18,8 @@ washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)
 \item{nreps}{Number of permutations to run.}
 
 \item{seed}{Number for psuedo-random number generation in R}
+
+\item{print}{If print==FALSE, suppress printed output.}
 }
 \value{
 A list of four slices (replace "~" with the assigned object name):
@@ -30,6 +32,21 @@ A list of four slices (replace "~" with the assigned object name):
 WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
 Conducts a permutation test of the independence of Y and tr, conditional on randomization block
 using the Wilcoxon rank-sum test statistic.
+}
+\details{
+The washb_glm and related functions (above) enable us to test hypotheses about whether the average outcome differs between trial arms -- that is,
+whether the difference in means is equal to zero.  The mean is just one function of the outcome distribution. A sharper test is the “sharp null hypothesis”
+first proposed by Ronald Fisher, in which we test whether there is any difference at all in the outcome distributions between intervention arms. Under the
+null hypothesis of no treatment effect, the outcome distributions should be indistinguishable from random sampling variation. A way to test the sharp null
+hypothesis is with a permutation test (also called a Fisher randomization test). The intuition behind the test is that there is a single source of random
+variation in the trial: namely the random allocation of treatment. If we re-randomize treatment in every possible combination (or a very large number of combinations),
+and compare arms using a test statistic for each combination, then this provides us with the test statistic’s distribution under the null hypothesis of no effect
+(since we re-shuffle treatment in each iteration, it is completely uninformative).  We can then compare the observed test statistic with real group assignments
+to the null distribution to see how likely it would be to have occurred by chance.  For more details on randomization tests, see the references below.
+
+In the WASH Benefits primary analysis, we pre-specified that we would test this sharp null using a Wilcoxon signed rank test, which is a non-parametric test
+statistic has been shown to have good power against alternatives for outcomes that could potentially have skewed distributions [Imbens GW, Rubin DB. Causal
+Inference in Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015.](http://dl.acm.org/citation.cfm?id=2764565).
 }
 \examples{
 #Unadjusted permutation test of Bangladesh diarrheal disease primary outcome

@@ -29,7 +29,7 @@ washb_prescreen
 #The function will test a matrix of covariates and return those related to child diarrheal disease with
 #a <0.2 p-value from a likelihood ratio test.
 
-Load diarrhea data:
+#Load diarrhea data:
 library(washb)
 data(washb_bd_diar)
 data(washb_bd_enrol)
