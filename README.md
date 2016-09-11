@@ -1,7 +1,7 @@
 # washb
 washb: an internal R software package to facilitate and standardize intention-to-treat analyses in the WASH Benefits trials
 
-The package's more convenient web interface is: http://ben-arnold.github.io/washb/
+The package's more convenient web interface is: http://amertens.github.io/washb/
 
 
 #Installation
