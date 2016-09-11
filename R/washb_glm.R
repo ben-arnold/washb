@@ -104,24 +104,25 @@
 
 
 
-washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE, verbose=TRUE) {
+washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE, verbose=TRUE) {
   require(sandwich)
   require(lmtest)
   options(scipen=20)
   #Create empty variable used in subgroup analysis
   Subgroups=NULL
 
-  if(!is.null(W)){
-    glmdat <- data.frame(
-      id=id[tr==contrast[1]|tr==contrast[2]],
-      Y=Y[tr==contrast[1]|tr==contrast[2]],
-      tr=tr[tr==contrast[1]|tr==contrast[2]],
-      pair=pair[tr==contrast[1]|tr==contrast[2]],
-      W[tr==contrast[1]|tr==contrast[2],]
-      )
-      #Fix variable name error if W is a single variable
-      if(ncol(W)==1){
-       colnames(glmdat)[5]<-  colnames(W)
+  if(!is.null(pair)){
+    if(!is.null(W)){
+      glmdat <- data.frame(
+        id=id[tr==contrast[1]|tr==contrast[2]],
+        Y=Y[tr==contrast[1]|tr==contrast[2]],
+        tr=tr[tr==contrast[1]|tr==contrast[2]],
+        pair=pair[tr==contrast[1]|tr==contrast[2]],
+        W[tr==contrast[1]|tr==contrast[2],]
+        )
+        #Fix variable name error if W is a single variable
+        if(ncol(W)==1){
+        colnames(glmdat)[5]<-  colnames(W)
         }
     }else{
     glmdat <- data.frame(
@@ -130,15 +131,35 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
       tr=tr[tr==contrast[1]|tr==contrast[2]],
       pair=pair[tr==contrast[1]|tr==contrast[2]]
     )
-  }
+    }
   glmdat$tr    <- factor(glmdat$tr,levels=contrast[1:2])
   glmdat$pair <- factor(glmdat$pair)
-
+  }else{
+    if(!is.null(W)){
+      glmdat <- data.frame(
+        id=id[tr==contrast[1]|tr==contrast[2]],
+        Y=Y[tr==contrast[1]|tr==contrast[2]],
+        tr=tr[tr==contrast[1]|tr==contrast[2]],
+        W[tr==contrast[1]|tr==contrast[2],]
+      )
+      #Fix variable name error if W is a single variable
+      if(ncol(W)==1){
+        colnames(glmdat)[4]<-  colnames(W)
+      }
+    }else{
+      glmdat <- data.frame(
+        id=id[tr==contrast[1]|tr==contrast[2]],
+        Y=Y[tr==contrast[1]|tr==contrast[2]],
+        tr=tr[tr==contrast[1]|tr==contrast[2]]
+      )
+    }
+    glmdat$tr    <- factor(glmdat$tr,levels=contrast[1:2])
+  }
 
   #####
   #Block Dropping
   #####
-
+  if(!is.null(pair)){
   #Drop blocks missing comparing arm 1
   n.orig <- dim(glmdat)[1]
   miss<-NULL
@@ -156,7 +177,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   n.sub  <- dim(glmdat)[1]
   if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Starting N:  ",n.orig,"\nN after block dropping: ",n.sub)
   if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Pairs/blocks dropped due to missingness in at least one treatment level:\n",sort(unique(miss)),"\n\nDropping",n.orig-n.sub,"observations due to missing pairs.","\n-----------------------------------------\n")
-
+  }
 
 
   # restrict to complete cases and save a vector indexing observations dropped
@@ -200,6 +221,7 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
   }else{
     Wscreen=NULL
   }
+  if(!is.null(pair)){
     if(!is.null(forcedW)){
       if(!is.null(Wscreen)){
         dmat <- subset(glmdat,select=c("Y","tr",forcedW,Wscreen,"pair"))
@@ -213,6 +235,26 @@ washb_glm <- function(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family
         dmat <- subset(glmdat,select=c("Y","tr","pair"))
         }
       }
+    }else{
+      if(!is.null(forcedW)){
+        if(!is.null(Wscreen)){
+          dmat <- subset(glmdat,select=c("Y","tr",forcedW,Wscreen))
+        }else{
+          dmat <- subset(glmdat,select=c("Y","tr",forcedW))
+        }
+      } else {
+        if(!is.null(Wscreen)){
+          dmat <- subset(glmdat,select=c("Y","tr",Wscreen))
+        }else{
+          dmat <- subset(glmdat,select=c("Y","tr"))
+        }
+      }
+    }
+
+
+
+
+
 
   if(family[1]=="binomial"|family[1]=="poisson"|family[1]=="gaussian"){
 
