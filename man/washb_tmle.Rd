@@ -36,9 +36,11 @@ washb_tmle(Y, tr, strat, W, id, contrast, prtr = c(0.5, 0.5),
 To be filled
 }
 \description{
-# Targeted maximum likelihood estimation (TMLE) for the WASH Benefits intention to treat (ITT) analyses
+NOTE: washb_tmle has not been fully implemented in this package version. Do not use yet.
 }
 \details{
+# Targeted maximum likelihood estimation (TMLE) for the WASH Benefits intention to treat (ITT) analyses
+
 The function does the following:
 }
 \examples{

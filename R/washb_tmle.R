@@ -1,6 +1,8 @@
 #' Target maximum likelihood estimation function for WASH Benefits study.
 #' washb_tmle
 #'
+#' NOTE: washb_tmle has not been fully implemented in this package version. Do not use yet.
+#'
 #'   # Targeted maximum likelihood estimation (TMLE) for the WASH Benefits intention to treat (ITT) analyses
 # depends on the tmle() package, as well as the Wprescreen() and design.matrix() functions.
 #'
@@ -23,6 +25,8 @@
 #'
 #'
 #' @return To be filled
+#'
+#'
 #' @export
 #'
 #' @examples
