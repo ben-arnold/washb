@@ -1,8 +1,6 @@
 
-
-
-#' Generalized linear model function for WASH Benefits study.
 #' washb_glm
+#' Generalized linear model function for WASH Benefits study.
 #'
 #' Note that in the WASH Benefits diarrheal disease primary outcome analysis, the glm model is fit with a log link,
 #'  `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`,
