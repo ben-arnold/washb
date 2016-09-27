@@ -50,9 +50,12 @@ washb_glmFormat <- function(glmModel=glmModel, rfit, dmat, rowdropped, contrast,
       }
     } else{
       if(family[1]=="poisson"|family[1]=="neg.binom") {
-        colnames(RR)<-c("IRR","2.5%","97.5%")
-      }
-      else{
+          if(family[2]!="log"|length(family)==1){
+            colnames(RR)<-c("IRR","2.5%","97.5%")
+          }else{
+            colnames(RR)<-c("PR","2.5%","97.5%")
+          }
+      }else{
         colnames(RR)<-c("Coef.","2.5%","97.5%")
       }}
 
