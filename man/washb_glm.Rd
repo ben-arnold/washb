@@ -2,8 +2,7 @@
 % Please edit documentation in R/washb_glm.R
 \name{washb_glm}
 \alias{washb_glm}
-\title{Generalized linear model function for WASH Benefits study.
-washb_glm}
+\title{Generalized linear model function for WASH Benefits study.}
 \usage{
 washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE)
 }
@@ -30,21 +29,27 @@ washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian",
 
 \item{print}{Logical for whether to print function output, defaults to TRUE.}
 
-\item{print}{Logical for whether to print names and descriptions of returned list objects}
+\item{verbose}{Logical for whether to print names and descriptions of returned list objects}
 }
 \value{
 Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
         used to fit the glm model
 }
 \description{
-Note that in the WASH Benefits diarrheal disease primary outcome analysis, the glm model is fit with a log link,
- `family=binomial(link='log')`, to estimate prevalence ratios rather than with a logit link, `family="binomial"`,
- to estimate the odds ratio.
+Estimate intention-to-treat parameters with generalized linear models and robust standard errors
 }
 \details{
-Occasionally, a glm model with a non-canonical link function like `family=binomial(link='log')` will fail to converge.
- If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument `family=poisson(link='log')`.
- See [Zou 2004](http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf) for details.
+\code{washb_glm} fits a generalized linear model to estimate intention-to-treat (ITT) effects in a trial. The \code{contrast} argument enables you to specify the arms that you wish to compare (reference group in the first argument, comparison group in the second). To estimate adjusted effects, you can pass a data.frame of adjustment covariates to the \code{W} argument -- by default, covariates are pre-screened to only include those that are associated with the outcome based on a likelihood ratio test. To over-ride the pre-screening algorithm for some or all covariates, use the \code{forcedW} argment.
+
+If the design is pair-matched (all primary outcome analyses in WASH B should be pair matched), use the \code{pair} argument to specify an id variable for pairs, and specify the same variable in the id argument to get correct SEs. If the design is not pair-matched, then the id argument should identify the smallest independent unit in the trial (e.g., cluster). The function computes robust standard errors. Note that this function automatically drops observations from the analysis if they are from a pair with no treatment contrast -- this can happen with incomplete randomization blocks in the Kenya trial.
+
+Note that for binary outcomes such as diarrhea, the glm model is fit with a log link,
+ \code{family=binomial(link='log')}, to estimate prevalence ratios rather than the canonical logit link, \code{family='binomial'},
+ to estimate the odds ratio. Occasionally, a glm model with a non-canonical link function like \code{family=binomial(link='log')} will fail to converge, particularly if the data are sparse.
+ If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument \code{family=poisson(link='log')}.
+ See \link[Zou 2004]{http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf} for details.
+
+ The function also makes it straight forward to estimate conditional (i.e., subgroup) effects using the optional \code{V} argument.
 }
 \examples{
 
