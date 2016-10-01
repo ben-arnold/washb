@@ -2,49 +2,51 @@
 % Please edit documentation in R/washb_tmle.R
 \name{washb_tmle}
 \alias{washb_tmle}
-\title{Target maximum likelihood estimation function for WASH Benefits study.
-washb_tmle}
+\title{Target maximum likelihood estimation function for the WASH Benefits study}
 \usage{
-washb_tmle(Y, tr, strat, W, id, contrast, prtr = c(0.5, 0.5),
-  modelfit = "glm", family = "gaussian", SL.library = c("SL.mean",
-  "SL.glm", "SL.bayesglm", "SL.gam", "SL.glmnet"), seed = NULL)
+washb_tmle(Y, tr, W = NULL, id, family = "gaussian", contrast,
+  prtr = NULL, modelfit = "sl", Q.SL.library = c("SL.mean", "SL.glm",
+  "SL.bayesglm", "SL.gam", "SL.glmnet"), g.SL.library = Q.SL.library,
+  seed = NULL)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
 
 \item{tr}{Binary treatment group variable, comparison group first}
 
-\item{strat}{Stratification variable (here: block)}
-
 \item{W}{Data frame that includes adjustment covariates}
 
-\item{id}{ID variable for independent units (e.g., cluster)}
+\item{id}{ID variable for independent units. For pair-matched designs, this is the matched pair.}
+
+\item{family}{Outcome family: \code{gaussian} (continuous outcomes, like LAZ) or \code{binomial} (binary outcomes like diarrhea or stunting)}
 
 \item{contrast}{Vector of length 2 that includes the tr groups to contrast}
 
-\item{prtr}{Vector of length 2 that includes the probability of receiving each treatment in the contrast argument for the main trial, the control is double sized (allocation 2:1) so control vs. active intervention should be prtr=c(0.67,0.33). in contrasts where the arms are equally sized (allocation 1:1), then prtr=c(0.5,0.5).}
+\item{prtr}{Vector of length 2 that includes the probability of receiving each treatment in the contrast argument for the main trial, the control is double sized (allocation 2:1) so control vs. active intervention should be \code{prtr=c(0.67,0.33)}. in contrasts where the arms are equally sized (allocation 1:1), then \code{prtr=c(0.5,0.5)}. If \code{prtr=NULL} (the default), then the treatment mechanism Pr(A|W) is estimated, which is usually more efficient (preferred).}
 
-\item{modelfit}{String variable of value "glm" for a glm prediction of E(Y|A,W) and E(A|W), or "sl" for a SuperLearner prediction.}
+\item{modelfit}{String variable of value \code{"sl"} for SuperLearner prediction or \code{"glm"} for GLM prediction of E(Y|A,W) and Pr(A|W).}
 
-\item{family}{Outcome family: gaussian (continuous outcomes, like LAZ) or binomial (binary outcomes like diarrhea or stunting)}
+\item{g.SL.library}{Library of algorithms to include in the SuperLearner for the treatment model (ignored if prtr is specified)}
 
-\item{seed}{A seed for the pseudo-random CV split for perfectly reproducible results}
+\item{seed}{A seed for the pseudo-random cross-validation split (use for perfectly reproducible results if \code{modelfit="sl"}).}
 
-\item{SL.Library}{Library of algorithms to include in the SuperLearner (pre-specified defaults are encoded above)}
+\item{Q.SL.Library}{Library of algorithms to include in the SuperLearner for the outcome model}
 }
 \value{
-To be filled
+A \code{tmle()} fit object (see the \code{\link[tmle]{tmle}} package for details).
 }
 \description{
-NOTE: washb_tmle has not been fully implemented in this package version. Do not use yet.
+Estimate intention-to-treat parameters using targeted maximum likelihood estimation (TMLE)
 }
 \details{
-# Targeted maximum likelihood estimation (TMLE) for the WASH Benefits intention to treat (ITT) analyses
+The \code{washb_tmle} function is a convenience wrapper for the \code{\link[tmle]{tmle}} function. It estimates intention-to-treat effects in a trial using targeted maximum likelihood estimation. If the trial is pair-matched, be sure to specify the pair id in the \code{id} argument. If adjustment covariates (\code{W}) are specified, then by default they are pre-screened and the subset that is associated with the outcome based on a likelihood ratio test are used in the estimation. There are some other important defaults to be aware of. First, if the \code{prtr=NULL} (the default), then the function estimates the treatment mechanism rather than treating it as known (recommended). Second, you can specify \code{modelfit="sl"} to use the \code{\link[SuperLearner]{SuperLearner}} algorithm to fit the outcome and treatment models in the TMLE (the default).  Alternatively, you can specify \code{modelfit="glm"} to fit the outcome and treatment models using main effects regression (either linear or binomial, depending on the family). If you use super learning to fit models, then you can also specify the algorithm libraries using the \code{Q.SL.library} and \code{g.SL.library} arguments (pre-specified defaults are provided).
 
-The function does the following:
+Note: this function depends on the \code{\link[tmle]{tmle}} package, the \code{\link[SuperLearner]{SuperLearner}} package, as well as the internal washb_prescreen() and design_matrix() functions.
+
+Note: In the near future this function will allow for outcome censoring (missing data) using the \code{delta} argument.
 }
 \examples{
-
+# TBD
 
 }
 
