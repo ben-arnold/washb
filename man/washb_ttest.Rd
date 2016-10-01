@@ -2,7 +2,7 @@
 % Please edit documentation in R/washb_ttest.R
 \name{washb_ttest}
 \alias{washb_ttest}
-\title{washb_ttest}
+\title{Paired t-test for the WASH Benefits trials}
 \usage{
 washb_ttest(Y,tr,strat,contrast)
 }
@@ -16,9 +16,37 @@ washb_ttest(Y,tr,strat,contrast)
 \item{contrast}{vector of length 2 that includes the tr groups to contrast}
 }
 \value{
-
+data frame with mean difference (diff), 95% confidence intervals (ci.lb and ci.ub), t-statistic (t-stat), and p-value(p)
 }
 \description{
-washb_ttest
+Function to call the paired t-test for two different arms of the study.
+}
+\details{
+\code{washb_ttest} estimates a paired t-test for differences in means paired within randomization blocks.
+The arguments \code{Y},\code{tr}, and \code{strat} need to be from the same dataset.
+}
+\examples{
+#The washb_ttest function
+
+ #Load in Bangladesh anthropometry data.
+ data(washb_bd_anthro)
+ data(washb_bd_enrol)
+
+ washb_bd_enrol$svydate <- NULL
+ washb_bd_enrol$month <- NULL
+ laz <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+
+ # subset to the endline target children
+ laz <- subset(laz,svy==2)
+ laz <- subset(laz,tchild=="Target child")
+
+ # Drop children with extreme LAZ values
+ laz <- subset(laz,laz_x!=1)
+
+ laz$tr <- factor(laz$tr,levels=c("Control","Water","Sanitation","Handwashing","WSH","Nutrition","Nutrition + WSH"))
+
+
+ #Run paired ttest function for water vs. control comparison:
+ washb_ttest(Y=laz$laz,tr=laz$tr,strat=laz$block, contrast=c("Control","Water"))
 }
 
