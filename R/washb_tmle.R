@@ -91,7 +91,7 @@ washb_tmle <- function(Y,tr,W=NULL,id, Delta = rep(1,length(Y)),family="gaussian
     g.SL.library <- c("SL.glm")
   } else{
     cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
-    Wscreen <- washb_prescreen(Y=tmledat$Y,Ws=tmledat[,4:ncol(tmledat)],family=family,pval=pval,print=TRUE)
+    Wscreen <- washb_prescreen(Y=tmledat$Y,Ws=tmledat[,5:ncol(tmledat)],family=family,pval=pval,print=TRUE)
 
     cat("\n-----------------------------------------\n")
 
@@ -99,7 +99,7 @@ washb_tmle <- function(Y,tr,W=NULL,id, Delta = rep(1,length(Y)),family="gaussian
     # because the tmle() function cannot handle factors in W
     # this relies on an internal function called design_matrix included in the washb package
     if(length(Wscreen)>0){
-      Wselect <- subset(tmledat[,4:ncol(tmledat)],select=Wscreen)
+      Wselect <- subset(tmledat[,5:ncol(tmledat)],select=Wscreen)
       Wselect <- design_matrix(Wselect)
     } else{
       cat("\n\nNo covariates were associated with the outcome\nProceeding with no adjustment...")
