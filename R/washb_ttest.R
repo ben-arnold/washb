@@ -1,8 +1,10 @@
-#' washb_ttest
+#' Paired t-test for the WASH Benefits trials
 #'
 #' Function to call the paired t-test for two different arms of the study.
-#' Estimates the paired t-test for differences in means paired within randomization blocks.
-#' The arguments Y,tr, and strat below need to be from the same dataset:
+#'
+#' @details
+#' \code{washb_ttest} estimates a paired t-test for differences in means paired within randomization blocks.
+#' The arguments \code{Y},\code{tr}, and \code{strat} need to be from the same dataset.
 #'
 #'
 #' @usage
@@ -41,11 +43,6 @@
 #'
 #'  #Run paired ttest function for water vs. control comparison:
 #'  washb_ttest(Y=laz$laz,tr=laz$tr,strat=laz$block, contrast=c("Control","Water"))
-
-
-
-
-
 
 washb_ttest <- function(Y,tr,strat,contrast) {
   ttdat <- data.frame(Y=Y[tr==contrast[1]|tr==contrast[2]],
