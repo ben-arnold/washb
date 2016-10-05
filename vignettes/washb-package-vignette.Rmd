@@ -142,12 +142,12 @@ ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 #Load unblinded data into the "ad" object from sysdata
 
 #ad<-loadUnblindedData("washb_bd_diarCleanUnblinded")
-setwd("C:/Users/andre/Documents/washb/data")
+setwd("C:/Users/andre/Documents/washb package data/data")
 
 load("washb_bd_diarCleanUnblinded.RData")
 ad<-washb_bd_diarCleanUnblinded
-#data(washb_bd_diarCleanUnblinded)
-
+load("washb_bd_anthroCleanUnblinded.Rdata")
+laz<-washb_bd_anthroCleanUnblinded
 ```
 
 <br>
@@ -175,16 +175,7 @@ laz <- laz[order(laz$block,laz$clusterid,laz$dataid,laz$childid),]
 
 ```
 
-```{r, eval=T, include=FALSE, comment=NA}
-#Load unblinded data into the "laz" object from sysdata
-#laz<-loadUnblindedData("washb_bd_diarCleanUnblinded")
-#data(washb_bd_anthroCleanUnblinded)
-#laz<-washb_bd_anthroCleanUnblinded
-setwd("C:/Users/andre/Documents/washb/data")
-load("washb_bd_anthroCleanUnblinded.Rdata")
-laz<-washb_bd_anthroCleanUnblinded
 
-```
 
 Now that the dataset is cleaned and merged, the washb package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis. (With the exception that the primary outcome analysis used TMLE, targeted maximum likelihood estimation, rather than GLM models in estimating the adjusted treatment effects.) 
 
@@ -340,6 +331,13 @@ glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild,
 
 #Examine the treatment effect across subgroups with `objectname'$lincom
 glm.C.N.byChildType$lincom
+
+
+#Estimate subgroup analysis glm with washb_glm
+glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild, V="tchild", id=ad$clusterid, contrast=c("Control","Nutrition"), family="gaussian", verbose=FALSE)
+
+#Examine the treatment effect across subgroups with `objectname'$lincom
+glm.C.N.byChildType$lincom
 ```
 
 <br>
@@ -357,6 +355,78 @@ glm.C.N.byFoodSecurity <- washb_glm(Y=laz$laz,tr=laz$tr,pair=laz$block, W=W_hfia
 ```
 
 
+
+<br>
+<br>
+<br>
+
+#Function: washb_tmle
+####Estimate intention-to-treat parameters using targeted maximum likelihood estimation (TMLE), potentially adjusted for covariates and missing outcomes
+
+<br>
+
+The `washb_tmle` function is mainly a convenience wrapper for the tmle function. It estimates intention-to-treat effects in a trial using targeted maximum likelihood estimation (TMLE). In brief, the function does the following: it restricts the data to complete observations in the two arms listed in the `contrast` argument, it pre-screens covariates (`W`), if specified, to select those that have a univariate association with the outcome, and then it estimates the intention-to-treat effect using TMLE.  If `family='binomial`, then the function returns effects on the absolute, relative, and odds ratio scale. If `Delta` is specified (i.e., observations with missing outcomes are included), then the function will adjust the effects for missingness using inverse probability of censoring weights, with the weights estimated using super learning of `Pr(Delta|A,W)`.
+
+<br>
+
+If the analysis is pair-matched (as for primary outcomes), be sure to specify the pair ID in the `id` argument. Do not include pair IDs in the adjustment covariate set.
+
+<br>
+
+If adjustment covariates (`W`) are specified, then by default they are pre-screened and the subset that is associated with the outcome based on a likelihood ratio test are used in the estimation. There are some other important defaults to be aware of. First, if the argument `prtr=NULL` (the default), then the function estimates the treatment mechanism rather than treating it as known. Estimating the treatment mechanism theoretically increases precision and empirically we have found this as well (in the Bangladesh primary analysis). Second, the function uses the `SuperLearner` algorithm to adjust for covariates. The default algorithm library includes the simple mean, GLM, Bayes GLM with non-informative priors, generalized additive models (degree 2), and lasso (glmnet). You can type `listWrappers()` to see the full set of algorithms implemented in the super learner. If you just wish to use a main effects GLM model to adjust for the covariates, then you can specify `Q.SL.library="SL.glm`.
+
+<br>
+
+If you want to adjust for missing outcomes in the analysis, then you need to include observations that have a missing outcome (`Y`) with `Delta=0` for those observations. Observations with missing outcomes should have treatment (`tr`) and covariate (`W`) information, which are used to create weights for `Pr(Delta|A,W)`.
+
+<br>
+
+
+washb_tmle <- function(Y,tr,W=NULL,id,pair=NULL, Delta = rep(1,length(Y)),family="gaussian",contrast,prtr=NULL,Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet"),g.SL.library=Q.SL.library, pval=0.2, seed=NULL, print=TRUE) {
+
+
+__Note:__ this function depends on the `TMLE` package, the `SuperLearner` package, as well as the internal `washb_prescreen()` and `design_matrix()` functions.  
+
+<br>
+
+__Arguments:__  
+`Y`= Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)  
+`tr`= Binary treatment group variable, comparison group first  
+`W`= Data frame that includes adjustment covariates   
+`id`= ID variable for independent units. For pair-matched designs, this is the matched pair.  
+`pair`= (Optional if there is no missingness in pair-matching) The matched pair unit (In WASH Benefits, blocks). This argument it used to drop pair levels if there is missingness in one ore more levels of the contrast. There treatment missingness in the Kenya blocks (not all blocks contain all interventions) but not in the Bangladesh blocks,  
+`Delta`= indicator of missing outcome. 1 - observed, 0 - missing.  
+`family`= Outcome family: `gaussian` (continuous outcomes, like LAZ) or `binomial` (binary outcomes like diarrhea or stunting)
+`contrast`= Vector of length 2 that includes the treatment groups to contrast (e.g., `contrast=c('Control','Nutrition')`).
+`prtr`= Vector of length 2 that includes the probability of receiving each treatment in the contrast argument for the main trial, the control is double sized (allocation 2:1) so control vs. active intervention should be `prtr=c(0.67,0.33)`. in contrasts where the arms are equally sized (allocation 1:1), then `prtr=c(0.5,0.5)`. If `prtr=NULL` (the default), then the treatment mechanism Pr(A|W) is estimated, which is usually more efficient (higher precision of the estimates).
+`Q.SL.Library`= Library of algorithms to include in the SuperLearner for the outcome model
+`g.SL.library`= Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) (ignored if prtr is specified), and for the missingness model Pr(Delta|A,W) (if Delta is specified)
+`pval`= The p-value threshold used to pre-screen covariates (`W`) based on a likelihood ratio test in a univariate regression with the outcome (`Y`). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.
+`seed`= A seed for the pseudo-random cross-validation split used in model selection (use for perfectly reproducible results).
+`print`= Logical for printed output, defaults to true. If false, no output will be printed to the console if the returned object is saved to an R object.
+\
+\
+
+__Usage:__  
+```{r, eval=F}
+washb_tmle(Y,tr,W=NULL,id,pair=NULL, Delta = rep(1,length(Y)), family="gaussian", contrast, prtr=NULL, Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet") ,g.SL.library=Q.SL.library, pval=0.2, seed=NULL, print=TRUE) 
+```
+\
+
+```{r, warning=FALSE, message=FALSE, eval=T, cache=TRUE, comment=NA}
+
+adj.Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=Ws_diar, id=ad$clusterid, contrast=c("Control","Sanitation"), family=binomial(link='log'), verbose=FALSE)
+
+test<-washb_tmle(Y=ad$diar7d,tr=ad$tr, W=Ws_diar, id=ad$block, pair=ad$block, Delta = rep(1,length(ad$diar7d)),family="binomial",contrast=c("Control","Sanitation"),prtr=c(0.67,0.33), Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet"), pval=0.2, seed=12345, print=TRUE) 
+```
+
+```{r, include=F}
+#TEMP
+adFull<-ad
+ad[ad$tr=="Sanitation"& ad$block<10,]<-NA
+
+test<-washb_tmle(Y=ad$diar7d,tr=ad$tr, W=Ws_diar, id=ad$block, pair=ad$block, Delta = rep(1,length(ad$diar7d)),family="binomial",contrast=c("Control","Sanitation"),prtr=c(0.67,0.33), Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet"), pval=0.2, seed=12345, print=TRUE) 
+```
 
 <br>
 <br>
@@ -674,7 +744,7 @@ unadj.glm.byFoodSecurity <- lapply(h1.contrasts,washb_glm,Y=laz$laz,tr=laz$tr,pa
 ```
 
 
-```{r, include=FALSE, eval=F, comment=NA}
+#```{r, include=FALSE, eval=F, comment=NA}
 #Table of Primary Outcome Results  
 
 ##7-day diarrheal disease recall outcome  
@@ -862,4 +932,4 @@ WSH + Nutrition |`r unadj.glm.byFoodSecurity[[6]]$lincom[1,1]` | `r unadj.glm.by
 <br>
 <br>
 <br>
-```
+#```
