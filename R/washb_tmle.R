@@ -18,6 +18,7 @@
 #' @param tr Binary treatment group variable, comparison group first
 #' @param W Data frame that includes adjustment covariates
 #' @param id ID variable for independent units. For pair-matched designs, this is the matched pair.
+#' @param pair (Optional if there is no missingness in pair-matching) The matched pair unit (In WASH Benefits, blocks). This argument it used to drop pair levels if there is missingness in one ore more levels of the contrast. There treatment missingness in the Kenya blocks (not all blocks contain all interventions) but not in the Bangladesh blocks,
 #' @param Delta indicator of missing outcome. 1 - observed, 0 - missing.
 #' @param family Outcome family: \code{gaussian} (continuous outcomes, like LAZ) or \code{binomial} (binary outcomes like diarrhea or stunting)
 #' @param contrast Vector of length 2 that includes the treatment groups to contrast (e.g., \code{contrast=c('Control','Nutrition')}).
@@ -26,6 +27,7 @@
 #' @param g.SL.library Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) (ignored if prtr is specified), and for the missingness model Pr(Delta|A,W) (if Delta is specified)
 #' @param pval The p-value threshold used to pre-screen covariates (\code{W}) based on a likelihood ratio test in a univariate regression with the outcome (\code{Y}). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.
 #' @param seed A seed for the pseudo-random cross-validation split used in model selection (use for perfectly reproducible results).
+#' @param print Logical for printed output, defaults to true. If false, no output will be printed to the console if the returned object is saved to an R object.
 #'
 #' @return A \code{tmle()} fit object (see the \code{\link[tmle]{tmle}} package for details). The \code{$estimates} list includes parameter estimates along with variance estimates and confidence intervals.
 #'
@@ -35,25 +37,41 @@
 #' Balzer LB, van der Laan MJ, Petersen ML, SEARCH Collaboration. Adaptive pre-specification in randomized trials with and without pair-matching. Stat Med. 2016; doi:10.1002/sim.7023 \link{http://onlinelibrary.wiley.com/doi/10.1002/sim.7023/abstract}
 #'
 #' @examples
-#' # TBD
+#' #TBD
 #'
 #'@export
+#'
+#'
+#' @examples
 
 
-washb_tmle <- function(Y,tr,W=NULL,id, Delta = rep(1,length(Y)),family="gaussian",contrast,prtr=NULL,Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet"),g.SL.library=Q.SL.library, pval=0.2, seed=NULL) {
+washb_tmle <- function(Y,tr,W=NULL,id,pair=NULL, Delta = rep(1,length(Y)),family="gaussian",contrast,prtr=NULL,Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet"),g.SL.library=Q.SL.library, pval=0.2, seed=NULL, print=TRUE) {
 
   require(tmle)
   require(SuperLearner)
+  #Create empty variable used in subgroup analysis
+  Subgroups=NULL
 
   # Make a data.frame, restricted to the 2 arms in the contrast
   if(is.null(W)){
+    if(is.null(pair)){
     tmledat <- data.frame(
       id=id[tr==contrast[1]|tr==contrast[2]],
       Y=Y[tr==contrast[1]|tr==contrast[2]],
       Delta=Delta[tr==contrast[1]|tr==contrast[2]],
       tr=tr[tr==contrast[1]|tr==contrast[2]]
     )
+    } else{
+      tmledat <- data.frame(
+        id=id[tr==contrast[1]|tr==contrast[2]],
+        Y=Y[tr==contrast[1]|tr==contrast[2]],
+        Delta=Delta[tr==contrast[1]|tr==contrast[2]],
+        tr=tr[tr==contrast[1]|tr==contrast[2]],
+        pair=pair[tr==contrast[1]|tr==contrast[2]]
+      )
+    }
   } else{
+    if(is.null(pair)){
     tmledat <- data.frame(
       id=id[tr==contrast[1]|tr==contrast[2]],
       Y=Y[tr==contrast[1]|tr==contrast[2]],
@@ -61,15 +79,52 @@ washb_tmle <- function(Y,tr,W=NULL,id, Delta = rep(1,length(Y)),family="gaussian
       tr=tr[tr==contrast[1]|tr==contrast[2]],
       W[tr==contrast[1]|tr==contrast[2],]
     )
+    } else{
+      tmledat <- data.frame(
+        id=id[tr==contrast[1]|tr==contrast[2]],
+        Y=Y[tr==contrast[1]|tr==contrast[2]],
+        Delta=Delta[tr==contrast[1]|tr==contrast[2]],
+        tr=tr[tr==contrast[1]|tr==contrast[2]],
+        W[tr==contrast[1]|tr==contrast[2],],
+        pair=pair[tr==contrast[1]|tr==contrast[2]]
+      )
+    }
   }
 
   tmledat$tr <- factor(tmledat$tr,levels=contrast[1:2])
+
+
+
+
+  #####
+  #Block Dropping
+  #####
+  if(!is.null(pair)){
+    #Drop blocks missing comparing arm 1
+    n.orig <- dim(tmledat)[1]
+    miss<-NULL
+    activeOnly<-((subset(tmledat,tr==contrast[1])))
+    nomiss<-sort(unique(activeOnly$pair))
+    miss1<-(unique(pair)[which(!( unique(pair)%in%(nomiss) ))])
+
+    #Drop blocks missing comparing arm 2
+    activeOnly2<-((subset(tmledat,tr==contrast[2])))
+    nomiss2<-sort(unique(activeOnly2$pair))
+    miss2<-(unique(pair)[which(!( unique(pair)%in%(nomiss2) ))])
+    miss<-append(miss1,miss2)
+    tmledat<-subset(tmledat,!(pair %in% miss))
+    n.sub  <- dim(tmledat)[1]
+    if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Starting N:  ",n.orig,"\nN after block dropping: ",n.sub)
+    if(print==TRUE)if(n.orig>n.sub) cat("\n-----------------------------------------\n","Pairs/blocks dropped due to missingness in at least one treatment level:\n",sort(unique(miss)),"\n\nDropping",n.orig-n.sub,"observations due to missing pairs.","\n-----------------------------------------\n")
+  }
+
+
 
   # restrict to complete cases (print the number of dropped observations, if any)
   n_orig <- dim(tmledat)[1]
   tmledat <- tmledat[complete.cases(tmledat),]
   n_sub  <- dim(tmledat)[1]
-  if(n_orig>n_sub) cat("\n-----------------------------------------\nDropping",n_orig-n_sub,"observations due to missing\nvalues in one or more variables\n"," Final sample size:",n_sub,"\n-----------------------------------------\n")
+  if(print==TRUE){if(n_orig>n_sub) cat("\n-----------------------------------------\nDropping",n_orig-n_sub,"observations due to missing\nvalues in one or more variables\n"," Final sample size:",n_sub,"\n-----------------------------------------\n")}
 
   # if specified, create a vector of treatment probabilities, depending on the type of contrast
   # for control vs. intervention, the control prob should be 2/3 and tr prob should be 1/3 (allocation 2:1)
@@ -90,10 +145,10 @@ washb_tmle <- function(Y,tr,W=NULL,id, Delta = rep(1,length(Y)),family="gaussian
     Q.SL.library <- c("SL.glm")
     g.SL.library <- c("SL.glm")
   } else{
-    cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
-    Wscreen <- washb_prescreen(Y=tmledat$Y,Ws=tmledat[,4:ncol(tmledat)],family=family,pval=pval,print=TRUE)
+    if(print==TRUE){cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")}
+    Wscreen <- washb_prescreen(Y=tmledat$Y,Ws=tmledat[,5:ncol(tmledat)],family=family,pval=pval,print=print)
 
-    cat("\n-----------------------------------------\n")
+    if(print==TRUE){cat("\n-----------------------------------------\n")}
 
     # for covariates that are factors, create indicator variables
     # because the tmle() function cannot handle factors in W
@@ -102,7 +157,7 @@ washb_tmle <- function(Y,tr,W=NULL,id, Delta = rep(1,length(Y)),family="gaussian
       Wselect <- subset(tmledat[,4:ncol(tmledat)],select=Wscreen)
       Wselect <- design_matrix(Wselect)
     } else{
-      cat("\n\nNo covariates were associated with the outcome\nProceeding with no adjustment...")
+      if(print==TRUE){cat("\n\nNo covariates were associated with the outcome\nProceeding with no adjustment...")}
       # create a data frame with 2 columns of 1s -- allows tmle() to run, but does no adjustment
       Wselect <- data.frame(w1=rep(1,length(tmledat$Y)),w2=rep(1,length(tmledat$Y)))
     }
@@ -127,9 +182,10 @@ washb_tmle <- function(Y,tr,W=NULL,id, Delta = rep(1,length(Y)),family="gaussian
                    g1W=tr_p,
                    g.SL.library=g.SL.library
   )
+  if(print==TRUE){
   cat("\n-----------------------------------------\nEstimation Results:\n-----------------------------------------\n")
   print(summary(tmle_fit))
   cat("\n-----------------------------------------\n")
-
+  }
   return(tmle_fit)
 }

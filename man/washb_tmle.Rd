@@ -4,10 +4,10 @@
 \alias{washb_tmle}
 \title{Target maximum likelihood estimation of intention-to-treat effects in the WASH Benefits trials}
 \usage{
-washb_tmle(Y, tr, W = NULL, id, Delta = rep(1, length(Y)),
+washb_tmle(Y, tr, W = NULL, id, pair = NULL, Delta = rep(1, length(Y)),
   family = "gaussian", contrast, prtr = NULL, Q.SL.library = c("SL.mean",
   "SL.glm", "SL.bayesglm", "SL.gam", "SL.glmnet"),
-  g.SL.library = Q.SL.library, pval = 0.2, seed = NULL)
+  g.SL.library = Q.SL.library, pval = 0.2, seed = NULL, print = TRUE)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
@@ -17,6 +17,8 @@ washb_tmle(Y, tr, W = NULL, id, Delta = rep(1, length(Y)),
 \item{W}{Data frame that includes adjustment covariates}
 
 \item{id}{ID variable for independent units. For pair-matched designs, this is the matched pair.}
+
+\item{pair}{(Optional if there is no missingness in pair-matching) The matched pair unit (In WASH Benefits, blocks). This argument it used to drop pair levels if there is missingness in one ore more levels of the contrast. There treatment missingness in the Kenya blocks (not all blocks contain all interventions) but not in the Bangladesh blocks,}
 
 \item{Delta}{indicator of missing outcome. 1 - observed, 0 - missing.}
 
@@ -31,6 +33,8 @@ washb_tmle(Y, tr, W = NULL, id, Delta = rep(1, length(Y)),
 \item{pval}{The p-value threshold used to pre-screen covariates (\code{W}) based on a likelihood ratio test in a univariate regression with the outcome (\code{Y}). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.}
 
 \item{seed}{A seed for the pseudo-random cross-validation split used in model selection (use for perfectly reproducible results).}
+
+\item{print}{Logical for printed output, defaults to true. If false, no output will be printed to the console if the returned object is saved to an R object.}
 
 \item{Q.SL.Library}{Library of algorithms to include in the SuperLearner for the outcome model}
 }
@@ -52,7 +56,7 @@ If you want to adjust for missing outcomes in the analysis, then you need to inc
 Note: this function depends on the \code{\link[tmle]{tmle}} package, the \code{\link[SuperLearner]{SuperLearner}} package, as well as the internal washb_prescreen() and design_matrix() functions.
 }
 \examples{
-# TBD
+#TBD
 
 }
 \references{
