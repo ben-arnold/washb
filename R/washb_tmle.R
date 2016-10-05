@@ -178,7 +178,7 @@ washb_tmle <- function(Y,tr,W=NULL,id,pair=NULL, Delta = rep(1,length(Y)),family
                    A=tmle_A,
                    W=Wselect,
                    Delta=tmle_Delta,
-                   id=tmle_id,
+                   id=as.numeric(tmle_id),
                    family=family,
                    Q.SL.library=Q.SL.library,
                    g1W=tr_p,
