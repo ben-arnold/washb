@@ -77,10 +77,15 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
     stop("P-value threshold not set between 0 and 1.")
   }
 
+  # ensure Ws are a data frame
+  Ws <- data.frame(Ws)
+
   dat <- data.frame(Ws,Y)
   dat <- dat[complete.cases(dat),]
   nW <- ncol(Ws)
-  LRp <- rep(NA,nW)
+  LRp <- matrix(rep(NA,nW),nrow=nW,ncol=1)
+  rownames(LRp) <- names(Ws)
+  colnames(LRp) <- "P-value"
   if(family[1]!="neg.binom"){
     for(i in 1:nW) {
       dat$W <- dat[,i]
@@ -102,11 +107,22 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
       }
     }
   p20 <- ifelse(LRp<pval,1,0)
+
   if(print==TRUE){
     cat("\nLikelihood Ratio Test P-values:\n")
-    print(cbind(names(Ws),paste("P =",sprintf("%1.3f",LRp))))
-    cat(paste("\n\nCovariates selected (P<",pval,"):\n",sep=""))
-    print(cbind(names(Ws)[p20==1],paste("P =",sprintf("%1.3f",LRp[p20==1]))))
-    }
+    print(round(LRp,5))
+    if(sum(p20)>0) {
+      LRps <- matrix(LRp[p20==1,],ncol=1)
+      rownames(LRps) <- names(Ws)[p20==1]
+      colnames(LRps) <- "P-value"
+      cat(paste("\n\nCovariates selected (P<",pval,"):\n",sep=""))
+      print(LRps)
+      } else{
+        cat(paste("\nNo covariates were associated with the outcome at P<",pval))
+      }
+  }
+
   return(names(Ws)[p20==1])
+
 }
+
