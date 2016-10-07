@@ -16,6 +16,8 @@ Imports:
     coin,
     plyr,
     metafor,
+    SuperLearner,
+    tmle
 Suggests:
     MASS,
     knitr,
