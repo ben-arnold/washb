@@ -62,8 +62,8 @@ Note: this function depends on the \code{\link[tmle]{tmle}} package, the \code{\
 
 }
 \references{
-Gruber S, van der Laan M. tmle: An R Package for Targeted Maximum Likelihood Estimation. J Stat Softw. 2012;51: 1–35. \link{https://www.jstatsoft.org/article/view/v051i13}
+Gruber S, van der Laan M. tmle: An R Package for Targeted Maximum Likelihood Estimation. J Stat Softw. 2012;51: 1–35. (https://www.jstatsoft.org/article/view/v051i13)
 
-Balzer LB, van der Laan MJ, Petersen ML, SEARCH Collaboration. Adaptive pre-specification in randomized trials with and without pair-matching. Stat Med. 2016; doi:10.1002/sim.7023 \link{http://onlinelibrary.wiley.com/doi/10.1002/sim.7023/abstract}
+Balzer LB, van der Laan MJ, Petersen ML, SEARCH Collaboration. Adaptive pre-specification in randomized trials with and without pair-matching. Stat Med. 2016; doi:10.1002/sim.7023 (http://onlinelibrary.wiley.com/doi/10.1002/sim.7023/abstract)
 }
 

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_mh. washb 0.1</title>
+<title>washb_mh. washb 0.1.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.1</a>
+      <a class="brand" href="index.html">washb 0.1.1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -106,16 +106,21 @@ The arguments Y,tr,strat, below need to be from the same dataset.</p>
 
 <span class="comment">#Load  diarrhea data</span>
 <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/library'>library</a></span><span class="keyword">(</span><span class="symbol">washb</span><span class="keyword">)</span>
-<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_diar</span><span class="keyword">)</span>
-<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">)</span>
-
+<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_diar</span><span class="keyword">)</span></div>
+<strong class='warning'>Warning message:
+data set ‘washb_bd_diar’ not found</strong>
+<div class='input'><span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">)</span></div>
+<strong class='warning'>Warning message:
+data set ‘washb_bd_enrol’ not found</strong>
+<div class='input'>
  <span class="comment"># drop svydate and month because they are superceded in the child level diarrhea data</span>
 <span class="symbol">washb_bd_enrol</span><span class="keyword">$</span><span class="symbol">svydate</span> <span class="assignement">&lt;-</span> NULL
 <span class="symbol">washb_bd_enrol</span><span class="keyword">$</span><span class="symbol">month</span> <span class="assignement">&lt;-</span> NULL
 
 <span class="comment"># merge the baseline dataset to the follow-up dataset</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_diar</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_diar</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span></div>
+<strong class='error'>Error in fix.by(by.x, x): &#39;by&#39; must specify a uniquely valid column</strong>
+<div class='input'>
 <span class="comment"># subset to the relevant measurement</span>
 <span class="comment"># Year 1 or Year 2</span>
 <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">1</span><span class="keyword">|</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
@@ -145,13 +150,13 @@ The arguments Y,tr,strat, below need to be from the same dataset.</p>
 <span class="comment">#Apply washb_mh to the water vs. control arm contrast.</span>
 <span class="functioncall"><a href='washb_mh.html'>washb_mh</a></span><span class="keyword">(</span><span class="argument">Y</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">,</span><span class="argument">tr</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span><span class="keyword">,</span> <span class="argument">contrast</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"Control"</span><span class="keyword">,</span><span class="string">"Water"</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">strat</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">block</span><span class="keyword">,</span><span class="argument">measure</span><span class="argument">=</span><span class="string">"RR"</span><span class="keyword">)</span></div>
 <div class='output'>       PR,      ci.lb      ci.ub      logPR   se.logPR          Z          p 
- 0.7898050  0.5793340  1.0767399 -0.2359692  0.1581187 -1.4923542  0.1356063 
+ 0.8882606  0.6966217  1.1326188 -0.1184901  0.1239934 -0.9556162  0.3392662 
 </div>
 <div class='input'>
 <span class="comment">#Return the risk difference instead of the risk ration:</span>
 <span class="functioncall"><a href='washb_mh.html'>washb_mh</a></span><span class="keyword">(</span><span class="argument">Y</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">,</span><span class="argument">tr</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span><span class="keyword">,</span> <span class="argument">contrast</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"Control"</span><span class="keyword">,</span><span class="string">"Water"</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">strat</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">block</span><span class="keyword">,</span><span class="argument">measure</span><span class="argument">=</span><span class="string">"RD"</span><span class="keyword">)</span></div>
 <div class='output'>          RD        se.RD        ci.lb        ci.ub            Z            p 
--0.008315341  0.005348086 -0.018797397  0.002166714 -1.554825694  0.119987588 
+-0.006287385  0.006478159 -0.018984344  0.006409574 -0.970551083  0.331771875 
 </div>
 <div class='input'>
 
@@ -160,13 +165,20 @@ The arguments Y,tr,strat, below need to be from the same dataset.</p>
 <span class="symbol">diff.h1</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/t'>t</a></span><span class="keyword">(</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/lapply'>sapply</a></span><span class="keyword">(</span><span class="symbol">h1.contrasts</span><span class="keyword">,</span><span class="symbol">washb_mh</span><span class="keyword">,</span><span class="argument">Y</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">,</span><span class="argument">tr</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span><span class="keyword">,</span><span class="argument">strat</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">block</span><span class="keyword">,</span><span class="argument">measure</span><span class="argument">=</span><span class="string">"RR"</span><span class="keyword">)</span><span class="keyword">)</span>
 <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/colnames'>rownames</a></span><span class="keyword">(</span><span class="symbol">diff.h1</span><span class="keyword">)</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"Water v C"</span><span class="keyword">,</span><span class="string">"Sanitation v C"</span><span class="keyword">,</span><span class="string">"Handwashing v C"</span><span class="keyword">,</span><span class="string">"WSH v C"</span><span class="keyword">,</span><span class="string">"Nutrition v C"</span><span class="keyword">,</span><span class="string">"Nutrition + WSH v C"</span><span class="keyword">)</span>
 <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/print'>print</a></span><span class="keyword">(</span><span class="symbol">diff.h1</span><span class="keyword">)</span></div>
-<div class='output'>                          PR,     ci.lb    ci.ub       logPR  se.logPR          Z           p
-Water v C           0.7898050 0.5793340 1.076740 -0.23596915 0.1581187 -1.4923542 0.135606316
-Sanitation v C      1.1676839 0.8962390 1.521342  0.15502223 0.1349874  1.1484202 0.250795139
-Handwashing v C     1.2307787 0.9493770 1.595590  0.20764708 0.1324495  1.5677447 0.116940720
-WSH v C             0.9375256 0.6999909 1.255665 -0.06451118 0.1490725 -0.4327504 0.665196128
-Nutrition v C       1.0946230 0.8303822 1.442949  0.09040999 0.1409614  0.6413813 0.521274952
-Nutrition + WSH v C 1.4996864 1.1705008 1.921450  0.40525600 0.1264433  3.2050413 0.001350431
+<div class='output'>                          PR,     ci.lb     ci.ub      logPR  se.logPR          Z
+Water v C           0.8882606 0.6966217 1.1326188 -0.1184901 0.1239934 -0.9556162
+Sanitation v C      0.6084525 0.4569245 0.8102311 -0.4968365 0.1461255 -3.4000675
+Handwashing v C     0.6005955 0.4529372 0.7963906 -0.5098336 0.1439660 -3.5413483
+WSH v C             0.6916926 0.5309844 0.9010409 -0.3686137 0.1349050 -2.7323934
+Nutrition v C       0.6437575 0.4872484 0.8505389 -0.4404332 0.1421190 -3.0990454
+Nutrition + WSH v C 0.6193351 0.4708506 0.8146448 -0.4791088 0.1398524 -3.4258172
+                               p
+Water v C           0.3392661732
+Sanitation v C      0.0006736921
+Handwashing v C     0.0003980878
+WSH v C             0.0062876008
+Nutrition v C       0.0019414528
+Nutrition + WSH v C 0.0006129528
 </div>
 <div class='input'></div></pre>
   </div>

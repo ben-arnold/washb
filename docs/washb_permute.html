@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_permute. washb 0.1</title>
+<title>washb_permute. washb 0.1.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.1</a>
+      <a class="brand" href="index.html">washb 0.1.1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -133,16 +133,21 @@ Inference in Statistics, Social, and Biomedical Sciences. Cambridge University P
 <span class="comment">#######################</span>
 <span class="comment">#Load and clean data</span>
 <span class="comment">#######################</span>
-<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_diar</span><span class="keyword">)</span>
-<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">)</span>
-
+<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_diar</span><span class="keyword">)</span></div>
+<strong class='warning'>Warning message:
+data set ‘washb_bd_diar’ not found</strong>
+<div class='input'><span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">)</span></div>
+<strong class='warning'>Warning message:
+data set ‘washb_bd_enrol’ not found</strong>
+<div class='input'>
  <span class="comment"># drop svydate and month because they are superceded in the child level diarrhea data</span>
 <span class="symbol">washb_bd_enrol</span><span class="keyword">$</span><span class="symbol">svydate</span> <span class="assignement">&lt;-</span> NULL
 <span class="symbol">washb_bd_enrol</span><span class="keyword">$</span><span class="symbol">month</span> <span class="assignement">&lt;-</span> NULL
 
 <span class="comment"># merge the baseline dataset to the follow-up dataset</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_diar</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_diar</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span></div>
+<strong class='error'>Error in fix.by(by.x, x): &#39;by&#39; must specify a uniquely valid column</strong>
+<div class='input'>
 <span class="comment"># subset to the relevant measurement</span>
 <span class="comment"># Year 1 or Year 2</span>
 <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">1</span><span class="keyword">|</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
@@ -174,7 +179,7 @@ Inference in Statistics, Social, and Biomedical Sciences. Cambridge University P
 
 data:  y by x (pos, neg) 
 	 stratified by block
-Z = 1.9823, p-value = 0.04724
+Z = 0.87119, p-value = 0.3862
 alternative hypothesis: true mu is not equal to 0
 
 </div>
@@ -184,7 +189,7 @@ alternative hypothesis: true mu is not equal to 0
 
 data:  y by x (pos, neg) 
 	 stratified by block
-Z = -0.397, p-value = 0.6927
+Z = 3.551, p-value = 0.00036
 alternative hypothesis: true mu is not equal to 0
 
 </div>
@@ -194,7 +199,7 @@ alternative hypothesis: true mu is not equal to 0
 
 data:  y by x (pos, neg) 
 	 stratified by block
-Z = -0.90978, p-value = 0.3657
+Z = 3.4504, p-value = 0.00045
 alternative hypothesis: true mu is not equal to 0
 
 </div>
@@ -204,7 +209,7 @@ alternative hypothesis: true mu is not equal to 0
 
 data:  y by x (pos, neg) 
 	 stratified by block
-Z = 1.3397, p-value = 0.1821
+Z = 2.6451, p-value = 0.00753
 alternative hypothesis: true mu is not equal to 0
 
 </div>
@@ -214,7 +219,7 @@ alternative hypothesis: true mu is not equal to 0
 
 data:  y by x (pos, neg) 
 	 stratified by block
-Z = -0.28782, p-value = 0.7758
+Z = 3.0269, p-value = 0.00214
 alternative hypothesis: true mu is not equal to 0
 
 </div>
@@ -224,7 +229,7 @@ alternative hypothesis: true mu is not equal to 0
 
 data:  y by x (pos, neg) 
 	 stratified by block
-Z = -1.8392, p-value = 0.06592
+Z = 3.7068, p-value = 0.00009
 alternative hypothesis: true mu is not equal to 0
 
 </div>
@@ -237,12 +242,12 @@ alternative hypothesis: true mu is not equal to 0
 <span class="comment"># print results</span>
 <span class="symbol">diar_h1_pval_unadj</span></div>
 <div class='output'>                       [,1]
-Water v C           0.04724
-Sanitation v C      0.69268
-Handwashing v C     0.36567
-WSH v C             0.18212
-Nutrition v C       0.77579
-Nutrition + WSH v C 0.06592
+Water v C           0.38623
+Sanitation v C      0.00036
+Handwashing v C     0.00045
+WSH v C             0.00753
+Nutrition v C       0.00214
+Nutrition + WSH v C 0.00009
 </div></pre>
   </div>
   <div class="span4 sidebar">

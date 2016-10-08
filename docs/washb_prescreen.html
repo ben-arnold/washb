@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_prescreen. washb 0.1</title>
+<title>washb_prescreen. washb 0.1.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.1</a>
+      <a class="brand" href="index.html">washb 0.1.1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -94,16 +94,21 @@ Function returns the list of variable names with a likelihood ratio test p-value
 
 <span class="comment">#Load diarrhea data:</span>
 <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/library'>library</a></span><span class="keyword">(</span><span class="symbol">washb</span><span class="keyword">)</span>
-<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_diar</span><span class="keyword">)</span>
-<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">)</span>
-
+<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_diar</span><span class="keyword">)</span></div>
+<strong class='warning'>Warning message:
+data set ‘washb_bd_diar’ not found</strong>
+<div class='input'><span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">)</span></div>
+<strong class='warning'>Warning message:
+data set ‘washb_bd_enrol’ not found</strong>
+<div class='input'>
  <span class="comment"># drop svydate and month because they are superceded in the child level diarrhea data</span>
 <span class="symbol">washb_bd_enrol</span><span class="keyword">$</span><span class="symbol">svydate</span> <span class="assignement">&lt;-</span> NULL
 <span class="symbol">washb_bd_enrol</span><span class="keyword">$</span><span class="symbol">month</span> <span class="assignement">&lt;-</span> NULL
 
 <span class="comment"># merge the baseline dataset to the follow-up dataset</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_diar</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_diar</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span></div>
+<strong class='error'>Error in fix.by(by.x, x): &#39;by&#39; must specify a uniquely valid column</strong>
+<div class='input'>
 <span class="comment"># subset to the relevant measurement</span>
 <span class="comment"># Year 1 or Year 2</span>
 <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">1</span><span class="keyword">|</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
@@ -135,54 +140,54 @@ Function returns the list of variable names with a likelihood ratio test p-value
 glm.fit: fitted probabilities numerically 0 or 1 occurred</strong>
 <div class='output'>
 Likelihood Ratio Test P-values:
-      [,1]             [,2]       
- [1,] &quot;fracode&quot;        &quot;P = 0.125&quot;
- [2,] &quot;month&quot;          &quot;P = 0.000&quot;
- [3,] &quot;agedays&quot;        &quot;P = 0.000&quot;
- [4,] &quot;sex&quot;            &quot;P = 0.159&quot;
- [5,] &quot;momage&quot;         &quot;P = 0.858&quot;
- [6,] &quot;momedu&quot;         &quot;P = 0.001&quot;
- [7,] &quot;momheight&quot;      &quot;P = 0.837&quot;
- [8,] &quot;hfiacat&quot;        &quot;P = 0.000&quot;
- [9,] &quot;Nlt18&quot;          &quot;P = 0.146&quot;
-[10,] &quot;Ncomp&quot;          &quot;P = 0.858&quot;
-[11,] &quot;watmin&quot;         &quot;P = 0.017&quot;
-[12,] &quot;elec&quot;           &quot;P = 0.002&quot;
-[13,] &quot;floor&quot;          &quot;P = 0.009&quot;
-[14,] &quot;walls&quot;          &quot;P = 0.173&quot;
-[15,] &quot;roof&quot;           &quot;P = 0.446&quot;
-[16,] &quot;asset_wardrobe&quot; &quot;P = 0.003&quot;
-[17,] &quot;asset_table&quot;    &quot;P = 0.278&quot;
-[18,] &quot;asset_chair&quot;    &quot;P = 0.264&quot;
-[19,] &quot;asset_khat&quot;     &quot;P = 0.054&quot;
-[20,] &quot;asset_chouki&quot;   &quot;P = 0.883&quot;
-[21,] &quot;asset_tv&quot;       &quot;P = 0.109&quot;
-[22,] &quot;asset_refrig&quot;   &quot;P = 0.015&quot;
-[23,] &quot;asset_bike&quot;     &quot;P = 0.005&quot;
-[24,] &quot;asset_moto&quot;     &quot;P = 0.233&quot;
-[25,] &quot;asset_sewmach&quot;  &quot;P = 0.004&quot;
-[26,] &quot;asset_mobile&quot;   &quot;P = 0.713&quot;
+               P-value
+fracode        0.12509
+month          0.00000
+agedays        0.00001
+sex            0.15806
+momage         0.85834
+momedu         0.00113
+momheight      0.83701
+hfiacat        0.00044
+Nlt18          0.14600
+Ncomp          0.85845
+watmin         0.01749
+elec           0.00166
+floor          0.00882
+walls          0.17286
+roof           0.44633
+asset_wardrobe 0.00334
+asset_table    0.27762
+asset_chair    0.26366
+asset_khat     0.05397
+asset_chouki   0.88290
+asset_tv       0.10924
+asset_refrig   0.01527
+asset_bike     0.00498
+asset_moto     0.23256
+asset_sewmach  0.00352
+asset_mobile   0.71326
 
 
 Covariates selected (P&lt;0.2):
-      [,1]             [,2]       
- [1,] &quot;fracode&quot;        &quot;P = 0.125&quot;
- [2,] &quot;month&quot;          &quot;P = 0.000&quot;
- [3,] &quot;agedays&quot;        &quot;P = 0.000&quot;
- [4,] &quot;sex&quot;            &quot;P = 0.159&quot;
- [5,] &quot;momedu&quot;         &quot;P = 0.001&quot;
- [6,] &quot;hfiacat&quot;        &quot;P = 0.000&quot;
- [7,] &quot;Nlt18&quot;          &quot;P = 0.146&quot;
- [8,] &quot;watmin&quot;         &quot;P = 0.017&quot;
- [9,] &quot;elec&quot;           &quot;P = 0.002&quot;
-[10,] &quot;floor&quot;          &quot;P = 0.009&quot;
-[11,] &quot;walls&quot;          &quot;P = 0.173&quot;
-[12,] &quot;asset_wardrobe&quot; &quot;P = 0.003&quot;
-[13,] &quot;asset_khat&quot;     &quot;P = 0.054&quot;
-[14,] &quot;asset_tv&quot;       &quot;P = 0.109&quot;
-[15,] &quot;asset_refrig&quot;   &quot;P = 0.015&quot;
-[16,] &quot;asset_bike&quot;     &quot;P = 0.005&quot;
-[17,] &quot;asset_sewmach&quot;  &quot;P = 0.004&quot;
+                      P-value
+fracode        0.125086717080
+month          0.000001277665
+agedays        0.000008587985
+sex            0.158058733890
+momedu         0.001131482118
+hfiacat        0.000436393481
+Nlt18          0.145996390524
+watmin         0.017492576342
+elec           0.001659255089
+floor          0.008816329210
+walls          0.172858463464
+asset_wardrobe 0.003338351150
+asset_khat     0.053968452008
+asset_tv       0.109235025959
+asset_refrig   0.015267527279
+asset_bike     0.004977085684
+asset_sewmach  0.003515782703
 </div>
 <div class='input'>
 <span class="comment">###Rerun the function with a stricter p=value</span>
@@ -191,58 +196,58 @@ Covariates selected (P&lt;0.2):
 glm.fit: fitted probabilities numerically 0 or 1 occurred</strong>
 <div class='output'>
 Likelihood Ratio Test P-values:
-      [,1]             [,2]       
- [1,] &quot;fracode&quot;        &quot;P = 0.125&quot;
- [2,] &quot;month&quot;          &quot;P = 0.000&quot;
- [3,] &quot;agedays&quot;        &quot;P = 0.000&quot;
- [4,] &quot;sex&quot;            &quot;P = 0.159&quot;
- [5,] &quot;momage&quot;         &quot;P = 0.858&quot;
- [6,] &quot;momedu&quot;         &quot;P = 0.001&quot;
- [7,] &quot;momheight&quot;      &quot;P = 0.837&quot;
- [8,] &quot;hfiacat&quot;        &quot;P = 0.000&quot;
- [9,] &quot;Nlt18&quot;          &quot;P = 0.146&quot;
-[10,] &quot;Ncomp&quot;          &quot;P = 0.858&quot;
-[11,] &quot;watmin&quot;         &quot;P = 0.017&quot;
-[12,] &quot;elec&quot;           &quot;P = 0.002&quot;
-[13,] &quot;floor&quot;          &quot;P = 0.009&quot;
-[14,] &quot;walls&quot;          &quot;P = 0.173&quot;
-[15,] &quot;roof&quot;           &quot;P = 0.446&quot;
-[16,] &quot;asset_wardrobe&quot; &quot;P = 0.003&quot;
-[17,] &quot;asset_table&quot;    &quot;P = 0.278&quot;
-[18,] &quot;asset_chair&quot;    &quot;P = 0.264&quot;
-[19,] &quot;asset_khat&quot;     &quot;P = 0.054&quot;
-[20,] &quot;asset_chouki&quot;   &quot;P = 0.883&quot;
-[21,] &quot;asset_tv&quot;       &quot;P = 0.109&quot;
-[22,] &quot;asset_refrig&quot;   &quot;P = 0.015&quot;
-[23,] &quot;asset_bike&quot;     &quot;P = 0.005&quot;
-[24,] &quot;asset_moto&quot;     &quot;P = 0.233&quot;
-[25,] &quot;asset_sewmach&quot;  &quot;P = 0.004&quot;
-[26,] &quot;asset_mobile&quot;   &quot;P = 0.713&quot;
+               P-value
+fracode        0.12509
+month          0.00000
+agedays        0.00001
+sex            0.15806
+momage         0.85834
+momedu         0.00113
+momheight      0.83701
+hfiacat        0.00044
+Nlt18          0.14600
+Ncomp          0.85845
+watmin         0.01749
+elec           0.00166
+floor          0.00882
+walls          0.17286
+roof           0.44633
+asset_wardrobe 0.00334
+asset_table    0.27762
+asset_chair    0.26366
+asset_khat     0.05397
+asset_chouki   0.88290
+asset_tv       0.10924
+asset_refrig   0.01527
+asset_bike     0.00498
+asset_moto     0.23256
+asset_sewmach  0.00352
+asset_mobile   0.71326
 
 
 Covariates selected (P&lt;0.5):
-      [,1]             [,2]       
- [1,] &quot;fracode&quot;        &quot;P = 0.125&quot;
- [2,] &quot;month&quot;          &quot;P = 0.000&quot;
- [3,] &quot;agedays&quot;        &quot;P = 0.000&quot;
- [4,] &quot;sex&quot;            &quot;P = 0.159&quot;
- [5,] &quot;momedu&quot;         &quot;P = 0.001&quot;
- [6,] &quot;hfiacat&quot;        &quot;P = 0.000&quot;
- [7,] &quot;Nlt18&quot;          &quot;P = 0.146&quot;
- [8,] &quot;watmin&quot;         &quot;P = 0.017&quot;
- [9,] &quot;elec&quot;           &quot;P = 0.002&quot;
-[10,] &quot;floor&quot;          &quot;P = 0.009&quot;
-[11,] &quot;walls&quot;          &quot;P = 0.173&quot;
-[12,] &quot;roof&quot;           &quot;P = 0.446&quot;
-[13,] &quot;asset_wardrobe&quot; &quot;P = 0.003&quot;
-[14,] &quot;asset_table&quot;    &quot;P = 0.278&quot;
-[15,] &quot;asset_chair&quot;    &quot;P = 0.264&quot;
-[16,] &quot;asset_khat&quot;     &quot;P = 0.054&quot;
-[17,] &quot;asset_tv&quot;       &quot;P = 0.109&quot;
-[18,] &quot;asset_refrig&quot;   &quot;P = 0.015&quot;
-[19,] &quot;asset_bike&quot;     &quot;P = 0.005&quot;
-[20,] &quot;asset_moto&quot;     &quot;P = 0.233&quot;
-[21,] &quot;asset_sewmach&quot;  &quot;P = 0.004&quot;
+                      P-value
+fracode        0.125086717080
+month          0.000001277665
+agedays        0.000008587985
+sex            0.158058733890
+momedu         0.001131482118
+hfiacat        0.000436393481
+Nlt18          0.145996390524
+watmin         0.017492576342
+elec           0.001659255089
+floor          0.008816329210
+walls          0.172858463464
+roof           0.446334998090
+asset_wardrobe 0.003338351150
+asset_table    0.277621120615
+asset_chair    0.263662641534
+asset_khat     0.053968452008
+asset_tv       0.109235025959
+asset_refrig   0.015267527279
+asset_bike     0.004977085684
+asset_moto     0.232560670543
+asset_sewmach  0.003515782703
 </div>
 <div class='input'></div></pre>
   </div>

@@ -14,7 +14,7 @@ sandwichSE(dat, fm, cluster)
 \item{cluster}{Vector of cluster ID's}
 }
 \value{
-#variance-covariance matrix vcovCL
+
 }
 \description{
 sandwichSE
@@ -23,4 +23,5 @@ sandwichSE
  #to be written
 
 }
+\keyword{internal}
 

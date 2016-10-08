@@ -4,7 +4,7 @@
 #' @export
 
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Welcome to the washb package\nUse the command browseVignettes(\"washb\") to open the package vignette\nand learn how to use all the package functions.")
+  packageStartupMessage("Welcome to the washb package\n(Version 0.1.1)\n\nUse the command browseVignettes(\"washb\") to open the package vignette\nand learn how to use all of the package functions.")
 }
 
 .onLoad <- function(libname, pkgname) {
