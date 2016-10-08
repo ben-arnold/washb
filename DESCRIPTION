@@ -1,11 +1,9 @@
 Package: washb
 Title: Interal WASH Benefits Function Package
-Version: 0.1
-Date: 2016-05-18
-Author@R: c(
-    person("Arnold", "Ben", email = "benarnold@berkeley.edu", role = "aut"),
-    person("Mertens", "Andrew", email = "amertens@berkeley.edu", role = "cre","aut"))
-Description: Internal package for analysis associated with the WASH Benefits trial. Contains several
+Version: 0.1.1
+Date: 2016-10-07
+Authors@R: as.person(c("Andrew Mertens <amertens@berkeley.edu> [aut, cre]","Ben Arnold <benarnold@berkeley.edu> [aut]"))
+Description: Internal package for analyses associated with the WASH Benefits trials. Contains several
     useful functions documented in detail in the accompanying vignette.
 LazyData: TRUE
 RoxygenNote: 5.0.1

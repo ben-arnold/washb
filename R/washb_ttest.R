@@ -16,11 +16,12 @@
 #' @param contrast vector of length 2 that includes the tr groups to contrast
 #'
 #' @return
-#' data frame with mean difference (diff), 95% confidence intervals (ci.lb and ci.ub), t-statistic (t-stat), and p-value(p)
+#' Returns a vector with the mean difference (diff), 95 percent confidence intervals (ci.lb and ci.ub), t-statistic (t-stat), and p-value (p) for the paired t-test
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' #The washb_ttest function
 #'
 #'  #Load in Bangladesh anthropometry data.
@@ -43,6 +44,7 @@
 #'
 #'  #Run paired ttest function for water vs. control comparison:
 #'  washb_ttest(Y=laz$laz,tr=laz$tr,strat=laz$block, contrast=c("Control","Water"))
+#' }
 
 washb_ttest <- function(Y,tr,strat,contrast) {
   ttdat <- data.frame(Y=Y[tr==contrast[1]|tr==contrast[2]],

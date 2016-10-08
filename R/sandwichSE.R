@@ -5,7 +5,9 @@
 #' @param cluster Vector of cluster ID's
 #'
 #' @return
-#' #variance-covariance matrix vcovCL
+#'
+#' @keywords internal
+#'
 #' @export
 #'
 #' @examples

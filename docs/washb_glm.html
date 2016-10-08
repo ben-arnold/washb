@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_glm. washb 0.1</title>
+<title>washb_glm. washb 0.1.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.1</a>
+      <a class="brand" href="index.html">washb 0.1.1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -49,8 +49,7 @@
         
       </header>
       
-      <h1>Generalized linear model function for WASH Benefits study.
-washb_glm</h1>
+      <h1>Generalized linear model function for WASH Benefits study.</h1>
 
 <div class="row">
   <div class="span8">
@@ -81,7 +80,7 @@ washb_glm</h1>
       <dd>The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2</dd>
       <dt>print</dt>
       <dd>Logical for whether to print function output, defaults to TRUE.</dd>
-      <dt>print</dt>
+      <dt>verbose</dt>
       <dd>Logical for whether to print names and descriptions of returned list objects</dd>
     </dl>
     
@@ -98,18 +97,24 @@ Returns a list of the risk ratios or risk differences, the variance-covariance m
     <div class="Description">
       <h2>Description</h2>
 
-      <p>Note that in the WASH Benefits diarrheal disease primary outcome analysis, the glm model is fit with a log link,
- `family=binomial(link=&#39;log&#39;)`, to estimate prevalence ratios rather than with a logit link, `family=&quot;binomial&quot;`,
- to estimate the odds ratio.</p>
+      <p>Estimate intention-to-treat parameters with generalized linear models and robust standard errors</p>
 
     </div>
 
     <div class="Details">
       <h2>Details</h2>
 
-      <p>Occasionally, a glm model with a non-canonical link function like `family=binomial(link=&#39;log&#39;)` will fail to converge.
- If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument `family=poisson(link=&#39;log&#39;)`.
- See [Zou 2004](http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf) for details.</p>
+      <p><code>washb_glm</code> fits a generalized linear model to estimate intention-to-treat (ITT) effects in a trial. The <code>contrast</code> argument enables you to specify the arms that you wish to compare (reference group in the first argument, comparison group in the second). To estimate adjusted effects, you can pass a data.frame of adjustment covariates to the <code>W</code> argument -- by default, covariates are pre-screened to only include those that are associated with the outcome based on a likelihood ratio test. To over-ride the pre-screening algorithm for some or all covariates, use the <code>forcedW</code> argment.</p>
+
+      <p>If the design is pair-matched (all primary outcome analyses in WASH B should be pair matched), use the <code>pair</code> argument to specify an id variable for pairs, and specify the same variable in the id argument to get correct SEs. If the design is not pair-matched, then the id argument should identify the smallest independent unit in the trial (e.g., cluster). The function computes robust standard errors. Note that this function automatically drops observations from the analysis if they are from a pair with no treatment contrast -- this can happen with incomplete randomization blocks in the Kenya trial.</p>
+
+      <p>Note that for binary outcomes such as diarrhea, the glm model is fit with a log link,
+ <code>family=binomial(link=&#39;log&#39;)</code>, to estimate prevalence ratios rather than the canonical logit link, <code>family=&#39;binomial&#39;</code>,
+ to estimate the odds ratio. Occasionally, a glm model with a non-canonical link function like <code>family=binomial(link=&#39;log&#39;)</code> will fail to converge, particularly if the data are sparse.
+ If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument <code>family=poisson(link=&#39;log&#39;)</code>.
+ See Zou 2004 (https://www.ncbi.nlm.nih.gov/pubmed/15033648) for details.</p>
+
+      <p>The function also makes it straight forward to estimate conditional (i.e., subgroup) effects using the optional <code>V</code> argument.</p>
 
     </div>
     
@@ -121,16 +126,21 @@ Returns a list of the risk ratios or risk differences, the variance-covariance m
 
 <span class="comment">#Cleans and merge the enrollment and diarrhea data:</span>
 <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/library'>library</a></span><span class="keyword">(</span><span class="symbol">washb</span><span class="keyword">)</span>
-<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">)</span>
-<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_diar</span><span class="keyword">)</span>
-
+<span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">)</span></div>
+<strong class='warning'>Warning message:
+data set ‘washb_bd_enrol’ not found</strong>
+<div class='input'><span class="functioncall"><a href='http://www.rdocumentation.org/packages/utils/topics/data'>data</a></span><span class="keyword">(</span><span class="symbol">washb_bd_diar</span><span class="keyword">)</span></div>
+<strong class='warning'>Warning message:
+data set ‘washb_bd_diar’ not found</strong>
+<div class='input'>
 <span class="comment"># drop svydate and month because they are superceded in the child level diarrhea data</span>
 <span class="comment">#washb_bd_enrol$svydate &lt;- NULL</span>
 <span class="comment">#washb_bd_enrol$month &lt;- NULL</span>
 
 <span class="comment"># merge the baseline dataset to the follow-up dataset</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_diar</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_diar</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span></div>
+<strong class='error'>Error in fix.by(by.x, x): &#39;by&#39; must specify a uniquely valid column</strong>
+<div class='input'>
 <span class="comment"># subset to the relevant measurement</span>
 <span class="comment"># Year 1 or Year 2</span>
 <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">1</span><span class="keyword">|</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
@@ -174,14 +184,11 @@ Returns a list of the risk ratios or risk differences, the variance-covariance m
 -----------------------------------------
  GLM Fit: Sanitation vs. Control 
 -----------------------------------------
-                   PR      2.5%    97.5%  Estimate Std. Error z value  Pr(&gt;|z|)
-trSanitation 1.173836 0.9345889 1.474329 0.1602771  0.1162886 1.37827 0.1681199
-
- Type &quot;`modelname&#39;$TR&quot; to return the treatment effect.
- Type &quot;`modelname&#39;$fit&quot; to return full glm model estimates.
- Type &quot;`modelname&#39;$vcv&quot; to return the variance-covariance matrix.
- Type &quot;`modelname&#39;$rowdropped&quot; to return the vector list of observations included in the model fit
- Type &quot;`modelname&#39;$glmModel&quot; to return the glm model fit to be used with predict() to return model predictions of the outcome</div>
+                    PR      2.5%     97.5%   Estimate Std. Error   z value
+trSanitation 0.6109162 0.4677257 0.7979433 -0.4927955  0.1362642 -3.616472
+                 Pr(&gt;|z|)
+trSanitation 0.0002986455
+</div>
 <div class='input'>
 <span class="comment">#On top of the function's auto-printed output, the washb_glm function contains a number of objects. For example, `'objectname'$vcv` returns the variance-covariance matrix.</span>
 

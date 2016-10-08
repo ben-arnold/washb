@@ -16,7 +16,7 @@ washb_ttest(Y,tr,strat,contrast)
 \item{contrast}{vector of length 2 that includes the tr groups to contrast}
 }
 \value{
-data frame with mean difference (diff), 95% confidence intervals (ci.lb and ci.ub), t-statistic (t-stat), and p-value(p)
+Returns a vector with the mean difference (diff), 95 percent confidence intervals (ci.lb and ci.ub), t-statistic (t-stat), and p-value (p) for the paired t-test
 }
 \description{
 Function to call the paired t-test for two different arms of the study.
@@ -26,6 +26,7 @@ Function to call the paired t-test for two different arms of the study.
 The arguments \code{Y},\code{tr}, and \code{strat} need to be from the same dataset.
 }
 \examples{
+\dontrun{
 #The washb_ttest function
 
  #Load in Bangladesh anthropometry data.
@@ -48,5 +49,6 @@ The arguments \code{Y},\code{tr}, and \code{strat} need to be from the same data
 
  #Run paired ttest function for water vs. control comparison:
  washb_ttest(Y=laz$laz,tr=laz$tr,strat=laz$block, contrast=c("Control","Water"))
+}
 }
 

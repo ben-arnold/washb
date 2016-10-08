@@ -47,7 +47,7 @@ Note that for binary outcomes such as diarrhea, the glm model is fit with a log 
  \code{family=binomial(link='log')}, to estimate prevalence ratios rather than the canonical logit link, \code{family='binomial'},
  to estimate the odds ratio. Occasionally, a glm model with a non-canonical link function like \code{family=binomial(link='log')} will fail to converge, particularly if the data are sparse.
  If this occurs, use a modified poisson regression to estimate prevalence ratio using the argument \code{family=poisson(link='log')}.
- See \link[Zou 2004]{http://www.uvm.edu/~rsingle/stat380/F04/possible/Zou-AJE-2004_PoissonRegBinaryData.pdf} for details.
+ See Zou 2004 (https://www.ncbi.nlm.nih.gov/pubmed/15033648) for details.
 
  The function also makes it straight forward to estimate conditional (i.e., subgroup) effects using the optional \code{V} argument.
 }

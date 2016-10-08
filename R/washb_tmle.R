@@ -35,9 +35,9 @@
 #' @return A \code{tmle()} fit object (see the \code{\link[tmle]{tmle}} package for details). The \code{$estimates} list includes parameter estimates along with variance estimates and confidence intervals.
 #'
 #' @references
-#' Gruber S, van der Laan M. tmle: An R Package for Targeted Maximum Likelihood Estimation. J Stat Softw. 2012;51: 1–35. \link{https://www.jstatsoft.org/article/view/v051i13}
+#' Gruber S, van der Laan M. tmle: An R Package for Targeted Maximum Likelihood Estimation. J Stat Softw. 2012;51: 1–35. (https://www.jstatsoft.org/article/view/v051i13)
 #'
-#' Balzer LB, van der Laan MJ, Petersen ML, SEARCH Collaboration. Adaptive pre-specification in randomized trials with and without pair-matching. Stat Med. 2016; doi:10.1002/sim.7023 \link{http://onlinelibrary.wiley.com/doi/10.1002/sim.7023/abstract}
+#' Balzer LB, van der Laan MJ, Petersen ML, SEARCH Collaboration. Adaptive pre-specification in randomized trials with and without pair-matching. Stat Med. 2016; doi:10.1002/sim.7023 (http://onlinelibrary.wiley.com/doi/10.1002/sim.7023/abstract)
 #'
 #' @examples
 #' #TBD
@@ -45,8 +45,6 @@
 #'@export
 #'
 #'
-#' @examples
-
 
 washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,length(Y)), family="gaussian",contrast,Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet"),g.SL.library=Q.SL.library, pval=0.2, seed=NULL, print=TRUE) {
 
