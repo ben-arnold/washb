@@ -112,50 +112,30 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
   #Create empty variable used in subgroup analysis
   Subgroups=NULL
 
+  #Make sure W is a dataframe
+  W<-data.frame(W)
+
+    # Make a data.frame, then restrict to the 2 arms in the contrast
   if(!is.null(pair)){
     if(!is.null(W)){
-      glmdat <- data.frame(
-        id=id[tr==contrast[1]|tr==contrast[2]],
-        Y=Y[tr==contrast[1]|tr==contrast[2]],
-        tr=tr[tr==contrast[1]|tr==contrast[2]],
-        pair=pair[tr==contrast[1]|tr==contrast[2]],
-        W[tr==contrast[1]|tr==contrast[2],]
-        )
-        #Fix variable name error if W is a single variable
-        if(ncol(W)==1){
-        colnames(glmdat)[5]<-  colnames(W)
-        }
+      glmdat <- data.frame(id,Y,tr,pair,W)
     }else{
-    glmdat <- data.frame(
-      id=id[tr==contrast[1]|tr==contrast[2]],
-      Y=Y[tr==contrast[1]|tr==contrast[2]],
-      tr=tr[tr==contrast[1]|tr==contrast[2]],
-      pair=pair[tr==contrast[1]|tr==contrast[2]]
-    )
+    glmdat <- data.frame(id,Y,tr,pair)
     }
   glmdat$tr    <- factor(glmdat$tr,levels=contrast[1:2])
   glmdat$pair <- factor(glmdat$pair)
   }else{
     if(!is.null(W)){
-      glmdat <- data.frame(
-        id=id[tr==contrast[1]|tr==contrast[2]],
-        Y=Y[tr==contrast[1]|tr==contrast[2]],
-        tr=tr[tr==contrast[1]|tr==contrast[2]],
-        W[tr==contrast[1]|tr==contrast[2],]
-      )
-      #Fix variable name error if W is a single variable
-      if(ncol(W)==1){
-        colnames(glmdat)[4]<-  colnames(W)
-      }
+      glmdat <- data.frame(id,Y,tr,W)
     }else{
-      glmdat <- data.frame(
-        id=id[tr==contrast[1]|tr==contrast[2]],
-        Y=Y[tr==contrast[1]|tr==contrast[2]],
-        tr=tr[tr==contrast[1]|tr==contrast[2]]
-      )
+      glmdat <- data.frame(id,Y,tr)
     }
     glmdat$tr    <- factor(glmdat$tr,levels=contrast[1:2])
   }
+
+  glmdat <- subset(glmdat,tr==contrast[1]|tr==contrast[2])
+  glmdat$tr <- factor(glmdat$tr,levels=contrast[1:2])
+
 
   #####
   #Block Dropping
@@ -191,14 +171,15 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
 
 
 
-
+  #extract colnames of W
+  colnamesW<-names(W)
   #split W into screened and forced adjustment covariates
   if(!is.null(W)){
     if(!is.null(V)){
       forcedW=c(V,forcedW)
     }
     if(!is.null(forcedW)){
-      screenW<-subset(glmdat, select=colnames(W))
+      screenW<-subset(glmdat, select=colnamesW)
       toexclude <- names(screenW) %in% forcedW
       if(length(which(toexclude==TRUE))!=length(forcedW)) stop("A forcedW variable name is not a variable within the W data frame.")
       screenW=screenW[!toexclude]
@@ -208,7 +189,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         print(forcedW, sep="\n")
         }
     }else{
-      screenW<-subset(glmdat, select=colnames(W))
+      screenW<-subset(glmdat, select=colnamesW)
     }
   }else{
     screenW<-NULL
@@ -251,9 +232,6 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         }
       }
     }
-
-
-
 
 
 
