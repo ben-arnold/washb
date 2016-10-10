@@ -111,7 +111,7 @@ washb_mh <- function(Y,tr,strat,contrast,measure="RR") {
       cat("\n-----------------------------------------","\nStarting N:  ",n.orig,"\nN after dropping incomplete blocks: ",n.sub,"\n\nTotal of",n.orig-n.sub,"observations dropped\n because of unmatched pairs.","\n-----------------------------------------\n")
     }
 
-  mhtab <- table(mhdat$tr,mhdat$Y,mhdat$strat)
+  mhtab <- table(mhdat$tr,mhdat$Y,as.numeric(mhdat$strat))
   mhtab <- mhtab[,c(2:1),] # re-order to be consistent w/ metafor table orientation
 
 
