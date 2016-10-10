@@ -113,7 +113,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
   Subgroups=NULL
 
   #Make sure W is a dataframe
-  W<-data.frame(W)
+  if(!is.null(W)){W<-data.frame(W)}
 
     # Make a data.frame, then restrict to the 2 arms in the contrast
   if(!is.null(pair)){
@@ -172,7 +172,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
 
 
   #extract colnames of W
-  colnamesW<-names(W)
+  if(!is.null(W)){colnamesW<-names(W)}
   #split W into screened and forced adjustment covariates
   if(!is.null(W)){
     if(!is.null(V)){
