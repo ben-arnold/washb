@@ -91,14 +91,25 @@ washb_mh <- function(Y,tr,strat,contrast,measure="RR") {
                       strat=strat[tr==contrast[1]|tr==contrast[2]])
   mhdat$tr <- factor(mhdat$tr,levels=contrast[2:1])
 
+  #drop any pairs that have no treatment contrast in them
+  #Drop blocks missing contrast arm 1
+    n.orig <- dim(mhdat)[1]
+    miss<-NULL
+    activeOnly<-((subset(mhdat,tr==contrast[1])))
+    nomiss<-sort(unique(activeOnly$strat))
+    miss1<-(unique(strat)[which(!( unique(strat)%in%(nomiss) ))])
 
-  if(contrast[1]=="Control"|contrast[2]=="Control"){
-    activeOnly<-((subset(mhdat,tr=="Control")))
-    nomissblock1<-(unique(activeOnly$strat))
-    nomiss<-sort((nomissblock1))
-    mhdat<-mhdat[which((mhdat$strat %in% nomiss)),]
-  }
-
+    #Drop blocks missing contrast arm 2
+    activeOnly2<-((subset(mhdat,tr==contrast[2])))
+    nomiss2<-sort(unique(activeOnly2$strat))
+    miss2<-(unique(strat)[which(!( unique(strat)%in%(nomiss2) ))])
+    miss<-append(miss1,miss2)
+    mhdat<-subset(mhdat,!(strat %in% miss))
+    n.sub  <- dim(mhdat)[1]
+    if(  (n.orig>n.sub) ) {
+      cat("\n-----------------------------------------","\nThere were",length(unique(miss)),"Block pairs dropped because they were\nmissing at least one treatment level.\nThis is the list of their IDs:\n",sort(unique(miss)))
+      cat("\n-----------------------------------------","\nStarting N:  ",n.orig,"\nN after dropping incomplete blocks: ",n.sub,"\n\nTotal of",n.orig-n.sub,"observations dropped\n because of unmatched pairs.","\n-----------------------------------------\n")
+    }
 
   mhtab <- table(mhdat$tr,mhdat$Y,mhdat$strat)
   mhtab <- mhtab[,c(2:1),] # re-order to be consistent w/ metafor table orientation
