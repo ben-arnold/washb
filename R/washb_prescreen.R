@@ -68,7 +68,7 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
   # Ws  : data frame of candidate covariates to screen
   # family : exponential model family (gaussian for continuous outcomes, binomial for binary outcomes, poisson for counts, and neg.binom for negative binomial models)
   require(lmtest)
-  if(family[1]=="neg.binom"){
+  if(family[[1]]=="neg.binom"){
     require(MASS)
   }
 
@@ -86,7 +86,7 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
   LRp <- matrix(rep(NA,nW),nrow=nW,ncol=1)
   rownames(LRp) <- names(Ws)
   colnames(LRp) <- "P-value"
-  if(family[1]!="neg.binom"){
+  if(family[[1]]!="neg.binom"){
     for(i in 1:nW) {
       dat$W <- dat[,i]
       fit1 <- glm(Y~W,data=dat,family=family)
