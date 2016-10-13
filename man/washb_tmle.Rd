@@ -12,7 +12,7 @@ washb_tmle(Y, tr, W = NULL, id = 1:length(Y), pair = NULL,
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
 
-\item{tr}{Binary treatment group variable, comparison group first}
+\item{tr}{Treatment group variable (binary or factor)}
 
 \item{W}{Data frame that includes adjustment covariates}
 
@@ -26,7 +26,7 @@ washb_tmle(Y, tr, W = NULL, id = 1:length(Y), pair = NULL,
 
 \item{contrast}{Vector of length 2 that includes the treatment groups to contrast (e.g., \code{contrast=c('Control','Nutrition')}).}
 
-\item{g.SL.library}{Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) (ignored if prtr is specified), and for the missingness model Pr(Delta|A,W) (if Delta is specified)}
+\item{g.SL.library}{Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) and for the missingness model Pr(Delta|A,W) (if Delta is specified)}
 
 \item{pval}{The p-value threshold used to pre-screen covariates (\code{W}) based on a likelihood ratio test in a univariate regression with the outcome (\code{Y}). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.}
 

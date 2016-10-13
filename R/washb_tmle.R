@@ -19,7 +19,7 @@
 #'
 #'
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
-#' @param tr Binary treatment group variable, comparison group first
+#' @param tr Treatment group variable (binary or factor)
 #' @param W Data frame that includes adjustment covariates
 #' @param id ID variable for independent units. For pair-matched designs, this is the matched pair and should be the same as the \code{pair} argument. For analyses that are not pair-matched, then it should typically be the cluster.
 #' @param pair An optional ID variable to identify the matched pair unit (In WASH Benefits, blocks) if conducting a matched-pair analysis. This argument is used to drop pairs that are missing one or more treatment groups. Incomplete pairs is not an issue in the overall Bangladesh trial (there were no incomplete blocks), but is an issue in the Kenya trial where there were some incomplete blocks.
@@ -27,7 +27,7 @@
 #' @param family Outcome family: \code{gaussian} (continuous outcomes, like LAZ) or \code{binomial} (binary outcomes like diarrhea or stunting)
 #' @param contrast Vector of length 2 that includes the treatment groups to contrast (e.g., \code{contrast=c('Control','Nutrition')}).
 #' @param Q.SL.Library Library of algorithms to include in the SuperLearner for the outcome model
-#' @param g.SL.library Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) (ignored if prtr is specified), and for the missingness model Pr(Delta|A,W) (if Delta is specified)
+#' @param g.SL.library Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) and for the missingness model Pr(Delta|A,W) (if Delta is specified)
 #' @param pval The p-value threshold used to pre-screen covariates (\code{W}) based on a likelihood ratio test in a univariate regression with the outcome (\code{Y}). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.
 #' @param seed A seed for the pseudo-random cross-validation split used in model selection (use for perfectly reproducible results).
 #' @param print Logical for printed output, defaults to true. If false, no output will be printed to the console if the returned object is saved to an R object.
