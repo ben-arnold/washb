@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_lincom. washb 0.1.1</title>
+<title>washb_lincom. washb 0.2.0</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.1.1</a>
+      <a class="brand" href="index.html">washb 0.2.0</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -106,15 +106,15 @@ data set ‘washb_bd_enrol’ not found</strong>
 <div class='input'>
 <span class="comment"># subset to the relevant measurement</span>
 <span class="comment"># Year 1 or Year 2</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">1</span><span class="keyword">|</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">1</span><span class="keyword">|</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
 
 <span class="comment">#subset the diarrhea to children &lt;36 mos at enrollment</span>
 <span class="comment">### (exlude new births that are not target children)</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">sibnewbirth</span>==<span class="number">0</span><span class="keyword">)</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">gt36mos</span>==<span class="number">0</span><span class="keyword">)</span>
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">sibnewbirth</span>==<span class="number">0</span><span class="keyword">)</span>
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">gt36mos</span>==<span class="number">0</span><span class="keyword">)</span>
 
 <span class="comment"># Exclude children with missing data</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="keyword">!</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">)</span><span class="keyword">)</span>
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="keyword">!</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">)</span><span class="keyword">)</span>
 
 <span class="comment">#Re-order the tr factor for convenience</span>
 <span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span><span class="keyword">,</span><span class="argument">levels</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"Control"</span><span class="keyword">,</span><span class="string">"Water"</span><span class="keyword">,</span><span class="string">"Sanitation"</span><span class="keyword">,</span><span class="string">"Handwashing"</span><span class="keyword">,</span><span class="string">"WSH"</span><span class="keyword">,</span><span class="string">"Nutrition"</span><span class="keyword">,</span><span class="string">"Nutrition + WSH"</span><span class="keyword">)</span><span class="keyword">)</span>
@@ -126,8 +126,9 @@ data set ‘washb_bd_enrol’ not found</strong>
 <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="symbol">ad</span><span class="keyword">[</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/order'>order</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">block</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">clusterid</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">dataid</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">childid</span><span class="keyword">)</span><span class="keyword">,</span><span class="keyword">]</span>
 
 <span class="comment">#Estimate subgroup analysis glm with washb_glm</span>
-<span class="symbol">glm.C.N.byChildType</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='washb_glm.html'>washb_glm</a></span><span class="keyword">(</span><span class="argument">Y</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">,</span><span class="argument">tr</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span><span class="keyword">,</span><span class="argument">pair</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">block</span><span class="keyword">,</span> <span class="argument">W</span><span class="argument">=</span><span class="symbol">W_tchild</span><span class="keyword">,</span> <span class="argument">V</span><span class="argument">=</span><span class="string">"tchild"</span><span class="keyword">,</span> <span class="argument">id</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">clusterid</span><span class="keyword">,</span> <span class="argument">contrast</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"Control"</span><span class="keyword">,</span><span class="string">"Nutrition"</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">family</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/stats/topics/family'>binomial</a></span><span class="keyword">(</span><span class="argument">link</span><span class="argument">=</span><span class="string">'log'</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">print</span><span class="argument">=</span><span class="number">FALSE</span><span class="keyword">)</span>
-
+<span class="symbol">glm.C.N.byChildType</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='washb_glm.html'>washb_glm</a></span><span class="keyword">(</span><span class="argument">Y</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">,</span><span class="argument">tr</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span><span class="keyword">,</span><span class="argument">pair</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">block</span><span class="keyword">,</span> <span class="argument">W</span><span class="argument">=</span><span class="symbol">W_tchild</span><span class="keyword">,</span> <span class="argument">V</span><span class="argument">=</span><span class="string">"tchild"</span><span class="keyword">,</span> <span class="argument">id</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">clusterid</span><span class="keyword">,</span> <span class="argument">contrast</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"Control"</span><span class="keyword">,</span><span class="string">"Nutrition"</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">family</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/stats/topics/family'>binomial</a></span><span class="keyword">(</span><span class="argument">link</span><span class="argument">=</span><span class="string">'log'</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">print</span><span class="argument">=</span><span class="number">FALSE</span><span class="keyword">)</span></div>
+<strong class='error'>Error in washb_glm(Y = ad$diar7d, tr = ad$tr, pair = ad$block, W = W_tchild,     V = &quot;tchild&quot;, id = ad$clusterid, contrast = c(&quot;Control&quot;,         &quot;Nutrition&quot;), family = binomial(link = &quot;log&quot;), print = FALSE): object &#39;W_tchild&#39; not found</strong>
+<div class='input'>
 
 <span class="comment">#The lincom function is called within washb_glm, so for standard subgroup analysis, there is no need to use the lincom()</span>
 <span class="comment">#function separately. But it can be used on its own to create a custom combination of regression coefficients</span>
@@ -135,9 +136,9 @@ data set ‘washb_bd_enrol’ not found</strong>
 
 <span class="comment">#Examine the treatment effect across subgroups with `objectname'$lincom</span>
 <span class="symbol">glm.C.N.byChildType</span><span class="keyword">$</span><span class="symbol">lincom</span></div>
-<div class='output'>  Tr vs. C by Subgroup    est se.est est.lb est.ub       Z      P
-1              Sibling 0.6255 0.3028 0.3455 1.1324 -1.5494 0.1213
-2         Target child 0.6421 0.1645 0.4651 0.8865 -2.6926 0.0071
+<div class='output'>  Tr vs. C by Subgroup     est se.est  est.lb  est.ub       Z      P
+1              Sibling -0.0144 0.0103 -0.0346  0.0058 -1.3978 0.1622
+2         Target child -0.0226 0.0080 -0.0383 -0.0068 -2.8111 0.0049
 </div>
 <div class='input'>
 <span class="comment">#Below is an example of using the `lincom()` function to externally replicate the target child/sibling subgroup analysis of the diarrheal disease outcome. First, recall the glm model contrasting diarrheal disease prevalence ratio between target child and sibling fitted to diarrheal disease:</span>
@@ -147,20 +148,20 @@ data set ‘washb_bd_enrol’ not found</strong>
 <span class="symbol">lc</span><span class="assignement">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span><span class="keyword">(</span><span class="number">0</span><span class="keyword">,</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span><span class="keyword">(</span><span class="symbol">glm.C.N.byChildType</span><span class="keyword">$</span><span class="symbol">fit</span><span class="keyword">)</span><span class="keyword">)</span>
 <span class="comment">#Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.</span>
 <span class="symbol">glm.C.N.byChildType</span><span class="keyword">$</span><span class="symbol">fit</span><span class="keyword">[</span><span class="number">1</span><span class="keyword">:</span><span class="number">6</span><span class="keyword">,</span><span class="keyword">]</span></div>
-<div class='output'>                     PR       2.5%       97.5%   Estimate Std. Error    z value
-(Intercept)   0.0138250 0.00255653  0.07476165 -4.2812768  0.8611360 -4.9716617
-trNutrition   0.6255283 0.34554320  1.13237828 -0.4691588  0.3027953 -1.5494253
-VTarget child 1.6236081 1.14428418  2.30371393  0.4846509  0.1785059  2.7150408
-pair2         5.5257593 0.92063591 33.16622301  1.7094207  0.9143425  1.8695627
-pair3         2.0717921 0.29545399 14.52788802  0.7284140  0.9937021  0.7330305
-pair4         6.2389283 0.99434265 39.14568782  1.8308084  0.9369805  1.9539450
-                     Pr(&gt;|z|)
-(Intercept)   0.0000006638145
-trNutrition   0.1212795092360
-VTarget child 0.0066267611434
-pair2         0.0615445651604
-pair3         0.4635398121126
-pair4         0.0507077218657
+<div class='output'>                    Coef.        2.5%      97.5%   Std. Error
+(Intercept)    0.00644303 -0.00640949 0.01929554 0.0065574058
+trNutrition   -0.01440164 -0.03459613 0.00579286 0.0103033129
+VTarget child  0.02491655  0.00632625 0.04350684 0.0094848459
+pair2          0.07757906  0.07517584 0.07998228 0.0012261335
+pair3          0.01871169  0.01528761 0.02213577 0.0017469792
+pair4          0.09317384  0.09179561 0.09455206 0.0007031754
+                  z value     Pr(&gt;|z|)
+(Intercept)     0.9825575 3.258253e-01
+trNutrition    -1.3977677 1.621828e-01
+VTarget child   2.6269849 8.614517e-03
+pair2          63.2713015 0.000000e+00
+pair3          10.7108843 9.049319e-27
+pair4         132.5044118 0.000000e+00
 </div>
 <div class='input'><span class="comment">#Replace the second and fourth position in the vector with 1 (the positions of the treatment coefficient and interaction term in the model)</span>
 <span class="symbol">lc</span><span class="keyword">[</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="number">2</span><span class="keyword">,</span><span class="number">4</span><span class="keyword">)</span><span class="keyword">]</span><span class="assignement">&lt;-</span><span class="number">1</span>
@@ -171,8 +172,8 @@ pair4         0.0507077218657
 Linear combination of coefficients:
 [1] &quot;trNutrition + pair2&quot;
 </div>
-<div class='output'>         RR  se.RR  RR.lb   RR.ub      Z      P
-[1,] 3.4565 0.9551 0.5317 22.4722 1.2986 0.1941
+<div class='output'>         RR  se.RR  RR.lb  RR.ub      Z      P
+[1,] 1.0116 0.0091 0.9936 1.0299 1.2624 0.2068
 </div>
 <div class='input'>
 <span class="comment"># The `lincom()` function can also be used to calculate risk difference</span>

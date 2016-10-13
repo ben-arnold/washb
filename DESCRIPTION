@@ -1,7 +1,7 @@
 Package: washb
 Title: Interal WASH Benefits Function Package
-Version: 0.1.1
-Date: 2016-10-07
+Version: 0.2.0
+Date: 2016-10-12
 Authors@R: as.person(c("Andrew Mertens <amertens@berkeley.edu> [aut, cre]","Ben Arnold <benarnold@berkeley.edu> [aut]"))
 Description: Internal package for analyses associated with the WASH Benefits trials. Contains several
     useful functions documented in detail in the accompanying vignette.

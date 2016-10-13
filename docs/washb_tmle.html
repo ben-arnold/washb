@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_tmle. washb 0.1.1</title>
+<title>washb_tmle. washb 0.2.0</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.1.1</a>
+      <a class="brand" href="index.html">washb 0.2.0</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -64,7 +64,7 @@
       <dt>Y</dt>
       <dd>Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)</dd>
       <dt>tr</dt>
-      <dd>Binary treatment group variable, comparison group first</dd>
+      <dd>Treatment group variable (binary or factor)</dd>
       <dt>W</dt>
       <dd>Data frame that includes adjustment covariates</dd>
       <dt>id</dt>
@@ -78,7 +78,7 @@
       <dt>contrast</dt>
       <dd>Vector of length 2 that includes the treatment groups to contrast (e.g., <code>contrast=c(&#39;Control&#39;,&#39;Nutrition&#39;)</code>).</dd>
       <dt>g.SL.library</dt>
-      <dd>Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) (ignored if prtr is specified), and for the missingness model Pr(Delta|A,W) (if Delta is specified)</dd>
+      <dd>Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) and for the missingness model Pr(Delta|A,W) (if Delta is specified)</dd>
       <dt>pval</dt>
       <dd>The p-value threshold used to pre-screen covariates (<code>W</code>) based on a likelihood ratio test in a univariate regression with the outcome (<code>Y</code>). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.</dd>
       <dt>seed</dt>

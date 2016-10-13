@@ -3,8 +3,11 @@
 #'
 #' @export
 
-.onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Welcome to the washb package\n(Version 0.1.1)\n\nUse the command browseVignettes(\"washb\") to open the package vignette\nand learn how to use all of the package functions.")
+.onAttach <- function(...) {
+  packageStartupMessage('Welcome to the washb package')
+  packageStartupMessage('Version: ', utils::packageDescription('washb')$Version)
+  packageStartupMessage('Created on ', utils::packageDescription('washb')$Date)
+  packageStartupMessage("\nThe package's reference manual and vignette are also online:\nhttps://ben-arnold.github.io/washb\n")
 }
 
 .onLoad <- function(libname, pkgname) {

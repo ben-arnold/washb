@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_mean. washb 0.1.1</title>
+<title>washb_mean. washb 0.2.0</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.1.1</a>
+      <a class="brand" href="index.html">washb 0.2.0</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -104,10 +104,10 @@ Returns a 1x6 matrix that includes the number of observations, outcome mean, sta
  <span class="symbol">washb_bd_enrol</span><span class="keyword">$</span><span class="symbol">month</span> <span class="assignement">&lt;-</span> NULL
  <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/merge'>merge</a></span><span class="keyword">(</span><span class="symbol">washb_bd_enrol</span><span class="keyword">,</span><span class="symbol">washb_bd_anthro</span><span class="keyword">,</span><span class="argument">by</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"dataid"</span><span class="keyword">,</span><span class="string">"clusterid"</span><span class="keyword">,</span><span class="string">"block"</span><span class="keyword">,</span><span class="string">"tr"</span><span class="keyword">)</span><span class="keyword">,</span><span class="argument">all.x</span><span class="argument">=</span><span class="symbol">F</span><span class="keyword">,</span><span class="argument">all.y</span><span class="argument">=</span><span class="symbol">T</span><span class="keyword">)</span></div>
 <strong class='error'>Error in fix.by(by.x, x): &#39;by&#39; must specify a uniquely valid column</strong>
-<div class='input'> <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
- <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">tchild</span>==<span class="string">"Target child"</span><span class="keyword">)</span>
+<div class='input'> <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
+ <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">tchild</span>==<span class="string">"Target child"</span><span class="keyword">)</span>
 
- <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">laz_x</span><span class="keyword">!=</span><span class="number">1</span><span class="keyword">)</span></div>
+ <span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">laz_x</span><span class="keyword">!=</span><span class="number">1</span><span class="keyword">)</span></div>
 <strong class='error'>Error in eval(expr, envir, enclos): object &#39;laz_x&#39; not found</strong>
 <div class='input'>
  <span class="comment">#Make sure the treatment group variables are set as factors:</span>
