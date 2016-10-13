@@ -111,144 +111,44 @@ data set ‘washb_bd_enrol’ not found</strong>
 <div class='input'>
 <span class="comment"># subset to the relevant measurement</span>
 <span class="comment"># Year 1 or Year 2</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">1</span><span class="keyword">|</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">svy</span>==<span class="number">1</span><span class="keyword">|</span><span class="symbol">svy</span>==<span class="number">2</span><span class="keyword">)</span></div>
+<strong class='error'>Error in subset(ad, svy == 1 | svy == 2): object &#39;ad&#39; not found</strong>
+<div class='input'>
 <span class="comment">#subset the diarrhea to children &lt;36 mos at enrollment</span>
 <span class="comment">### (exlude new births that are not target children)</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">sibnewbirth</span>==<span class="number">0</span><span class="keyword">)</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">gt36mos</span>==<span class="number">0</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">sibnewbirth</span>==<span class="number">0</span><span class="keyword">)</span></div>
+<strong class='error'>Error in subset(ad, sibnewbirth == 0): object &#39;ad&#39; not found</strong>
+<div class='input'><span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="symbol">gt36mos</span>==<span class="number">0</span><span class="keyword">)</span></div>
+<strong class='error'>Error in subset(ad, gt36mos == 0): object &#39;ad&#39; not found</strong>
+<div class='input'>
 <span class="comment"># Exclude children with missing data</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="keyword">!</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">)</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="keyword">!</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">)</span><span class="keyword">)</span></div>
+<strong class='error'>Error in subset(ad, !is.na(ad$diar7d)): object &#39;ad&#39; not found</strong>
+<div class='input'>
 <span class="comment">#Re-order the tr factor for convenience</span>
-<span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span><span class="keyword">,</span><span class="argument">levels</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"Control"</span><span class="keyword">,</span><span class="string">"Water"</span><span class="keyword">,</span><span class="string">"Sanitation"</span><span class="keyword">,</span><span class="string">"Handwashing"</span><span class="keyword">,</span><span class="string">"WSH"</span><span class="keyword">,</span><span class="string">"Nutrition"</span><span class="keyword">,</span><span class="string">"Nutrition + WSH"</span><span class="keyword">)</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">tr</span><span class="keyword">,</span><span class="argument">levels</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"Control"</span><span class="keyword">,</span><span class="string">"Water"</span><span class="keyword">,</span><span class="string">"Sanitation"</span><span class="keyword">,</span><span class="string">"Handwashing"</span><span class="keyword">,</span><span class="string">"WSH"</span><span class="keyword">,</span><span class="string">"Nutrition"</span><span class="keyword">,</span><span class="string">"Nutrition + WSH"</span><span class="keyword">)</span><span class="keyword">)</span></div>
+<strong class='error'>Error in factor(ad$tr, levels = c(&quot;Control&quot;, &quot;Water&quot;, &quot;Sanitation&quot;, &quot;Handwashing&quot;,     &quot;WSH&quot;, &quot;Nutrition&quot;, &quot;Nutrition + WSH&quot;)): object &#39;ad&#39; not found</strong>
+<div class='input'>
 <span class="comment">#Ensure that month is coded as a factor</span>
-<span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">month</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">month</span><span class="keyword">)</span>
-
+<span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">month</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/factor'>factor</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">month</span><span class="keyword">)</span></div>
+<strong class='error'>Error in factor(ad$month): object &#39;ad&#39; not found</strong>
+<div class='input'>
 <span class="comment">#Sort the data for perfect replication when using V-fold cross-validation</span>
-<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="symbol">ad</span><span class="keyword">[</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/order'>order</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">block</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">clusterid</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">dataid</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">childid</span><span class="keyword">)</span><span class="keyword">,</span><span class="keyword">]</span>
-
+<span class="symbol">ad</span> <span class="assignement">&lt;-</span> <span class="symbol">ad</span><span class="keyword">[</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/order'>order</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">block</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">clusterid</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">dataid</span><span class="keyword">,</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">childid</span><span class="keyword">)</span><span class="keyword">,</span><span class="keyword">]</span></div>
+<strong class='error'>Error in eval(expr, envir, enclos): object &#39;ad&#39; not found</strong>
+<div class='input'>
 
 <span class="comment">###Subset to a new dataframe the variables to be screened:</span>
-<span class="symbol">Ws</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/modeltools/topics/ModelEnv-class'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="argument">select</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"fracode"</span><span class="keyword">,</span><span class="string">"month"</span><span class="keyword">,</span><span class="string">"agedays"</span><span class="keyword">,</span><span class="string">"sex"</span><span class="keyword">,</span><span class="string">"momage"</span><span class="keyword">,</span><span class="string">"momedu"</span><span class="keyword">,</span><span class="string">"momheight"</span><span class="keyword">,</span><span class="string">"hfiacat"</span><span class="keyword">,</span><span class="string">"Nlt18"</span><span class="keyword">,</span><span class="string">"Ncomp"</span><span class="keyword">,</span><span class="string">"watmin"</span><span class="keyword">,</span><span class="string">"elec"</span><span class="keyword">,</span><span class="string">"floor"</span><span class="keyword">,</span><span class="string">"walls"</span><span class="keyword">,</span><span class="string">"roof"</span><span class="keyword">,</span><span class="string">"asset_wardrobe"</span><span class="keyword">,</span><span class="string">"asset_table"</span><span class="keyword">,</span><span class="string">"asset_chair"</span><span class="keyword">,</span><span class="string">"asset_khat"</span><span class="keyword">,</span><span class="string">"asset_chouki"</span><span class="keyword">,</span><span class="string">"asset_tv"</span><span class="keyword">,</span><span class="string">"asset_refrig"</span><span class="keyword">,</span><span class="string">"asset_bike"</span><span class="keyword">,</span><span class="string">"asset_moto"</span><span class="keyword">,</span><span class="string">"asset_sewmach"</span><span class="keyword">,</span><span class="string">"asset_mobile"</span><span class="keyword">)</span><span class="keyword">)</span>
-
+<span class="symbol">Ws</span> <span class="assignement">&lt;-</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span><span class="keyword">(</span><span class="symbol">ad</span><span class="keyword">,</span><span class="argument">select</span><span class="argument">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"fracode"</span><span class="keyword">,</span><span class="string">"month"</span><span class="keyword">,</span><span class="string">"agedays"</span><span class="keyword">,</span><span class="string">"sex"</span><span class="keyword">,</span><span class="string">"momage"</span><span class="keyword">,</span><span class="string">"momedu"</span><span class="keyword">,</span><span class="string">"momheight"</span><span class="keyword">,</span><span class="string">"hfiacat"</span><span class="keyword">,</span><span class="string">"Nlt18"</span><span class="keyword">,</span><span class="string">"Ncomp"</span><span class="keyword">,</span><span class="string">"watmin"</span><span class="keyword">,</span><span class="string">"elec"</span><span class="keyword">,</span><span class="string">"floor"</span><span class="keyword">,</span><span class="string">"walls"</span><span class="keyword">,</span><span class="string">"roof"</span><span class="keyword">,</span><span class="string">"asset_wardrobe"</span><span class="keyword">,</span><span class="string">"asset_table"</span><span class="keyword">,</span><span class="string">"asset_chair"</span><span class="keyword">,</span><span class="string">"asset_khat"</span><span class="keyword">,</span><span class="string">"asset_chouki"</span><span class="keyword">,</span><span class="string">"asset_tv"</span><span class="keyword">,</span><span class="string">"asset_refrig"</span><span class="keyword">,</span><span class="string">"asset_bike"</span><span class="keyword">,</span><span class="string">"asset_moto"</span><span class="keyword">,</span><span class="string">"asset_sewmach"</span><span class="keyword">,</span><span class="string">"asset_mobile"</span><span class="keyword">)</span><span class="keyword">)</span></div>
+<strong class='error'>Error in subset(ad, select = c(&quot;fracode&quot;, &quot;month&quot;, &quot;agedays&quot;, &quot;sex&quot;, &quot;momage&quot;,     &quot;momedu&quot;, &quot;momheight&quot;, &quot;hfiacat&quot;, &quot;Nlt18&quot;, &quot;Ncomp&quot;, &quot;watmin&quot;,     &quot;elec&quot;, &quot;floor&quot;, &quot;walls&quot;, &quot;roof&quot;, &quot;asset_wardrobe&quot;, &quot;asset_table&quot;,     &quot;asset_chair&quot;, &quot;asset_khat&quot;, &quot;asset_chouki&quot;, &quot;asset_tv&quot;,     &quot;asset_refrig&quot;, &quot;asset_bike&quot;, &quot;asset_moto&quot;, &quot;asset_sewmach&quot;,     &quot;asset_mobile&quot;)): object &#39;ad&#39; not found</strong>
+<div class='input'>
 <span class="comment">###Run the washb_prescreen function</span>
 <span class="symbol">prescreened_varnames</span><span class="assignement">&lt;-</span><span class="functioncall"><a href='washb_prescreen.html'>washb_prescreen</a></span><span class="keyword">(</span><span class="argument">Y</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">,</span><span class="symbol">Ws</span><span class="keyword">,</span><span class="argument">family</span><span class="argument">=</span><span class="string">"binomial"</span><span class="keyword">)</span></div>
-<strong class='warning'>Warning message:
-glm.fit: fitted probabilities numerically 0 or 1 occurred</strong>
-<div class='output'>
-Likelihood Ratio Test P-values:
-               P-value
-fracode        0.12509
-month          0.00000
-agedays        0.00001
-sex            0.15806
-momage         0.85834
-momedu         0.00113
-momheight      0.83701
-hfiacat        0.00044
-Nlt18          0.14600
-Ncomp          0.85845
-watmin         0.01749
-elec           0.00166
-floor          0.00882
-walls          0.17286
-roof           0.44633
-asset_wardrobe 0.00334
-asset_table    0.27762
-asset_chair    0.26366
-asset_khat     0.05397
-asset_chouki   0.88290
-asset_tv       0.10924
-asset_refrig   0.01527
-asset_bike     0.00498
-asset_moto     0.23256
-asset_sewmach  0.00352
-asset_mobile   0.71326
-
-
-Covariates selected (P&lt;0.2):
-                      P-value
-fracode        0.125086717080
-month          0.000001277665
-agedays        0.000008587985
-sex            0.158058733890
-momedu         0.001131482118
-hfiacat        0.000436393481
-Nlt18          0.145996390524
-watmin         0.017492576342
-elec           0.001659255089
-floor          0.008816329210
-walls          0.172858463464
-asset_wardrobe 0.003338351150
-asset_khat     0.053968452008
-asset_tv       0.109235025959
-asset_refrig   0.015267527279
-asset_bike     0.004977085684
-asset_sewmach  0.003515782703
-</div>
+<strong class='error'>Error in data.frame(Ws): object &#39;Ws&#39; not found</strong>
 <div class='input'>
 <span class="comment">###Rerun the function with a stricter p=value</span>
 <span class="symbol">prescreened_varname2s</span><span class="assignement">&lt;-</span><span class="functioncall"><a href='washb_prescreen.html'>washb_prescreen</a></span><span class="keyword">(</span><span class="argument">Y</span><span class="argument">=</span><span class="symbol">ad</span><span class="keyword">$</span><span class="symbol">diar7d</span><span class="keyword">,</span><span class="symbol">Ws</span><span class="keyword">,</span><span class="argument">family</span><span class="argument">=</span><span class="string">"binomial"</span><span class="keyword">,</span> <span class="argument">pval</span><span class="argument">=</span><span class="number">0.5</span><span class="keyword">)</span></div>
-<strong class='warning'>Warning message:
-glm.fit: fitted probabilities numerically 0 or 1 occurred</strong>
-<div class='output'>
-Likelihood Ratio Test P-values:
-               P-value
-fracode        0.12509
-month          0.00000
-agedays        0.00001
-sex            0.15806
-momage         0.85834
-momedu         0.00113
-momheight      0.83701
-hfiacat        0.00044
-Nlt18          0.14600
-Ncomp          0.85845
-watmin         0.01749
-elec           0.00166
-floor          0.00882
-walls          0.17286
-roof           0.44633
-asset_wardrobe 0.00334
-asset_table    0.27762
-asset_chair    0.26366
-asset_khat     0.05397
-asset_chouki   0.88290
-asset_tv       0.10924
-asset_refrig   0.01527
-asset_bike     0.00498
-asset_moto     0.23256
-asset_sewmach  0.00352
-asset_mobile   0.71326
-
-
-Covariates selected (P&lt;0.5):
-                      P-value
-fracode        0.125086717080
-month          0.000001277665
-agedays        0.000008587985
-sex            0.158058733890
-momedu         0.001131482118
-hfiacat        0.000436393481
-Nlt18          0.145996390524
-watmin         0.017492576342
-elec           0.001659255089
-floor          0.008816329210
-walls          0.172858463464
-roof           0.446334998090
-asset_wardrobe 0.003338351150
-asset_table    0.277621120615
-asset_chair    0.263662641534
-asset_khat     0.053968452008
-asset_tv       0.109235025959
-asset_refrig   0.015267527279
-asset_bike     0.004977085684
-asset_moto     0.232560670543
-asset_sewmach  0.003515782703
-</div>
+<strong class='error'>Error in data.frame(Ws): object &#39;Ws&#39; not found</strong>
 <div class='input'></div></pre>
   </div>
   <div class="span4 sidebar">
