@@ -15,6 +15,8 @@
 #'
 #' If you want to adjust for missing outcomes in the analysis, then you need to include observations that have a missing outcome (\code{Y}) with \code{Delta=0} for those observations. Observations with missing outcomes should have treatment (\code{tr}) and covariate (\code{W}) information, which are used to create weights for \code{Pr(Delta|A,W)}.
 #'
+#' A standard parameter of interest for soil transmitted helminth infection intensity (eggs per gram) is the fecal egg count reduction percentage, which is defined as FECR = (EY1-EY0)/EY0 = (EY1/EY0)-1. To estimate the FECR using \code{washb_tmle} simply specify \code{FECR=TRUE} (the default is \code{FECR=FALSE}), and a list of FECR estimates will be added to the returned object in \code{$estimates$FECR}.  \code{washb_tmle} estimates the standard error and 95 percent confidence intervals for the FECR using the influence curve and the delta method. The FECR parameter estimate and variance accounts for missing outcomes if specified (\code{Delta}) and repeated observations (\code{id}).
+#'
 #' Note: this function depends on the \code{\link[tmle]{tmle}} package, the \code{\link[SuperLearner]{SuperLearner}} package, as well as the internal washb_prescreen() and design_matrix() functions.
 #'
 #'
@@ -28,11 +30,12 @@
 #' @param contrast Vector of length 2 that includes the treatment groups to contrast (e.g., \code{contrast=c('Control','Nutrition')}).
 #' @param Q.SL.Library Library of algorithms to include in the SuperLearner for the outcome model
 #' @param g.SL.library Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) and for the missingness model Pr(Delta|A,W) (if Delta is specified)
+#' @param FECR Logical argument: estimate the fecal egg count reduction (FECR) proportion?  If \code{FECR=TRUE}, then specify \code{family='gaussian'}.
 #' @param pval The p-value threshold used to pre-screen covariates (\code{W}) based on a likelihood ratio test in a univariate regression with the outcome (\code{Y}). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.
 #' @param seed A seed for the pseudo-random cross-validation split used in model selection (use for perfectly reproducible results).
 #' @param print Logical for printed output, defaults to true. If false, no output will be printed to the console if the returned object is saved to an R object.
 #'
-#' @return A \code{tmle()} fit object (see the \code{\link[tmle]{tmle}} package for details). The \code{$estimates} list includes parameter estimates along with variance estimates and confidence intervals.
+#' @return A \code{tmle()} fit object (see the \code{\link[tmle]{tmle}} package for details). The \code{$estimates} list includes parameter estimates along with variance estimates and confidence intervals. If \code{FECR=TRUE}, then the tmle object also includes results in \code{$estimates$FECR}.
 #'
 #' @references
 #' Gruber S, van der Laan M. tmle: An R Package for Targeted Maximum Likelihood Estimation. J Stat Softw. 2012;51: 1–35. (https://www.jstatsoft.org/article/view/v051i13)
@@ -46,7 +49,7 @@
 #'
 #'
 
-washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,length(Y)), family="gaussian",contrast,Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet"),g.SL.library=Q.SL.library, pval=0.2, seed=NULL, print=TRUE) {
+washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,length(Y)), family="gaussian",contrast,Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet"),g.SL.library=Q.SL.library, pval=0.2,FECR=FALSE, seed=NULL, print=TRUE) {
 
   require(tmle)
   require(SuperLearner)
@@ -66,6 +69,10 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
 
   }
 
+  # ensure that family is gaussian if estimating the FECR
+  if(FECR==TRUE & family!="gaussian"){
+    stop("You specified FECR=TRUE to estimate the fecal egg count reduction %\nThis parameter is a ratio of means: FECR=(EY1/EY0)-1\nso you need to specify family='gaussian' to estimate it properly.")
+  }
 
   # Make a data.frame, restricted to the 2 arms in the contrast
   if(is.null(W)){
@@ -106,8 +113,6 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
     }
   }
 
-
-
   # restrict to complete cases (print the number of dropped observations, if any)
   n_orig <- dim(tmledat)[1]
   tmledat <- tmledat[complete.cases(tmledat),]
@@ -115,7 +120,6 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
   if( (print==TRUE) & (n_orig>n_sub)) {
     cat("\n-----------------------------------------\nTotal of",n_orig-n_sub,"observations dropped due to missing\nvalues in one or more variables\n"," Final sample size:",n_sub,"\n-----------------------------------------\n")
     }
-
 
   # pre-screen the covariates (if specified)
   # see washb_prescreen() in the base functions
@@ -188,5 +192,54 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
     print(summary(tmle_fit))
     cat("\n-----------------------------------------\n")
   }
+
+  # Estimate the fecal egg count reduction proportion if FECR=TRUE
+  if(FECR==TRUE) {
+    if(print==TRUE){
+      cat("\n-----------------------------------------\nEstimating the fecal egg count reduction\n(FECR) proportion = (EY1/EY0 - 1)\nfrom TMLE results using the delta method\n(for a ratio of means)\n-----------------------------------------\n")
+    }
+
+    # retreive basic building blocks from the empirical data and the
+    # TMLE estimation results
+    n_id <- length(unique(id))
+    g1   <- tmle_fit$g$g1W
+    pDelta1 <- tmle_fit$g.Delta$g1W[,1]
+    Qst0 <- tmle_fit$Qstar[,1]
+    Qst1 <- tmle_fit$Qstar[,2]
+    Ey0  <- mean(Qst0)
+    Ey1  <- mean(Qst1)
+
+    # estimate the influence curve
+    # for repeated observations within id, collapse the influence curve
+    IC0 <- (Delta/pDelta1) * ((1-A)/(1-g1)) * (tmle_Y - Qst0) + Qst0 - Ey0
+    IC1 <- (Delta/pDelta1) * (A/g1) * (tmle_Y - Qst1) + Qst1 - Ey1
+    if (n_id < length(id)) {
+      IC0 <- as.vector(by(IC0, id, mean))
+      IC1 <- as.vector(by(IC1, id, mean))
+    }
+    vc <- (1/n_id)*var(cbind(IC0,IC1))
+
+    # use the delta method to get the SE & 95% CI of the FECR
+    fderiv  <- c(1/Ey0,-Ey1/(Ey0^2))
+    fecr    <- (Ey1/Ey0) - 1
+    fecr_se <- as.vector(sqrt(t(fderiv)%*%vc%*%fderiv))
+    fecr_lb <- fecr-1.96*fecr_se
+    fecr_ub <- fecr+1.96*fecr_se
+    fecr_p  <- 2*(1-pnorm(abs(fecr/fecr_se)))
+
+    # add FECR results to the tmle_fit$estimates list
+    tmle_fit$estimates$FECR <- list(psi=fecr,var.psi=fecr_se^2,CI=c(fecr_lb,fecr_ub),pvalue=fecr_p)
+
+    # print results
+    if(print==TRUE){
+      cat("\n-----------------------------------------\nFecal egg count reduction (EY1/EY0)-1:\n-----------------------------------------\n")
+      cat(paste("FECR (95% CI) : ",sprintf("%1.3f",fecr)," (",sprintf("%1.3f",fecr_lb),", ",sprintf("%1.3f",fecr_ub),")",sep=""))
+      cat("\n     SE(FECR) :",sprintf("%1.4f",fecr_se))
+      cat("\n      p-value :",sprintf("%1.4f",fecr_p))
+      cat("\n-----------------------------------------\n")
+    }
+
+  }
+
   return(tmle_fit)
 }

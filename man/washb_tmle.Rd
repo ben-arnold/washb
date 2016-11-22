@@ -7,7 +7,8 @@
 washb_tmle(Y, tr, W = NULL, id = 1:length(Y), pair = NULL,
   Delta = rep(1, length(Y)), family = "gaussian", contrast,
   Q.SL.library = c("SL.mean", "SL.glm", "SL.bayesglm", "SL.gam", "SL.glmnet"),
-  g.SL.library = Q.SL.library, pval = 0.2, seed = NULL, print = TRUE)
+  g.SL.library = Q.SL.library, pval = 0.2, FECR = FALSE, seed = NULL,
+  print = TRUE)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
@@ -30,6 +31,8 @@ washb_tmle(Y, tr, W = NULL, id = 1:length(Y), pair = NULL,
 
 \item{pval}{The p-value threshold used to pre-screen covariates (\code{W}) based on a likelihood ratio test in a univariate regression with the outcome (\code{Y}). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.}
 
+\item{FECR}{Logical argument: estimate the fecal egg count reduction (FECR) proportion?  If \code{FECR=TRUE}, then specify \code{family='gaussian'}.}
+
 \item{seed}{A seed for the pseudo-random cross-validation split used in model selection (use for perfectly reproducible results).}
 
 \item{print}{Logical for printed output, defaults to true. If false, no output will be printed to the console if the returned object is saved to an R object.}
@@ -37,7 +40,7 @@ washb_tmle(Y, tr, W = NULL, id = 1:length(Y), pair = NULL,
 \item{Q.SL.Library}{Library of algorithms to include in the SuperLearner for the outcome model}
 }
 \value{
-A \code{tmle()} fit object (see the \code{\link[tmle]{tmle}} package for details). The \code{$estimates} list includes parameter estimates along with variance estimates and confidence intervals.
+A \code{tmle()} fit object (see the \code{\link[tmle]{tmle}} package for details). The \code{$estimates} list includes parameter estimates along with variance estimates and confidence intervals. If \code{FECR=TRUE}, then the tmle object also includes results in \code{$estimates$FECR}.
 }
 \description{
 Estimate intention-to-treat parameters using targeted maximum likelihood estimation (TMLE), potentially adjusted for covariates and missing outcomes
@@ -54,6 +57,8 @@ Another default is that \code{washb_tmle} uses the \code{\link[SuperLearner]{Sup
 Finally, by default the function uses the same algorithm library to predict the outcome (\code{Q.SL.library}) and the treatment and censoring mechanisms (\code{g.SL.library}). You can specify a different library for the treatment and censoring mechanisms using the \code{g.SL.library} argument.
 
 If you want to adjust for missing outcomes in the analysis, then you need to include observations that have a missing outcome (\code{Y}) with \code{Delta=0} for those observations. Observations with missing outcomes should have treatment (\code{tr}) and covariate (\code{W}) information, which are used to create weights for \code{Pr(Delta|A,W)}.
+
+A standard parameter of interest for soil transmitted helminth infection intensity (eggs per gram) is the fecal egg count reduction percentage, which is defined as FECR = (EY1-EY0)/EY0 = (EY1/EY0)-1. To estimate the FECR using \code{washb_tmle} simply specify \code{FECR=TRUE} (the default is \code{FECR=FALSE}), and a list of FECR estimates will be added to the returned object in \code{$estimates$FECR}.  \code{washb_tmle} estimates the standard error and 95 percent confidence intervals for the FECR using the influence curve and the delta method. The FECR parameter estimate and variance accounts for missing outcomes if specified (\code{Delta}) and repeated observations (\code{id}).
 
 Note: this function depends on the \code{\link[tmle]{tmle}} package, the \code{\link[SuperLearner]{SuperLearner}} package, as well as the internal washb_prescreen() and design_matrix() functions.
 }
