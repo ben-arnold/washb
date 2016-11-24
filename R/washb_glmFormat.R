@@ -1,5 +1,5 @@
 
-#' washb_glmFormat
+#' An internal formatting function for results output in glm objects
 #'
 #'Internal package function used to format the output of glm objects.
 #'
@@ -20,6 +20,7 @@
 #'         used to fit the glm model
 #' @export
 #'
+#' @keywords internal
 #' @examples
 #'
 

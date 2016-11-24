@@ -2,7 +2,7 @@
 % Please edit documentation in R/washb_glmFormat.R
 \name{washb_glmFormat}
 \alias{washb_glmFormat}
-\title{washb_glmFormat}
+\title{An internal formatting function for results output in glm objects}
 \usage{
 washb_glmFormat(glmModel = glmModel, rfit, dmat, rowdropped, contrast, pair,
   vcovCL, family = family, V = NULL, Subgroups = NULL, print = print,
@@ -43,4 +43,5 @@ Internal package function used to format the output of glm objects.
 \examples{
 
 }
+\keyword{internal}
 

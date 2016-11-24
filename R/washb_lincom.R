@@ -1,4 +1,4 @@
-#' washb_lincom
+#' Estimate linear combinations of GLM regression coefficients.
 #'
 #' Function to get Estimates, SEs, CIs, and P-values for Pr>|Z| from a linear combination of regression coefficients.
 #'
@@ -11,6 +11,8 @@
 #' @return Returns a list of the risk ratios or risk differences, the variance-covariance matrix, and a vector indexing the rows of observations
 #'         used to fit the glm model
 #' @export
+#'
+#' @keywords internal
 #'
 #' @examples
 #' library(washb)

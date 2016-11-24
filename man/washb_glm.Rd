@@ -2,7 +2,7 @@
 % Please edit documentation in R/washb_glm.R
 \name{washb_glm}
 \alias{washb_glm}
-\title{Generalized linear model function for WASH Benefits study.}
+\title{Generalized linear model function for the WASH Benefits study}
 \usage{
 washb_glm(Y,tr,pair,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE)
 }

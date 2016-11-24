@@ -2,7 +2,7 @@
 % Please edit documentation in R/washb_permute.R
 \name{washb_permute}
 \alias{washb_permute}
-\title{washb_permute}
+\title{Conditional permutation test using the Wilcoxon signed rank statistic in the WASH Benefits trials}
 \usage{
 washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)
 }
@@ -30,11 +30,10 @@ A list of four slices (replace "~" with the assigned object name):
 }
 \description{
 WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
-Conducts a permutation test of the independence of Y and tr, conditional on randomization block
-using the Wilcoxon rank-sum test statistic.
+Conducts a permutation test of the independence of Y and tr, conditional on randomization block using the Wilcoxon rank-sum test statistic.
 }
 \details{
-The washb_glm and related functions (above) enable us to test hypotheses about whether the average outcome differs between trial arms -- that is,
+The \code{washb_glm} and \code{washb_tmle} related functions enable us to test hypotheses about whether the average outcome differs between trial arms -- that is,
 whether the difference in means is equal to zero.  The mean is just one function of the outcome distribution. A sharper test is the “sharp null hypothesis”
 first proposed by Ronald Fisher, in which we test whether there is any difference at all in the outcome distributions between intervention arms. Under the
 null hypothesis of no treatment effect, the outcome distributions should be indistinguishable from random sampling variation. A way to test the sharp null

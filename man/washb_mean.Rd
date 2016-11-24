@@ -2,7 +2,7 @@
 % Please edit documentation in R/washb_mean.R
 \name{washb_mean}
 \alias{washb_mean}
-\title{washb_mean}
+\title{Estimate means with robust SEs}
 \usage{
 washb_mean(Y, id, print = TRUE)
 }

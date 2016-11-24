@@ -31,7 +31,7 @@ washb_tmle(Y, tr, W = NULL, id = 1:length(Y), pair = NULL,
 
 \item{pval}{The p-value threshold used to pre-screen covariates (\code{W}) based on a likelihood ratio test in a univariate regression with the outcome (\code{Y}). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.}
 
-\item{FECR}{(default is \code{NULL}). Estimate the fecal egg count reduction (FECR) proportion by specifying either \code{FECR='arithmetic'} to estimate it on the artithmetic mean scale or \code{FECR='geometric'} on the geometric mean scale. If \code{FECR='geometric'} ensure that you use log-transformed outcomes. When estimating the FECR, ensure that you  also specify \code{family='gaussian'} (see details).}
+\item{FECR}{(default is \code{NULL}). Estimate the fecal egg count reduction (FECR) proportion by specifying either \code{FECR='arithmetic'} to estimate it on the artithmetic mean scale or \code{FECR='geometric'} on the geometric mean scale. If \code{FECR='geometric'} ensure that you use log-transformed eggs per gram. When estimating the FECR, also ensure that you specify \code{family='gaussian'} (see details).}
 
 \item{seed}{A seed for the pseudo-random cross-validation split used in model selection (use for perfectly reproducible results).}
 

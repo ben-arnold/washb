@@ -1,5 +1,5 @@
 
-#' Generalized linear model function for WASH Benefits study.
+#' Generalized linear model function for the WASH Benefits study
 #'
 #' Estimate intention-to-treat parameters with generalized linear models and robust standard errors
 #'

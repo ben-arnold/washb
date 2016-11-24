@@ -1,5 +1,5 @@
 
-#' washb_mean
+#' Estimate means with robust SEs
 #'
 #' Means estimated with robust standard errors for the WASH Benefits trials
 #'

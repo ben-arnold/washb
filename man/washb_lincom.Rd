@@ -2,7 +2,7 @@
 % Please edit documentation in R/washb_lincom.R
 \name{washb_lincom}
 \alias{washb_lincom}
-\title{washb_lincom}
+\title{Estimate linear combinations of GLM regression coefficients.}
 \usage{
 washb_lincom(lc = NULL, fit, vcv, measure = "RR", flag = NULL)
 }
@@ -87,4 +87,5 @@ washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, 
 #Compare to RD by subgroup from the washb_glm function:
 glm.C.N.byChildType$lincomRD
 }
+\keyword{internal}
 

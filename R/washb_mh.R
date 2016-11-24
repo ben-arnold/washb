@@ -1,6 +1,7 @@
-#' washb_mh
+#' Mantel-Haenszel pooled estimates of the prevalence ratio (PR) or the prevalence
+#' difference (PD) in the WASH Benefits trials
 #'
-#' Mantel-Haenszel Pooled estimates of the prevalence ratio (PR) or the prevalence
+#' Mantel-Haenszel pooled estimates of the prevalence ratio (PR) or the prevalence
 #' difference (PD) using randomization block as the stratification variable.
 #'
 #' The function calls the M-H estimator for two different arms of the study. It relies on

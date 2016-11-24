@@ -2,7 +2,8 @@
 % Please edit documentation in R/washb_mh.R
 \name{washb_mh}
 \alias{washb_mh}
-\title{washb_mh}
+\title{Mantel-Haenszel pooled estimates of the prevalence ratio (PR) or the prevalence
+difference (PD) in the WASH Benefits trials}
 \usage{
 washb_mh(Y,tr,strat,contrast,measure="RR")
 }
@@ -21,7 +22,7 @@ washb_mh(Y,tr,strat,contrast,measure="RR")
 res: Matrix of RD, se.RD, ci.lb, ci.ub, Z, p-value.
 }
 \description{
-Mantel-Haenszel Pooled estimates of the prevalence ratio (PR) or the prevalence
+Mantel-Haenszel pooled estimates of the prevalence ratio (PR) or the prevalence
 difference (PD) using randomization block as the stratification variable.
 }
 \details{
