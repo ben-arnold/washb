@@ -2,7 +2,7 @@
 % Please edit documentation in R/washb_prescreen.R
 \name{washb_prescreen}
 \alias{washb_prescreen}
-\title{washb_prescreen}
+\title{Pre-screen covariates using a likelihood ratio test.}
 \usage{
 washb_prescreen(Y, Ws, family = "gaussian", pval = 0.2, print = TRUE)
 }
@@ -21,7 +21,7 @@ washb_prescreen(Y, Ws, family = "gaussian", pval = 0.2, print = TRUE)
 Function returns the list of variable names with a likelihood ratio test p-value <0.2 (unless a custom p-value is specified).
 }
 \description{
-washb_prescreen
+Pre-screen covariates using a likelihood ratio test.
 }
 \examples{
 

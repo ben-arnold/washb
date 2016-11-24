@@ -1,5 +1,5 @@
 
-#' washb_prescreen
+#' Pre-screen covariates using a likelihood ratio test.
 #'
 #' @param Y Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)
 #' @param Ws data frame that includes candidate adjustment covariates to screen
@@ -78,7 +78,7 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
   }
 
   # ensure Ws are a data frame
-  Ws <- data.frame(Ws)
+  Ws <- as.data.frame(Ws)
 
   dat <- data.frame(Ws,Y)
   dat <- dat[complete.cases(dat),]

@@ -45,7 +45,7 @@ design_matrix <- function(W) {
   }
   # now drop the factors that have been replaced by indicators (if any)
   if(length(flist)>0) {
-    W <- W[,-c(flist)]
+    W <- subset(W,select=-c(flist))
   }
   # return results
   return(W)
