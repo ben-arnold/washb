@@ -70,9 +70,12 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
   }
 
   # ensure that family is gaussian if estimating the FECR
-  if((FECR=='arithmetic'|FECR=='geometric') & family!="gaussian"){
-    stop(paste("You specified FECR=",fnargs$FECR[[length(fnargs$FECR)]],"to estimate the fecal egg count reduction %\nThis parameter is a ratio of means: FECR=(EY1/EY0)-1\nso you need to specify family='gaussian' to estimate it properly."))
+  if(!is.null(FECR)){
+    if((FECR=='arithmetic'|FECR=='geometric') & family!="gaussian"){
+      stop(paste("You specified FECR=",fnargs$FECR[[length(fnargs$FECR)]],"to estimate the fecal egg count reduction %\nThis parameter is a ratio of means: FECR=(EY1/EY0)-1\nso you need to specify family='gaussian' to estimate it properly."))
+    }
   }
+
 
   # Make a data.frame, restricted to the 2 arms in the contrast
   if(is.null(W)){
