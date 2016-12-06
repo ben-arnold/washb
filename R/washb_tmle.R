@@ -201,10 +201,10 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
   }
 
   # Estimate the fecal egg count reduction proportion if FECR!=NULL
-  if(!is.null(FECR) & (FECR=='arithmetic'|FECR=='geometric')) {
+  if(!is.null(FECR)){
     if(print==TRUE){
-      cat(paste("\n-----------------------------------------\nEstimating the fecal egg count reduction\n(FECR) proportion = (EY1/EY0) - 1\nfrom TMLE results using",FECR,"means\nand the delta method (for a ratio of means)\n-----------------------------------------\n"))
-    }
+        cat(paste("\n-----------------------------------------\nEstimating the fecal egg count reduction\n(FECR) proportion = (EY1/EY0) - 1\nfrom TMLE results using",FECR,"means\nand the delta method (for a ratio of means)\n-----------------------------------------\n"))
+      }
 
     # retreive basic building blocks from the empirical data and the
     # TMLE estimation results
