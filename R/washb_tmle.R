@@ -132,7 +132,7 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
       cat("\n-----------------------------------------\nPre-screening the adjustment covariates\nusing a univariate liklihood ratio test:\n-----------------------------------------\n")
       }
 
-    Wscreen <- washb_prescreen(Y=tmledat$Y,Ws=subset(tmledat,select=names(W)),family=family,pval=pval,print=print)
+    Wscreen <- washb_prescreen(Y=tmledat$Y[tmledat$Delta==1],Ws=subset(tmledat,tmledat$Delta==1,select=names(W)),family=family,pval=pval,print=print)
 
     if(print==TRUE){
       cat("\n-----------------------------------------\n")
