@@ -71,6 +71,11 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
 
   # ensure that family is gaussian if estimating the FECR
   if(!is.null(FECR)){
+    if(FECR!='arithmetic' & FECR!='geometric') {
+      stop(paste("You specified FECR=",fnargs$FECR[[length(fnargs$FECR)]],"to estimate the fecal egg count reduction %\nYou need to supply either 'arithmetic' or 'geometric' as an argument to the FECR option."))
+    }
+  }
+    }
     if((FECR=='arithmetic'|FECR=='geometric') & family!="gaussian"){
       stop(paste("You specified FECR=",fnargs$FECR[[length(fnargs$FECR)]],"to estimate the fecal egg count reduction %\nThis parameter is a ratio of means: FECR=(EY1/EY0)-1\nso you need to specify family='gaussian' to estimate it properly."))
     }
@@ -197,7 +202,7 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
   }
 
   # Estimate the fecal egg count reduction proportion if FECR!=NULL
-  if(FECR=='arithmetic'|FECR=='geometric') {
+  if(!is.null(FECR) & (FECR=='arithmetic'|FECR=='geometric')) {
     if(print==TRUE){
       cat(paste("\n-----------------------------------------\nEstimating the fecal egg count reduction\n(FECR) proportion = (EY1/EY0) - 1\nfrom TMLE results using",FECR,"means\nand the delta method (for a ratio of means)\n-----------------------------------------\n"))
     }
