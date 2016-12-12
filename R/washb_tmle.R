@@ -233,11 +233,11 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
     # and   FECR = exp(EY1)/exp(EY0)-1 on the geometric mean scale
     if(FECR=='arithmetic') {
       fecr    <- (Ey1/Ey0) - 1
-      fderiv  <- c(1/Ey0,-Ey1/(Ey0^2))
+      fderiv  <- c(-Ey1/(Ey0^2),1/Ey0)
     }
     if(FECR=='geometric') {
       fecr    <- (exp(Ey1)/exp(Ey0)) - 1
-      fderiv  <- c(exp(Ey1)/exp(Ey0),-exp(Ey1)/exp(Ey0))
+      fderiv  <- c(-exp(Ey1)/exp(Ey0),exp(Ey1)/exp(Ey0))
     }
     fecr_se <- as.vector(sqrt(t(fderiv)%*%vc%*%fderiv))
     fecr_lb <- fecr-1.96*fecr_se
