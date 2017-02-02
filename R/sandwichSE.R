@@ -23,6 +23,7 @@ sandwichSE   <- function(dat,fm, cluster){
   require(sandwich, quietly = TRUE)
   require(lmtest, quietly = TRUE)
   if(is.factor(cluster)) {
+    #Drop factor levels for blocks without treatment contrast
     cluster <- droplevels(cluster)
   }
   M <- length(unique(cluster))
