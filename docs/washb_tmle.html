@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_tmle. washb 0.2.0</title>
+<title>washb_tmle. washb 0.2.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.2.0</a>
+      <a class="brand" href="index.html">washb 0.2.1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -57,7 +57,8 @@
     <pre><span class="functioncall"><a href='washb_tmle.html'>washb_tmle</a></span><span class="keyword">(</span><span class="symbol">Y</span><span class="keyword">,</span> <span class="symbol">tr</span><span class="keyword">,</span> <span class="argument">W</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span> <span class="argument">id</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="number">1</span><span class="keyword">:</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/length'>length</a></span><span class="keyword">(</span><span class="symbol">Y</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">pair</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span>
   <span class="argument">Delta</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span><span class="keyword">(</span><span class="number">1</span><span class="keyword">,</span> <span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/length'>length</a></span><span class="keyword">(</span><span class="symbol">Y</span><span class="keyword">)</span><span class="keyword">)</span><span class="keyword">,</span> <span class="argument">family</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="string">"gaussian"</span><span class="keyword">,</span> <span class="symbol">contrast</span><span class="keyword">,</span>
   <span class="argument">Q.SL.library</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="string">"SL.mean"</span><span class="keyword">,</span> <span class="string">"SL.glm"</span><span class="keyword">,</span> <span class="string">"SL.bayesglm"</span><span class="keyword">,</span> <span class="string">"SL.gam"</span><span class="keyword">,</span> <span class="string">"SL.glmnet"</span><span class="keyword">)</span><span class="keyword">,</span>
-  <span class="argument">g.SL.library</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="symbol">Q.SL.library</span><span class="keyword">,</span> <span class="argument">pval</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="number">0.2</span><span class="keyword">,</span> <span class="argument">seed</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span> <span class="argument">print</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="number">TRUE</span><span class="keyword">)</span></pre>
+  <span class="argument">g.SL.library</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="symbol">Q.SL.library</span><span class="keyword">,</span> <span class="argument">pval</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="number">0.2</span><span class="keyword">,</span> <span class="argument">FECR</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span> <span class="argument">seed</span>&nbsp;<span class="argument">=</span>&nbsp;NULL<span class="keyword">,</span>
+  <span class="argument">print</span>&nbsp;<span class="argument">=</span>&nbsp;<span class="number">TRUE</span><span class="keyword">)</span></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -72,15 +73,17 @@
       <dt>pair</dt>
       <dd>An optional ID variable to identify the matched pair unit (In WASH Benefits, blocks) if conducting a matched-pair analysis. This argument is used to drop pairs that are missing one or more treatment groups. Incomplete pairs is not an issue in the overall Bangladesh trial (there were no incomplete blocks), but is an issue in the Kenya trial where there were some incomplete blocks.</dd>
       <dt>Delta</dt>
-      <dd>indicator of missing outcome. 1 - observed, 0 - missing.</dd>
+      <dd>indicator of missing outcome. 1 - observed, 0 - missing. For values with <code>Delta=0</code>, ensure the missing outcomes in <code>Y</code> are set to an arbitrary constant (e.g., 9).</dd>
       <dt>family</dt>
       <dd>Outcome family: <code>gaussian</code> (continuous outcomes, like LAZ) or <code>binomial</code> (binary outcomes like diarrhea or stunting)</dd>
       <dt>contrast</dt>
-      <dd>Vector of length 2 that includes the treatment groups to contrast (e.g., <code>contrast=c(&#39;Control&#39;,&#39;Nutrition&#39;)</code>).</dd>
+      <dd>Vector of length 2 that includes the treatment groups to contrast from the <code>tr</code> variable, reference group first (e.g., <code>contrast=c(&#39;Control&#39;,&#39;Nutrition&#39;)</code>).</dd>
       <dt>g.SL.library</dt>
       <dd>Library of algorithms to include in the SuperLearner for the treatment model Pr(A|W) and for the missingness model Pr(Delta|A,W) (if Delta is specified)</dd>
       <dt>pval</dt>
       <dd>The p-value threshold used to pre-screen covariates (<code>W</code>) based on a likelihood ratio test in a univariate regression with the outcome (<code>Y</code>). Variables with a univariate association p-value below this threshold will be used in the final model. Defaults to 0.2.</dd>
+      <dt>FECR</dt>
+      <dd>(default is <code>NULL</code>). Estimate the fecal egg count reduction (FECR) proportion by specifying either <code>FECR=&#39;arithmetic&#39;</code> to estimate it on the artithmetic mean scale or <code>FECR=&#39;geometric&#39;</code> on the geometric mean scale. If <code>FECR=&#39;geometric&#39;</code> ensure that you use log-transformed eggs per gram. When estimating the FECR, also ensure that you specify <code>family=&#39;gaussian&#39;</code> (see details).</dd>
       <dt>seed</dt>
       <dd>A seed for the pseudo-random cross-validation split used in model selection (use for perfectly reproducible results).</dd>
       <dt>print</dt>
@@ -93,7 +96,7 @@
       <h2>Value</h2>
 
       <p><dl>
-A <code>tmle()</code> fit object (see the <code><a href='http://www.rdocumentation.org/packages/tmle/topics/tmle'>tmle</a></code> package for details). The <code>$estimates</code> list includes parameter estimates along with variance estimates and confidence intervals.
+A <code>tmle()</code> fit object (see the <code><a href='http://www.rdocumentation.org/packages/tmle/topics/tmle'>tmle</a></code> package for details). The <code>$estimates</code> list includes parameter estimates along with variance estimates and confidence intervals. If <code>FECR=TRUE</code>, then the tmle object also includes results in <code>$estimates$FECR</code>.
 </dl></p>
 
     </div>
@@ -116,11 +119,13 @@ A <code>tmle()</code> fit object (see the <code><a href='http://www.rdocumentati
 
       <p>Another default is that <code>washb_tmle</code> uses the <code><a href='http://www.rdocumentation.org/packages/SuperLearner/topics/SuperLearner'>SuperLearner</a></code> algorithm to adjust for covariates and to predict the treatment mechanism and censoring mechanism (if adjusting for missing outcomes). The default algorithm library includes the simple mean, main terms GLM, main terms Bayes GLM with non-informative priors, generalized additive models (degree 2), and lasso (glmnet). These are the pre-specified algorithms from the original trial statistical analysis plan. You can type <code>listWrappers()</code> to see the full set of algorithms implemented in the super learner. If you just wish to use a main effects GLM model to adjust for the covariates, then you can specify <code>Q.SL.library=&quot;SL.glm&quot;</code>.  If you are dealing with very small sample sizes (e.g., in a substudy), then you may wish to use even simpler libraries, such as a set of univariate regressions (as in Balzer et al. 2016).</p>
 
-      <p>Finally, by default the function uses the same algorithm library to predict the outcome (<code>Q.SL.library</code>) and the treatment and censoring mechanisms (<code>g.SL.library</code>). You can specify a different library for the treatment and censoring mechanisms using the <code>g.SL.library</code> argument.</p>
+      <p>By default the function uses the same algorithm library to predict the outcome (<code>Q.SL.library</code>) and the treatment and censoring mechanisms (<code>g.SL.library</code>). You can specify a different library for the treatment and censoring mechanisms using the <code>g.SL.library</code> argument.</p>
 
-      <p>If you want to adjust for missing outcomes in the analysis, then you need to include observations that have a missing outcome (<code>Y</code>) with <code>Delta=0</code> for those observations. Observations with missing outcomes should have treatment (<code>tr</code>) and covariate (<code>W</code>) information, which are used to create weights for <code>Pr(Delta|A,W)</code>.</p>
+      <p>If you want to adjust for missing outcomes in the analysis using inverse probability of censoring weights (IPCW), then you need to include observations that have a missing outcome (<code>Y</code>) set to an arbitrary value (e.g., <code>9</code>) with <code>Delta=0</code> for those observations. Observations with missing outcomes also need to have treatment (<code>tr</code>) and covariate (<code>W</code>) information, which are used to create weights for <code>Pr(Delta|A,W)</code>.  Please see the package&#39;s vignette for a detailed example of how to estimate an IPCW-TMLE parameter.</p>
 
-      <p>Note: this function depends on the <code><a href='http://www.rdocumentation.org/packages/tmle/topics/tmle'>tmle</a></code> package, the <code><a href='http://www.rdocumentation.org/packages/SuperLearner/topics/SuperLearner'>SuperLearner</a></code> package, as well as the internal washb_prescreen() and design_matrix() functions.</p>
+      <p>A standard parameter of interest for soil transmitted helminth infection intensity (eggs per gram) is the fecal egg count reduction (FECR) percentage, which is defined as FECR = (EY1-EY0)/EY0 = (EY1/EY0)-1. To estimate the FECR using <code>washb_tmle</code> simply specify <code>FECR=&#39;arithmetic&#39;</code> or <code>FECR=&#39;geometric&#39;</code> (the default is <code>FECR=FALSE</code>), and a list of FECR estimates will be added to the returned object in <code>$estimates$FECR</code>. If estimating the FECR using geometric means (computed on <code>log(Y)</code> outcomes), ensure that you pass <code>washb_tmle</code> log transformed outcomes. <code>washb_tmle</code> estimates the standard error and 95 percent confidence intervals for the FECR with the influence curve and the delta method. The FECR parameter estimate and its variance account for missing outcomes if specified (<code>Delta</code>) and repeated observations (<code>id</code>). The result is returned as a proportion (EY1-EY0)/EY0; simply multiply the FECR estimate by 100 to report the percentage reduction.</p>
+
+      <p>Note: <code>washb_tmle</code> depends on the <code><a href='http://www.rdocumentation.org/packages/tmle/topics/tmle'>tmle</a></code> package, the <code><a href='http://www.rdocumentation.org/packages/SuperLearner/topics/SuperLearner'>SuperLearner</a></code> package, as well as the internal <code><a href='washb_prescreen.html'>washb_prescreen</a></code> and <code><a href='design_matrix.html'>design_matrix</a></code> functions.</p>
 
     </div>
 

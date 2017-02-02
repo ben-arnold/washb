@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_permute. washb 0.2.0</title>
+<title>washb_permute. washb 0.2.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.2.0</a>
+      <a class="brand" href="index.html">washb 0.2.1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -49,7 +49,7 @@
         
       </header>
       
-      <h1>washb_permute</h1>
+      <h1>Conditional permutation test using the Wilcoxon signed rank statistic in the WASH Benefits trials</h1>
 
 <div class="row">
   <div class="span8">
@@ -91,15 +91,14 @@ A list of four slices (replace &quot;~&quot; with the assigned object name):
       <h2>Description</h2>
 
       <p>WASH Benefits Wilcoxon Signed Rank permutation test function for two treatment arms conditional on randomization block.
-Conducts a permutation test of the independence of Y and tr, conditional on randomization block
-using the Wilcoxon rank-sum test statistic.</p>
+Conducts a permutation test of the independence of Y and tr, conditional on randomization block using the Wilcoxon rank-sum test statistic.</p>
 
     </div>
 
     <div class="Details">
       <h2>Details</h2>
 
-      <p>The washb_glm and related functions (above) enable us to test hypotheses about whether the average outcome differs between trial arms -- that is,
+      <p>The <code>washb_glm</code> and <code>washb_tmle</code> related functions enable us to test hypotheses about whether the average outcome differs between trial arms -- that is,
 whether the difference in means is equal to zero.  The mean is just one function of the outcome distribution. A sharper test is the “sharp null hypothesis”
 first proposed by Ronald Fisher, in which we test whether there is any difference at all in the outcome distributions between intervention arms. Under the
 null hypothesis of no treatment effect, the outcome distributions should be indistinguishable from random sampling variation. A way to test the sharp null

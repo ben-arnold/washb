@@ -11,9 +11,9 @@
 #'
 #'Another default is that \code{washb_tmle} uses the \code{\link[SuperLearner]{SuperLearner}} algorithm to adjust for covariates and to predict the treatment mechanism and censoring mechanism (if adjusting for missing outcomes). The default algorithm library includes the simple mean, main terms GLM, main terms Bayes GLM with non-informative priors, generalized additive models (degree 2), and lasso (glmnet). These are the pre-specified algorithms from the original trial statistical analysis plan. You can type \code{listWrappers()} to see the full set of algorithms implemented in the super learner. If you just wish to use a main effects GLM model to adjust for the covariates, then you can specify \code{Q.SL.library="SL.glm"}.  If you are dealing with very small sample sizes (e.g., in a substudy), then you may wish to use even simpler libraries, such as a set of univariate regressions (as in Balzer et al. 2016).
 #'
-#'Finally, by default the function uses the same algorithm library to predict the outcome (\code{Q.SL.library}) and the treatment and censoring mechanisms (\code{g.SL.library}). You can specify a different library for the treatment and censoring mechanisms using the \code{g.SL.library} argument.
+#'By default the function uses the same algorithm library to predict the outcome (\code{Q.SL.library}) and the treatment and censoring mechanisms (\code{g.SL.library}). You can specify a different library for the treatment and censoring mechanisms using the \code{g.SL.library} argument.
 #'
-#' If you want to adjust for missing outcomes in the analysis, then you need to include observations that have a missing outcome (\code{Y}) with \code{Delta=0} for those observations. Observations with missing outcomes should have treatment (\code{tr}) and covariate (\code{W}) information, which are used to create weights for \code{Pr(Delta|A,W)}.
+#' If you want to adjust for missing outcomes in the analysis using inverse probability of censoring weights (IPCW), then you need to include observations that have a missing outcome (\code{Y}) set to an arbitrary value (e.g., \code{9}) with \code{Delta=0} for those observations. Observations with missing outcomes also need to have treatment (\code{tr}) and covariate (\code{W}) information, which are used to create weights for \code{Pr(Delta|A,W)}.  Please see the package's vignette for a detailed example of how to estimate an IPCW-TMLE parameter.
 #'
 #' A standard parameter of interest for soil transmitted helminth infection intensity (eggs per gram) is the fecal egg count reduction (FECR) percentage, which is defined as FECR = (EY1-EY0)/EY0 = (EY1/EY0)-1. To estimate the FECR using \code{washb_tmle} simply specify \code{FECR='arithmetic'} or \code{FECR='geometric'} (the default is \code{FECR=FALSE}), and a list of FECR estimates will be added to the returned object in \code{$estimates$FECR}. If estimating the FECR using geometric means (computed on \code{log(Y)} outcomes), ensure that you pass \code{washb_tmle} log transformed outcomes. \code{washb_tmle} estimates the standard error and 95 percent confidence intervals for the FECR with the influence curve and the delta method. The FECR parameter estimate and its variance account for missing outcomes if specified (\code{Delta}) and repeated observations (\code{id}). The result is returned as a proportion (EY1-EY0)/EY0; simply multiply the FECR estimate by 100 to report the percentage reduction.
 #'
@@ -25,7 +25,7 @@
 #' @param W Data frame that includes adjustment covariates
 #' @param id ID variable for independent units. For pair-matched designs, this is the matched pair and should be the same as the \code{pair} argument. For analyses that are not pair-matched, then it should typically be the cluster.
 #' @param pair An optional ID variable to identify the matched pair unit (In WASH Benefits, blocks) if conducting a matched-pair analysis. This argument is used to drop pairs that are missing one or more treatment groups. Incomplete pairs is not an issue in the overall Bangladesh trial (there were no incomplete blocks), but is an issue in the Kenya trial where there were some incomplete blocks.
-#' @param Delta indicator of missing outcome. 1 - observed, 0 - missing.
+#' @param Delta indicator of missing outcome. 1 - observed, 0 - missing. For values with \code{Delta=0}, ensure the missing outcomes in \code{Y} are set to an arbitrary constant (e.g., 9).
 #' @param family Outcome family: \code{gaussian} (continuous outcomes, like LAZ) or \code{binomial} (binary outcomes like diarrhea or stunting)
 #' @param contrast Vector of length 2 that includes the treatment groups to contrast from the \code{tr} variable, reference group first (e.g., \code{contrast=c('Control','Nutrition')}).
 #' @param Q.SL.Library Library of algorithms to include in the SuperLearner for the outcome model
@@ -168,10 +168,10 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
   }
 
   # if W is null or if no covariates were selected
-  # create a data frame with 2 columns of 1s -- allows tmle() to run, but does no adjustment
+  # create a data frame with a column of noise -- allows tmle() to run, but does no adjustment
   # and set the SL libraries to GLM only
   if(is.null(W)) {
-    Wselect <- data.frame(w1=rep(1,length(tmledat$Y)),w2=rep(1,length(tmledat$Y)))
+    Wselect <- data.frame(w1=runif(n=length(tmledat$Y)))
     Q.SL.library <- c("SL.glm")
     g.SL.library <- c("SL.glm")
   }

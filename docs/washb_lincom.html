@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>washb_lincom. washb 0.2.0</title>
+<title>washb_lincom. washb 0.2.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -32,7 +32,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="index.html">washb 0.2.0</a>
+      <a class="brand" href="index.html">washb 0.2.1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html">Home</a></li>
@@ -49,7 +49,7 @@
         
       </header>
       
-      <h1>washb_lincom</h1>
+      <h1>Estimate linear combinations of GLM regression coefficients.</h1>
 
 <div class="row">
   <div class="span8">
@@ -155,13 +155,20 @@ data set ‘washb_bd_enrol’ not found</strong>
 <span class="symbol">lc</span><span class="assignement">=</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span><span class="keyword">(</span><span class="number">0</span><span class="keyword">,</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span><span class="keyword">(</span><span class="symbol">glm.C.N.byChildType</span><span class="keyword">$</span><span class="symbol">fit</span><span class="keyword">)</span><span class="keyword">)</span>
 <span class="comment">#Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.</span>
 <span class="symbol">glm.C.N.byChildType</span><span class="keyword">$</span><span class="symbol">fit</span><span class="keyword">[</span><span class="number">1</span><span class="keyword">:</span><span class="number">6</span><span class="keyword">,</span><span class="keyword">]</span></div>
-<div class='output'>                    Coef.        2.5%      97.5%   Std. Error     z value     Pr(&gt;|z|)
-(Intercept)    0.00644303 -0.00640949 0.01929554 0.0065574058   0.9825575 3.258253e-01
-trNutrition   -0.01440164 -0.03459613 0.00579286 0.0103033129  -1.3977677 1.621828e-01
-VTarget child  0.02491655  0.00632625 0.04350684 0.0094848459   2.6269849 8.614517e-03
-pair2          0.07757906  0.07517584 0.07998228 0.0012261335  63.2713015 0.000000e+00
-pair3          0.01871169  0.01528761 0.02213577 0.0017469792  10.7108843 9.049319e-27
-pair4          0.09317384  0.09179561 0.09455206 0.0007031754 132.5044118 0.000000e+00
+<div class='output'>                    Coef.        2.5%      97.5%   Std. Error     z value
+(Intercept)    0.00644303 -0.00640949 0.01929554 0.0065574058   0.9825575
+trNutrition   -0.01440164 -0.03459613 0.00579286 0.0103033129  -1.3977677
+VTarget child  0.02491655  0.00632625 0.04350684 0.0094848459   2.6269849
+pair2          0.07757906  0.07517584 0.07998228 0.0012261335  63.2713015
+pair3          0.01871169  0.01528761 0.02213577 0.0017469792  10.7108843
+pair4          0.09317384  0.09179561 0.09455206 0.0007031754 132.5044118
+                  Pr(&gt;|z|)
+(Intercept)   3.258253e-01
+trNutrition   1.621828e-01
+VTarget child 8.614517e-03
+pair2         0.000000e+00
+pair3         9.049319e-27
+pair4         0.000000e+00
 </div>
 <div class='input'><span class="comment">#Replace the second and fourth position in the vector with 1 (the positions of the treatment coefficient and interaction term in the model)</span>
 <span class="symbol">lc</span><span class="keyword">[</span><span class="functioncall"><a href='http://www.rdocumentation.org/packages/base/topics/c'>c</a></span><span class="keyword">(</span><span class="number">2</span><span class="keyword">,</span><span class="number">4</span><span class="keyword">)</span><span class="keyword">]</span><span class="assignement">&lt;-</span><span class="number">1</span>
@@ -190,7 +197,7 @@ Linear combination of coefficients:
       <li>washb_lincom</li>
     </ul>
     <ul>
-      
+      <li>internal</li>
     </ul> -->
 
 

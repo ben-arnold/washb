@@ -24,7 +24,7 @@ library(washb)
 
 ## ---- results="hide", eval=TRUE---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # load and merge the final analysis files
-# enrollment charactersitics, diarrhea measurements, and treatment assignments
+# treatment assignments, enrollment charactersitics, and diarrhea measurements
 # note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments
 # if you do not have access to these data through Dropbox, but need it, please contact UCB
 washb_bd_tr    <- read.csv('/Volumes/0-Treatment-assignments/washb-bangladesh-tr.csv')
@@ -94,7 +94,7 @@ lazd$tr <- factor(lazd$tr,levels=c("Control","Water","Sanitation","Handwashing",
 # ensure that month is coded as a factor
 lazd$month <- factor(lazd$month)
 
-# rename aged to agedays (for consistency with the anthro file)
+# rename aged to agedays (for consistency with the diarrhea file)
 lazd$agedays <- lazd$aged
 
 # sort the data for perfect replication when using random splits for V-fold cross-validation (washb_tmle and adj permutation tests)
@@ -118,6 +118,57 @@ lazd <- lazd[order(lazd$block,lazd$clusterid,lazd$dataid,lazd$childid),]
 
 ## ---- eval=TRUE, comment=NA-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 unlist(adj.LAZ.tmle.C.N$estimates$ATE)
+
+## ----make full data,eval=TRUE,comment=NA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#---------------------------------------
+# create a shell of the full data (dfull)
+# as if every index child with a live birth
+# were measured at year 1 and year 2
+#---------------------------------------
+
+# load the compound-level tracking data and identify compounds with live births
+washb_bd_track <- read.csv("~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-track-compound.csv")
+table(washb_bd_track$miss1reason=="No live birth") # total number of unique compounds w/ live birth = 5190
+
+# create the full data (i.e., a dataset with rows for every potential measurement)
+dfull <- subset(washb_bd_track,miss1reason!="No live birth")
+dfull$svy <- 1
+dfull2 <- dfull
+dfull2$svy <- 2
+dfull <- rbind(dfull,dfull2)
+
+# merge treatment and enrollment data onto this shell of the full data
+dfull <- merge(dfull,washb_bd_tr,by=c("clusterid","block"),all.x=T,all.y=F)
+dfull <- merge(dfull,washb_bd_enrol,by=c("dataid","clusterid","block"),all.x=T,all.y=F)
+
+# Since we are only analyzing the primary outcome at year 2 in this example
+# we need to re-subset the full data to year 2, 
+# just before merging to the LAZ data (lazd, created above)
+dfull <- subset(dfull,svy==2)
+
+# now merge the observed anthropometry outcomes (lazd) onto this full dataset
+lazdfull <- merge(dfull,washb_bd_anthro,by=c("dataid","clusterid","block","svy"),all.x=T,all.y=T)
+lazdfull$agedays <- lazdfull$aged # naming consisetncy across files
+
+# create an indicator equal to 1 if the outcome is observed, 0 otherwise
+lazdfull$Delta <- ifelse(is.na(lazdfull$laz),0,1)
+table(lazdfull$Delta[lazdfull$tr=="Control"|lazdfull$tr=="Nutrition"])
+
+# set missing outcomes to an arbitrary, non-missing value. In this case use 9
+lazdfull$Ydelta <- lazdfull$laz
+lazdfull$Ydelta[lazdfull$Delta==0] <- 9
+
+# estimate an IPCW-TMLE parameter
+psi_ipcw <- washb_tmle(Y=lazdfull$Ydelta,Delta=lazdfull$Delta,tr=lazdfull$tr,id=lazdfull$block,pair=lazdfull$block,family="gaussian",contrast=c("Control","Nutrition"),W=lazdfull[Wadj],seed=12345)
+
+## ----compare estimates, eval=TRUE,comment=NA--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------
+# compare the estimates
+#---------------------------------------
+round(unlist(adj.LAZ.tmle.C.N$estimates$ATE),4)
+round(unlist(psi_ipcw$estimates$ATE),4)
+
 
 ## ---- eval=F----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)

@@ -22,6 +22,9 @@ sandwichSE   <- function(dat,fm, cluster){
   # cluster : vector of cluster IDs
   require(sandwich, quietly = TRUE)
   require(lmtest, quietly = TRUE)
+  if(is.factor(cluster)) {
+    cluster <- droplevels(cluster)
+  }
   M <- length(unique(cluster))
   N <- length(cluster)
   K <- fm$rank

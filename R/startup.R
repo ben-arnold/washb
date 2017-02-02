@@ -7,7 +7,7 @@
   packageStartupMessage('Welcome to the washb package')
   packageStartupMessage('Version: ', utils::packageDescription('washb')$Version)
   packageStartupMessage('Created on ', utils::packageDescription('washb')$Date)
-  packageStartupMessage("\nThe package's reference manual and vignette are also online:\nhttps://ben-arnold.github.io/washb\n")
+  packageStartupMessage("\nThis software was developed with funding from the\nBill & Melinda Gates Foundation (grant number OPPGD759).\n\nThe package's reference manual and vignette are also online:\nhttps://ben-arnold.github.io/washb\n")
 }
 
 .onLoad <- function(libname, pkgname) {

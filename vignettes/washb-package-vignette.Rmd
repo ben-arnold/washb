@@ -127,7 +127,7 @@ Below we will use some actual analyses from the Bangladesh trial to illustrate t
 This is an example of how to load and merge the enrollment and diarrhea data, with the actual treatment assignments. It creates a final analysis data frame called `dd` (for diarrhea data). At this time, these datasets are not included with the package -- if you need access to them, please email the UCB team.
 ```{r, results="hide", eval=TRUE}
 # load and merge the final analysis files
-# enrollment charactersitics, diarrhea measurements, and treatment assignments
+# treatment assignments, enrollment charactersitics, and diarrhea measurements
 # note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments
 # if you do not have access to these data through Dropbox, but need it, please contact UCB
 washb_bd_tr    <- read.csv('/Volumes/0-Treatment-assignments/washb-bangladesh-tr.csv')
@@ -201,7 +201,7 @@ lazd$tr <- factor(lazd$tr,levels=c("Control","Water","Sanitation","Handwashing",
 # ensure that month is coded as a factor
 lazd$month <- factor(lazd$month)
 
-# rename aged to agedays (for consistency with the anthro file)
+# rename aged to agedays (for consistency with the diarrhea file)
 lazd$agedays <- lazd$aged
 
 # sort the data for perfect replication when using random splits for V-fold cross-validation (washb_tmle and adj permutation tests)
@@ -472,7 +472,6 @@ Estimate intention-to-treat parameters using targeted maximum likelihood estimat
 
 The `washb_tmle` function is mainly a convenience wrapper for the `tmle` package. It estimates ITT effects in a trial using targeted maximum likelihood estimation (TMLE). In brief, the function does the following: it restricts the data to complete observations in the two arms listed in the `contrast` argument, it pre-screens covariates (`W`), if specified, to select those that have a univariate association with the outcome, and then it estimates the intention-to-treat effect using TMLE.  If `family='binomial'`, then the function returns effects on the absolute, relative, and odds ratio scale. If `Delta` is specified (i.e., observations with missing outcomes are included), then the function will adjust the effects for missingness using inverse probability of censoring weights, with the weights estimated using data-adaptive super learning for `Pr(Delta|A,W)`.
 
-__IMPORTANT:__ _As of Oct 12, 2016 we do not recommend using the `Delta` option yet because we have not fully tested it.  This is in active testing and as soon as it's validated (very near future) we will notify collaborators and will add an example analysis for missing outcomes to this vignette._
 
 ### some technical details
 
@@ -512,6 +511,16 @@ __Usage:__
 washb_tmle(Y,tr,W=NULL,id,pair=NULL, Delta = rep(1,length(Y)), family="gaussian", contrast, Q.SL.library=c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet") ,g.SL.library=Q.SL.library, pval=0.2, seed=NULL, print=TRUE) 
 ```
 
+__References:__  
+1.  van der Laan MJ, Rose S. Targeted Learning: Causal Inference for Observational and Experimental Data. Springer Series in Statistics; 2011.[Link](http://www.springer.com/us/book/9781441997814)
+
+2. Gruber S, van der Laan M. tmle: An R Package for Targeted Maximum Likelihood Estimation. J Stat Softw. 2012;51: 1–35.[Link](https://www.jstatsoft.org/article/view/v051i13)
+
+3. Balzer LB, van der Laan MJ, Petersen ML, SEARCH Collaboration. Adaptive pre-specification in randomized trials with and without pair-matching. Stat Med. 2016; doi:10.1002/sim.7023 [Link](http://onlinelibrary.wiley.com/doi/10.1002/sim.7023/abstract;jsessionid=F5CD1290B8DFF44C20FF303FBB08390F.f03t03)
+
+4.	Schuler MS, Rose S. Targeted Maximum Likelihood Estimation for Causal Inference in Observational Studies. Am J Epidemiol. 2017;185: 65–73. [Link](https://www.ncbi.nlm.nih.gov/pubmed/27941068)  
+
+
 ### TMLE for a continuous outcome
 
 The `washb_tmle` has similar arguments as `washb_glm` (by design), with the addition of the super learner libraries. The default library (`c("SL.mean","SL.glm","SL.bayesglm","SL.gam","SL.glmnet")`) is pretty good in this context, so we don't actually specify it below (instead relying on the default value).
@@ -542,6 +551,64 @@ round(unlist(adj.Diar.tmle.C.S$estimates$RR),4)
 
 # odds ratio
 round(unlist(adj.Diar.tmle.C.S$estimates$OR),4)
+```
+
+### TMLE with inverse probability of censoring weights (IPCW)
+
+The `washb_tmle` function enables you to account for missing data in the outcome using inverse probability of censoring weights (IPCW) to the estimator. You can do this using the `Delta=` argument to specify an indicator of whether the outcome.  A key step for conducting an IPCW analysis that differs from other analyses in this vignette is that you need to create the "full" data, where there is an observation for every potential measurement (i.e., including those that were missing in the trial).  To do this, you need to use the enrolled study population, limited to live births (since the trial's inference is limited to live births).  Below, we provide an example using the control and nutrition arms in the Bangladesh trial.
+
+```{r make full data,eval=TRUE,comment=NA}
+
+#---------------------------------------
+# create a shell of the full data (dfull)
+# as if every index child with a live birth
+# were measured at year 1 and year 2
+#---------------------------------------
+
+# load the compound-level tracking data and identify compounds with live births
+washb_bd_track <- read.csv("~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-track-compound.csv")
+table(washb_bd_track$miss1reason=="No live birth") # total number of unique compounds w/ live birth = 5190
+
+# create the full data (i.e., a dataset with rows for every potential measurement)
+dfull <- subset(washb_bd_track,miss1reason!="No live birth")
+dfull$svy <- 1
+dfull2 <- dfull
+dfull2$svy <- 2
+dfull <- rbind(dfull,dfull2)
+
+# merge treatment and enrollment data onto this shell of the full data
+dfull <- merge(dfull,washb_bd_tr,by=c("clusterid","block"),all.x=T,all.y=F)
+dfull <- merge(dfull,washb_bd_enrol,by=c("dataid","clusterid","block"),all.x=T,all.y=F)
+
+# Since we are only analyzing the primary outcome at year 2 in this example
+# we need to re-subset the full data to year 2, 
+# just before merging to the LAZ data (lazd, created above)
+dfull <- subset(dfull,svy==2)
+
+# now merge the observed anthropometry outcomes (lazd) onto this full dataset
+lazdfull <- merge(dfull,washb_bd_anthro,by=c("dataid","clusterid","block","svy"),all.x=T,all.y=T)
+lazdfull$agedays <- lazdfull$aged # naming consisetncy across files
+
+# create an indicator equal to 1 if the outcome is observed, 0 otherwise
+lazdfull$Delta <- ifelse(is.na(lazdfull$laz),0,1)
+table(lazdfull$Delta[lazdfull$tr=="Control"|lazdfull$tr=="Nutrition"])
+
+# set missing outcomes to an arbitrary, non-missing value. In this case use 9
+lazdfull$Ydelta <- lazdfull$laz
+lazdfull$Ydelta[lazdfull$Delta==0] <- 9
+
+# estimate an IPCW-TMLE parameter
+psi_ipcw <- washb_tmle(Y=lazdfull$Ydelta,Delta=lazdfull$Delta,tr=lazdfull$tr,id=lazdfull$block,pair=lazdfull$block,family="gaussian",contrast=c("Control","Nutrition"),W=lazdfull[Wadj],seed=12345)
+```
+
+In this particular example, accounting for missing outcomes makes very little difference after adjusting for covariates -- adjusted, and adjusted+IPCW estimates are nearly identical.
+```{r compare estimates, eval=TRUE,comment=NA}
+#---------------------------------------
+# compare the estimates
+#---------------------------------------
+round(unlist(adj.LAZ.tmle.C.N$estimates$ATE),4)
+round(unlist(psi_ipcw$estimates$ATE),4)
+
 ```
 
 # Comparison of ITT estimators
@@ -650,8 +717,10 @@ washb_permute(Y,tr,pair,contrast,nreps=100000,seed=NULL)
 
 
 __References:__  
-1.	Gail, M. H., Mark, S. D., Carroll, R. J., Green, S. B. & Pee, D. On Design Considerations and Randomization-Based Inference for Community Intervention Trials. Statist. Med. 15, 1069–1092 (1996). [Link](http://onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0258(19960615)15:11%3c1069::AID-SIM220%3e3.0.CO%3b2-Q/full)  
+1.	Gail, M. H., Mark, S. D., Carroll, R. J., Green, S. B. & Pee, D. On Design Considerations and Randomization-Based Inference for Community Intervention Trials. Statist. Med. 15, 1069–1092 (1996).[Link](http://onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-0258(19960615)15:11%3c1069::AID-SIM220%3e3.0.CO%3b2-Q/full)  
+
 2.	Braun, T. M. & Feng, Z. Optimal Permutation Tests for the Analysis of Group Randomized Trials. Journal of the American Statistical Association 96, 1424–1432 (2001). [Link](http://www.tandfonline.com/doi/abs/10.1198/016214501753382336)  
+
 3.	Rosenbaum, P. R. Covariance Adjustment in Randomized Experiments and Observational Studies. Statist. Sci. 17, 286–327 (2002). [Link](http://projecteuclid.org/euclid.ss/1042727942)  
 
 ### unadjusted permutation test
