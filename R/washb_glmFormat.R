@@ -125,7 +125,7 @@ washb_glmFormat <- function(glmModel=glmModel, rfit, dmat, rowdropped, contrast,
     if(ncol(dmat)>3&is.null(V)|ncol(dmat)>4){
       if(family[1]=="gaussian"){cat("\n Coef of covariates\n")}
       if(family[1]!="gaussian"){cat("\n RR of covariates\n")}
-      if(is.null(pair)){
+      if(!is.null(pair)){
         print(RR[2:(nrow(RR)-(length(unique(dmat$pair))-1)),])
       }else{
         print(RR[3:(nrow(RR)),])
