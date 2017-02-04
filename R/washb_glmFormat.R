@@ -128,7 +128,7 @@ washb_glmFormat <- function(glmModel=glmModel, rfit, dmat, rowdropped, contrast,
       if(is.null(pair)){
         print(RR[2:(nrow(RR)-(length(unique(dmat$pair))-1)),])
       }else{
-        print(RR[3:(nrow(RR)+1),])
+        print(RR[3:(nrow(RR)),])
       }
     }
 
