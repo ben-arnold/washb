@@ -89,10 +89,15 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
   if(family[[1]]!="neg.binom"){
     for(i in 1:nW) {
       dat$W <- dat[,i]
-      fit1 <- glm(Y~W,data=dat,family=family)
-      fit0 <- glm(Y~1,data=dat,family=family)
-      LRp[i] <- lrtest(fit1,fit0)[2,5]
-    }
+      if(class(dat$W)=="factor" & dim(table(dat$W))==1){
+        #skip factors with a single level to avoid error
+        fit1 <- fit0 <- glm(Y~1,data=dat,family=family)
+      }else{
+        fit1 <- glm(Y~W,data=dat,family=family)
+        fit0 <- glm(Y~1,data=dat,family=family)
+      }
+          LRp[i] <- lrtest(fit1,fit0)[2,5]
+      }
   }else{
     if (!requireNamespace("MASS", quietly = TRUE)) {
       stop("Pkg needed for this function to work. Please install it.",
@@ -100,9 +105,14 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
     }else{
       for(i in 1:nW) {
         dat$W <- dat[,i]
-        fit1 <- glm.nb(Y~W,data=dat)
-        fit0 <- glm.nb(Y~1,data=dat)
-        LRp[i] <- lrtest(fit1,fit0)[2,5]
+        if(class(dat$W)=="factor" & dim(table(dat$W))==1){
+        #skip factors with a single level to avoid error
+        fit1 <- fit0 <- glm(Y~1,data=dat,family=family)
+      }else{
+        fit1 <- glm.nb(Y~W,data=dat,family=family)
+        fit0 <- glm.nb(Y~1,data=dat,family=family)
+      }
+          LRp[i] <- lrtest(fit1,fit0)[2,5]
         }
       }
     }
