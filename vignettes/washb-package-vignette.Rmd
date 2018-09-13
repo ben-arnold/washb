@@ -130,9 +130,19 @@ This is an example of how to load and merge the enrollment and diarrhea data, wi
 # treatment assignments, enrollment charactersitics, and diarrhea measurements
 # note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments
 # if you do not have access to these data through Dropbox, but need it, please contact UCB
-washb_bd_tr    <- read.csv('/Volumes/0-Treatment-assignments/washb-bangladesh-tr.csv')
-washb_bd_enrol <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-enrol.csv')
-washb_bd_diar  <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-diar.csv')
+
+washb_bd_enrol <- washb_bd_anthro <- NULL
+try(washb_bd_tr    <- read.csv('/Volumes/0-Treatment-assignments/washb-bangladesh-tr.csv'))
+try(washb_bd_enrol <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-enrol.csv'))
+try(washb_bd_diar  <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-diar.csv'))
+
+if(is.null(washb_bd_enrol)){
+  setwd("C:/Users/andre/Dropbox/WASHB Package/PrimaryOutcomeData")
+washb_bd_tr    <- read.csv('washb-bang-tr.csv')
+washb_bd_enrol <- read.csv('washb-bangladesh-enrol.csv')
+washb_bd_diar  <- read.csv('washb-bangladesh-diar.csv')
+}
+
 
 # drop svydate and month because they are superceded in the child level diarrhea data
 washb_bd_enrol$svydate <- NULL
@@ -182,7 +192,11 @@ This is an example of how to load and merge the anthropometry and enrollment dat
 ```{r, eval=TRUE, comment=NA}
 
 # load the anthropometry dataset
-washb_bd_anthro  <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-anthro.csv')
+try(washb_bd_anthro  <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-anthro.csv'))
+if(is.null(washb_bd_anthro)){
+    setwd("C:/Users/andre/Dropbox/WASHB Package/PrimaryOutcomeData")
+  washb_bd_anthro <- read.csv('washb-bangladesh-anthro.csv')
+}
 
 #  merge to final analysis files, loaded above (keep only compounds with follow-up data)
 lazd <- merge(washb_bd_enrol,washb_bd_tr,by=c("clusterid","block"),all.x=T,all.y=T)
@@ -565,8 +579,13 @@ The `washb_tmle` function enables you to account for missing data in the outcome
 # were measured at year 1 and year 2
 #---------------------------------------
 
+washb_bd_track<-NULL
+
 # load the compound-level tracking data and identify compounds with live births
-washb_bd_track <- read.csv("~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-track-compound.csv")
+try(washb_bd_track <- read.csv("~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-track-compound.csv"))
+if(is.null(washb_bd_track)){
+  washb_bd_track <- read.csv("C:/Users/andre/Dropbox/WASHB Package/PrimaryOutcomeData/washb-bangladesh-track-compound.csv")
+}
 table(washb_bd_track$miss1reason=="No live birth") # total number of unique compounds w/ live birth = 5190
 
 # create the full data (i.e., a dataset with rows for every potential measurement)
@@ -794,7 +813,7 @@ The `washb_prescreen` function selects covariates with univariate associations w
 __Arguments:__  
 `Y` Outcome variable (continuous, such as LAZ, or binary, such as diarrhea).  
 `Ws` data frame that includes candidate adjustment covariates to screen.  
-`family` GLM model family (`"gaussian"`, `"binomial"`, `"poisson"`, or `"neg.binom"` for negative binomial).    
+`family` GLM model family (`"gaussian"`, `"binomial"`, `"poisson"`, `binomial(link='log')`, or `"neg.binom"` for negative binomial).    
 `pval` The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2.  
 `print` Logical for whether to print function output, defaults to TRUE.  
 
@@ -802,7 +821,7 @@ __Arguments:__
 
 __Usage:__  
 ```{r, eval=FALSE}
-washb_prescreen(Y=dd$diar7d,Ws=W,family="binomial", pval=0.2, print=TRUE)
+washb_prescreen(Y=dd$diar7d,Ws=W,family=binomial(link='log'), pval=0.2, print=TRUE)
 ```
 
   
@@ -810,7 +829,7 @@ washb_prescreen(Y=dd$diar7d,Ws=W,family="binomial", pval=0.2, print=TRUE)
 ### run the washb_prescreen function  
 The `washb_prescreen` function performs a likelihood ratio test on a set of potential covariates and returns all covariates with an associated p-value<0.2 (unless a custom pvalue is specified). It can be called as a function on its own, and is also called internally within the washb\_glm function. Unless otherwise specified by the use, the washb\_glm function with therefore only include covariates with a LR-test p-value <0.2 in the model. See the Function: washb_glm section for more details.
 ```{r, warning=FALSE, message=FALSE, cache=TRUE, comment=NA}
-prescreened_varnames<-washb_prescreen(Y=dd$diar7d,dd[Wadj],family="binomial", pval=0.2)
+prescreened_varnames<-washb_prescreen(Y=dd$diar7d,dd[Wadj],family=binomial(link='log'), pval=0.2)
 ```
 
 
