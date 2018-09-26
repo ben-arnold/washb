@@ -117,4 +117,3 @@ Diar.glm.C.S <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, id=ad$clusterid, c
 #'objectname$rowdropped` to return the vector list of observations included in the model fit.
 #'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
 }
-

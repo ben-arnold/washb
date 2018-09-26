@@ -88,4 +88,3 @@ washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, 
 glm.C.N.byChildType$lincomRD
 }
 \keyword{internal}
-

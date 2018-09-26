@@ -6,7 +6,7 @@ Authors@R: as.person(c("Andrew Mertens <amertens@berkeley.edu> [aut, cre]","Ben 
 Description: Internal package for analyses associated with the WASH Benefits trials. Contains several
     useful functions documented in detail in the accompanying vignette.
 LazyData: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.1.0
 VignetteBuilder: knitr
 Imports:
     sandwich,

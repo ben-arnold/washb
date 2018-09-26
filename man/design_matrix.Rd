@@ -19,4 +19,3 @@ An internal, convenience function that automatically transforms a vector, matrix
 The \code{design_matrix} function is used by \code{agecurveAb} and \code{tmleAb} as a data processing tool for functions that do not readily accommodate factor variables in a data.frame object. In particular, the \code{SuperLearner()} and \code{tmle()} functions typically have difficulty with factor variables and so this function transforms data before calling those functions.
 }
 \keyword{internal}
-

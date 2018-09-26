@@ -24,4 +24,3 @@ sandwichSE
 
 }
 \keyword{internal}
-
