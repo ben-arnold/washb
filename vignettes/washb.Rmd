@@ -20,11 +20,10 @@ vignette: |
 ---
 
 
-```{r set-options, echo=FALSE, cache=FALSE}
+```{r set-options, echo=FALSE, cache=FALSE, include = FALSE}
 options(width = 300)
 options(scipen=20)
-library("gam")
-
+library(here)
 ```
 
 ```{r setup, include=FALSE}
@@ -34,7 +33,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Vignette overview  
 
-fThe `washb` R package was developed to help standardize and facilitate intention-to-treat analyses in the WASH Benefits trial. This vignette provides an overview of the main functions included in package. As an illustrative example, the vignette uses the Bangladesh trial primary outcomes (diarrhea, length-for-age Z-scores) to calculate several unadjusted and adjusted estimates of intervention effects. It illustrates a range of different estimators from unadjusted approaches such as the paired t-test (see `washb_ttest`) to targeted maximum likelihood estimation with ensemble machine learning (see `washb_tmle`).
+The `washb` R package was developed to help standardize and facilitate intention-to-treat analyses in the WASH Benefits trial. This vignette provides an overview of the main functions included in package. As an illustrative example, the vignette uses the Bangladesh trial primary outcomes (diarrhea, length-for-age Z-scores) to calculate several unadjusted and adjusted estimates of intervention effects. It illustrates a range of different estimators from unadjusted approaches such as the paired t-test (see `washb_ttest`) to targeted maximum likelihood estimation with ensemble machine learning (see `washb_tmle`).
 
 For unadjusted analyses in a paired design, the paired t-test (`washb_ttest`) for continuous outcomes and Mantel-Haenszel pooled risk difference or ratio (`washb_mh`) are "oldies but goodies" -- they provide a simple and robust way to compare outcomes between arms. However, for unpaired analyses and/or any type of adjusted analyses, you should consider regression (`washb_glm`) or semi-parametric, double-robust (`washb_tmle`) estimators.
 
@@ -128,25 +127,18 @@ When is it reasonable to treat clusters as the independent unit?  First, when es
 Below we will use some actual analyses from the Bangladesh trial to illustrate the different functions. To do that, we also need to read in final analysis datasets, merge them to baseline characteristics, and merge on the actual (unblinded) treatment assignments.  We also do a little bit of minimal data processing to help facilitate the analyses.
 
 This is an example of how to load and merge the enrollment and diarrhea data, with the actual treatment assignments. It creates a final analysis data frame called `dd` (for diarrhea data). At this time, these datasets are not included with the package -- if you need access to them, please email the UCB team.
+
+
 ```{r, results="hide", eval=TRUE}
 # load and merge the final analysis files
 # treatment assignments, enrollment characteristics, and diarrhea measurements
 # note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments
 # if you do not have access to these data through Dropbox, but need it, please contact UCB
-
 washb_bd_enrol <- washb_bd_anthro <- NULL
-try(washb_bd_tr    <- read.csv('/Volumes/0-Treatment-assignments/washb-bangladesh-tr.csv'))
-try(washb_bd_enrol <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-enrol.csv'))
-try(washb_bd_diar  <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-diar.csv'))
 
-if(is.null(washb_bd_enrol)){
-  ### Sets working directory to locally saved file, if dropbox is not loaded onto user machine
-  setwd("C:/Users/Anna/Dropbox/WASHB Package/PrimaryOutcomeData")
-washb_bd_tr    <- read.csv('washb-bang-tr.csv')
-washb_bd_enrol <- read.csv('washb-bangladesh-enrol.csv')
-washb_bd_diar  <- read.csv('washb-bangladesh-diar.csv')
-}
-
+washb_bd_tr    <- read.csv("PrimaryOutcomeData/washb-bang-tr.csv")
+washb_bd_enrol <- read.csv("PrimaryOutcomeData/washb-bangladesh-enrol.csv")
+washb_bd_diar  <- read.csv("PrimaryOutcomeData/washb-bangladesh-diar.csv")
 
 # drop svydate and month because they are superseded in the child level diarrhea data
 washb_bd_enrol$svydate <- NULL
@@ -193,15 +185,10 @@ dd <- dd[order(dd$block,dd$clusterid,dd$dataid,dd$childid),]
 
 ### LAZ data processing  
 This is an example of how to load and merge the anthropometry and enrollment datasets. It pretty much parallels the processing steps of the diarrhea data (above). It creates a final analysis data frame called `lazd`. At this time, the anthropometry dataset is not included with the package -- if you need access to it, please email the UCB team.
-```{r, eval=TRUE, comment=NA}
 
+```{r, eval=TRUE, comment=NA}
 # load the anthropometry dataset
-try(washb_bd_anthro  <- read.csv('~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-anthro.csv'))
-if(is.null(washb_bd_anthro)){
-    ### Sets working directory to locally saved file, if dropbox is not loaded onto user machine
-    setwd("C:/Users/Anna/Dropbox/WASHB Package/PrimaryOutcomeData")
-  washb_bd_anthro <- read.csv('washb-bangladesh-anthro.csv')
-}
+washb_bd_anthro <- read.csv("PrimaryOutcomeData/washb-bangladesh-anthro.csv")
 
 #  merge to final analysis files, loaded above (keep only compounds with follow-up data)
 lazd <- merge(washb_bd_enrol,washb_bd_tr,by=c("clusterid","block"),all.x=T,all.y=T)
@@ -225,7 +212,6 @@ lazd$agedays <- lazd$aged
 
 # sort the data for perfect replication when using random splits for V-fold cross-validation (washb_tmle and adj permutation tests)
 lazd <- lazd[order(lazd$block,lazd$clusterid,lazd$dataid,lazd$childid),]
-
 ```
 
 Now that the dataset is cleaned and merged, the `washb` package functions can be applied and the results will match the WASH Benefits Bangladesh primary analysis.
@@ -254,7 +240,6 @@ Using the WASH Benefits enrollment survey data and the `washb_mean` function, th
 ```{r, cache=TRUE, comment=NA}
 MomAge<-washb_mean(Y=washb_bd_enrol$momage,id=washb_bd_enrol$clusterid)
 MomEduY<-washb_mean(Y=washb_bd_enrol$momeduy,id=washb_bd_enrol$clusterid)
-
 ```
 The `<-` command assigns the output of `washb_mean` to the new objects called `MomAge` and `MomEduY`  Notice how there are 20 missing observations in the `momage`, but none in the `momeduy` variable.  
 
@@ -576,6 +561,22 @@ round(unlist(adj.Diar.tmle.C.S$estimates$OR),4)
 
 The `washb_tmle` function enables you to account for missing data in the outcome using inverse probability of censoring weights (IPCW) to the estimator. You can do this using the `Delta=` argument to specify an indicator of whether the outcome.  A key step for conducting an IPCW analysis that differs from other analyses in this vignette is that you need to create the "full" data, where there is an observation for every potential measurement (i.e., including those that were missing in the trial).  To do this, you need to use the enrolled study population, limited to live births (since the trial's inference is limited to live births).  Below, we provide an example using the control and nutrition arms in the Bangladesh trial.
 
+```{r, include = FALSE}
+library(tmle)
+library(SuperLearner)
+library(nnls)
+library(lmtest)
+library(zoo)
+library(arm)
+library(MASS)
+library(Matrix)
+library(lme4)
+library(gam)
+library(splines)
+library(foreach)
+library(glmnet)
+```
+
 ```{r make full data,eval=TRUE,comment=NA}
 
 #---------------------------------------
@@ -586,12 +587,8 @@ The `washb_tmle` function enables you to account for missing data in the outcome
 
 washb_bd_track<-NULL
 
-# load the compound-level tracking data and identify compounds with live births
-try(washb_bd_track <- read.csv("~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-track-compound.csv"))
-if(is.null(washb_bd_track)){
-  ### Loads locally saved file, if dropbox is not loaded onto user machine
-  washb_bd_track <- read.csv("C:/Users/Anna/Dropbox/WASHB Package/PrimaryOutcomeData/washb-bangladesh-track-compound.csv")
-}
+washb_bd_track <- read.csv("PrimaryOutcomeData/washb-bangladesh-track-compound.csv")
+
 table(washb_bd_track$miss1reason=="No live birth") # total number of unique compounds w/ live birth = 5190
 
 # create the full data (i.e., a dataset with rows for every potential measurement)

@@ -38,7 +38,7 @@
 <li>
   <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
-
+     
   </a>
 </li>
 <li>
@@ -56,32 +56,26 @@
 </div>
 <!--/.navbar -->
 
-
+      
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>washb Package Vignette</h1>
-                        <h4 class="author">Authors: Andrew Mertens and Ben Arnold</h4>
-
-            <h4 class="date">Last updated: 2018-09-26</h4>
-
-
+      <h1>washb package vignette</h1>
+                        <h4 class="author">Andrew Mertens and Ben Arnold</h4>
+            
+            <h4 class="date">2018-09-27</h4>
+      
+      
       <div class="hidden name"><code>washb.Rmd</code></div>
 
     </div>
 
-
-
-<!-- <pre><code>## Warning: package 'gam' was built under R version 3.4.4</code></pre>
-<pre><code>## Loading required package: splines</code></pre>
-<pre><code>## Loading required package: foreach</code></pre>
-<pre><code>## Warning: package 'foreach' was built under R version 3.4.4</code></pre>
-<pre><code>## Loaded gam 1.16</code></pre> -->
-
+    
+    
 <div id="vignette-overview" class="section level1">
 <h1 class="hasAnchor">
 <a href="#vignette-overview" class="anchor"></a>Vignette overview</h1>
-<p>fThe <code>washb</code> R package was developed to help standardize and facilitate intention-to-treat analyses in the WASH Benefits trial. This vignette provides an overview of the main functions included in package. As an illustrative example, the vignette uses the Bangladesh trial primary outcomes (diarrhea, length-for-age Z-scores) to calculate several unadjusted and adjusted estimates of intervention effects. It illustrates a range of different estimators from unadjusted approaches such as the paired t-test (see <code>washb_ttest</code>) to targeted maximum likelihood estimation with ensemble machine learning (see <code>washb_tmle</code>).</p>
+<p>The <code>washb</code> R package was developed to help standardize and facilitate intention-to-treat analyses in the WASH Benefits trial. This vignette provides an overview of the main functions included in package. As an illustrative example, the vignette uses the Bangladesh trial primary outcomes (diarrhea, length-for-age Z-scores) to calculate several unadjusted and adjusted estimates of intervention effects. It illustrates a range of different estimators from unadjusted approaches such as the paired t-test (see <code>washb_ttest</code>) to targeted maximum likelihood estimation with ensemble machine learning (see <code>washb_tmle</code>).</p>
 <p>For unadjusted analyses in a paired design, the paired t-test (<code>washb_ttest</code>) for continuous outcomes and Mantel-Haenszel pooled risk difference or ratio (<code>washb_mh</code>) are “oldies but goodies” – they provide a simple and robust way to compare outcomes between arms. However, for unpaired analyses and/or any type of adjusted analyses, you should consider regression (<code>washb_glm</code>) or semi-parametric, double-robust (<code>washb_tmle</code>) estimators.</p>
 <div id="brief-description-of-functions-documented-in-the-vignette" class="section level3">
 <h3 class="hasAnchor">
@@ -141,10 +135,10 @@
 <pre><code>## Welcome to the washb package</code></pre>
 <pre><code>## Version: 0.2.1</code></pre>
 <pre><code>## Created on 2017-02-02</code></pre>
-<pre><code>##
+<pre><code>## 
 ## This software was developed with funding from the
 ## Bill &amp; Melinda Gates Foundation (grant number OPPGD759).
-##
+## 
 ## The package's reference manual and vignette are also online:
 ## https://ben-arnold.github.io/washb</code></pre>
 <p>The <code>library()</code> command can be used to load any installed package. It is not needed for any of the required packages listed above, but it is for suggested packages. For example, to fit a negative binomial GLM model, the  package is required, and can be installed once with <code>install.packages("MASS")</code> and loaded each time R is opened with <code>library("MASS")</code>.</p>
@@ -172,22 +166,11 @@
 <span class="co"># treatment assignments, enrollment characteristics, and diarrhea measurements</span>
 <span class="co"># note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments</span>
 <span class="co"># if you do not have access to these data through Dropbox, but need it, please contact UCB</span>
-
 washb_bd_enrol &lt;-<span class="st"> </span>washb_bd_anthro &lt;-<span class="st"> </span><span class="ot">NULL</span>
-<span class="kw">try</span>(washb_bd_tr    &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'/Volumes/0-Treatment-assignments/washb-bangladesh-tr.csv'</span>))</code></pre></div>
-<pre><code>## Warning in file(file, "rt"): cannot open file '/Volumes/0-Treatment-assignments/washb-bangladesh-tr.csv': No such file or directory</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">try</span>(washb_bd_enrol &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-enrol.csv'</span>))</code></pre></div>
-<pre><code>## Warning in file(file, "rt"): cannot open file 'C:/Users/Anna/Documents/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-enrol.csv': No such file or directory</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">try</span>(washb_bd_diar  &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-diar.csv'</span>))</code></pre></div>
-<pre><code>## Warning in file(file, "rt"): cannot open file 'C:/Users/Anna/Documents/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-diar.csv': No such file or directory</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(<span class="kw">is.null</span>(washb_bd_enrol)){
-  ### Sets working directory to locally saved file, if dropbox is not loaded onto user machine
-  <span class="kw">setwd</span>(<span class="st">"C:/Users/Anna/Dropbox/WASHB Package/PrimaryOutcomeData"</span>)
-washb_bd_tr    &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'washb-bang-tr.csv'</span>)
-washb_bd_enrol &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'washb-bangladesh-enrol.csv'</span>)
-washb_bd_diar  &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'washb-bangladesh-diar.csv'</span>)
-}
 
+washb_bd_tr    &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bang-tr.csv"</span>)
+washb_bd_enrol &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bangladesh-enrol.csv"</span>)
+washb_bd_diar  &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bangladesh-diar.csv"</span>)
 
 <span class="co"># drop svydate and month because they are superseded in the child level diarrhea data</span>
 washb_bd_enrol<span class="op">$</span>svydate &lt;-<span class="st"> </span><span class="ot">NULL</span>
@@ -222,13 +205,7 @@ dd &lt;-<span class="st"> </span>dd[<span class="kw">order</span>(dd<span class=
 <a href="#laz-data-processing" class="anchor"></a>LAZ data processing</h3>
 <p>This is an example of how to load and merge the anthropometry and enrollment datasets. It pretty much parallels the processing steps of the diarrhea data (above). It creates a final analysis data frame called <code>lazd</code>. At this time, the anthropometry dataset is not included with the package – if you need access to it, please email the UCB team.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the anthropometry dataset</span>
-<span class="kw">try</span>(washb_bd_anthro  &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-anthro.csv'</span>))</code></pre></div>
-<pre><code>Warning in file(file, "rt"): cannot open file 'C:/Users/Anna/Documents/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-anthro.csv': No such file or directory</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(<span class="kw">is.null</span>(washb_bd_anthro)){
-    ### Sets working directory to locally saved file, if dropbox is not loaded onto user machine
-    <span class="kw">setwd</span>(<span class="st">"C:/Users/Anna/Dropbox/WASHB Package/PrimaryOutcomeData"</span>)
-  washb_bd_anthro &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'washb-bangladesh-anthro.csv'</span>)
-}
+washb_bd_anthro &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bangladesh-anthro.csv"</span>)
 
 <span class="co">#  merge to final analysis files, loaded above (keep only compounds with follow-up data)</span>
 lazd &lt;-<span class="st"> </span><span class="kw">merge</span>(washb_bd_enrol,washb_bd_tr,<span class="dt">by=</span><span class="kw">c</span>(<span class="st">"clusterid"</span>,<span class="st">"block"</span>),<span class="dt">all.x=</span>T,<span class="dt">all.y=</span>T)
@@ -275,17 +252,9 @@ lazd &lt;-<span class="st"> </span>lazd[<span class="kw">order</span>(lazd<span 
 -----------------------------------------
 Dropping 20 observations
 due to missing values in the outcome
- Final sample size: 5531
------------------------------------------</code></pre>
-<pre><code>Warning: package 'sandwich' was built under R version 3.4.4</code></pre>
-<pre><code>Warning: package 'lmtest' was built under R version 3.4.4</code></pre>
-<pre><code>Warning: package 'zoo' was built under R version 3.4.4</code></pre>
-<pre><code>
-Attaching package: 'zoo'</code></pre>
-<pre><code>The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric</code></pre>
-<pre><code>        N     Mean      SD Robust SE Lower 95%CI Upper 95%CI
+ Final sample size: 5531 
+-----------------------------------------
+        N     Mean      SD Robust SE Lower 95%CI Upper 95%CI
 [1,] 5531 23.76749 5.24887 0.0756264    23.61926    23.91572</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomEduY&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momeduy,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
 <pre><code>        N     Mean       SD  Robust SE Lower 95%CI Upper 95%CI
@@ -316,7 +285,7 @@ Attaching package: 'zoo'</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Run washb_ttest on Nutrition vs. control arm comparison</span>
 ttest.C.N &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_ttest.html">washb_ttest</a></span>(<span class="dt">Y=</span>lazd<span class="op">$</span>laz,<span class="dt">tr=</span>lazd<span class="op">$</span>tr,<span class="dt">strat=</span>lazd<span class="op">$</span>block, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>, <span class="st">"Nutrition"</span>))
 <span class="kw">round</span>(ttest.C.N,<span class="dv">4</span>)</code></pre></div>
-<pre><code>  diff  ci.lb  ci.ub t-stat      p
+<pre><code>  diff  ci.lb  ci.ub t-stat      p 
 0.2526 0.1470 0.3581 4.7545 0.0000 </code></pre>
 <p>Advanced R tip: for a function like <code>washb_ttest</code> that returns a simple vector or list of single parameter estimates, you can use <code>sapply</code> command to efficiently apply the function to all the treatment arm contrasts</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create vector of contrasts for the pre-specified hypothesis 1</span>
@@ -360,7 +329,7 @@ Nutrition + WSH v C  0.1292  0.0166 0.2418  2.2797 0.0250</code></pre>
 <p>Apply washb_mh to the sanitation vs. control arm contrast (With the <code>round()</code> function added to clean output and keep it from spilling across multiple lines).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mh.C.S &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_mh.html">washb_mh</a></span>(<span class="dt">Y=</span>dd<span class="op">$</span>diar7d,<span class="dt">tr=</span>dd<span class="op">$</span>tr, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Sanitation"</span>), <span class="dt">strat=</span>dd<span class="op">$</span>block,<span class="dt">measure=</span><span class="st">"RR"</span>)
 <span class="kw">round</span>(mh.C.S,<span class="dv">4</span>)</code></pre></div>
-<pre><code>     PR,    ci.lb    ci.ub    logPR se.logPR        Z        p
+<pre><code>     PR,    ci.lb    ci.ub    logPR se.logPR        Z        p 
   0.6085   0.4569   0.8102  -0.4968   0.1461  -3.4001   0.0007 </code></pre>
 </div>
 <div id="estimate-a-pooled-prevalence-or-risk-difference" class="section level3">
@@ -368,7 +337,7 @@ Nutrition + WSH v C  0.1292  0.0166 0.2418  2.2797 0.0250</code></pre>
 <a href="#estimate-a-pooled-prevalence-or-risk-difference" class="anchor"></a>estimate a pooled prevalence (or risk) difference</h3>
 <p>The function washb_mh can also be used to calculate an unadjusted risk difference:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw"><a href="../reference/washb_mh.html">washb_mh</a></span>(<span class="dt">Y=</span>dd<span class="op">$</span>diar7d,<span class="dt">tr=</span>dd<span class="op">$</span>tr, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Sanitation"</span>), <span class="dt">strat=</span>dd<span class="op">$</span>block,<span class="dt">measure=</span><span class="st">"RD"</span>),<span class="dv">4</span>)</code></pre></div>
-<pre><code>     RD   se.RD   ci.lb   ci.ub       Z       p
+<pre><code>     RD   se.RD   ci.lb   ci.ub       Z       p 
 -0.0220  0.0059 -0.0335 -0.0105 -3.7396  0.0002 </code></pre>
 <p>Advanced R tip: for a function like <code>washb_mh</code> that returns a simple vector or list of single parameter estimates, you can use <code>sapply</code> command to efficiently apply the function to all the treatment arm contrasts</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create vector of contrasts for the pre-specified hypothesis 1</span>
@@ -422,7 +391,7 @@ Nutrition + WSH v C 0.6193 0.4709 0.8146 -0.4791   0.1399 -3.4258 0.0006</code><
 <pre><code>
 
 -----------------------------------------
- GLM Fit: Sanitation vs. Control
+ GLM Fit: Sanitation vs. Control 
 -----------------------------------------
                     PR      2.5%     97.5%   Estimate Std. Error   z value    Pr(&gt;|z|)
 trSanitation 0.6109162 0.4510202 0.8274985 -0.4927955  0.1548202 -3.183019 0.001457482</code></pre>
@@ -440,7 +409,7 @@ trSanitation 0.6109 0.451 0.8275  -0.4928     0.1548  -3.183   0.0015</code></pr
 <pre><code>
 
 -----------------------------------------
- GLM Fit: Sanitation vs. Control
+ GLM Fit: Sanitation vs. Control 
 -----------------------------------------
                    Coef.        2.5%      97.5% Std. Error   z value     Pr(&gt;|z|)
 trSanitation -0.02200495 -0.03458109 -0.0094288  0.0064164 -3.429485 0.0006047275</code></pre>
@@ -454,7 +423,7 @@ trSanitation -0.02200495 -0.03458109 -0.0094288  0.0064164 -3.429485 0.000604727
 <pre><code>
 
 -----------------------------------------
- GLM Fit: Sanitation vs. Control
+ GLM Fit: Sanitation vs. Control 
 -----------------------------------------
                    Coef.       2.5%      97.5% Std. Error    z value  Pr(&gt;|z|)
 trSanitation -0.01862361 -0.1356985 0.09845124 0.05973207 -0.3117859 0.7552033</code></pre>
@@ -473,7 +442,7 @@ Wadj &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"m
 <pre><code>
 -----------------------------------------
 Dropping 67 observations due to missing values in 1 or more variables
- Final sample size: 5210
+ Final sample size: 5210 
 -----------------------------------------
 
 -----------------------------------------
@@ -526,7 +495,7 @@ asset_sewmach  0.1375079553959
 
 
 -----------------------------------------
- GLM Fit: Sanitation vs. Control
+ GLM Fit: Sanitation vs. Control 
 -----------------------------------------
                     PR      2.5%     97.5%   Estimate Std. Error   z value    Pr(&gt;|z|)
 trSanitation 0.5847469 0.4317727 0.7919187 -0.5365762  0.1547345 -3.467721 0.000524891
@@ -565,13 +534,13 @@ asset_sewmach                   0.8804924 0.4872256 1.5911867</code></pre>
 <pre><code>
 -----------------------------------------
 Dropping 67 observations due to missing values in 1 or more variables
- Final sample size: 5210
+ Final sample size: 5210 
 -----------------------------------------
 
 -----------------------------------------
 Include the following adjustment covariates without screening:
 -----------------------------------------
-[1] "agedays" "sex"
+[1] "agedays" "sex"    
 
 -----------------------------------------
 Pre-screening the adjustment covariates:
@@ -620,7 +589,7 @@ asset_sewmach  0.1375079553959
 
 
 -----------------------------------------
- GLM Fit: Sanitation vs. Control
+ GLM Fit: Sanitation vs. Control 
 -----------------------------------------
                     PR      2.5%     97.5%   Estimate Std. Error   z value     Pr(&gt;|z|)
 trSanitation 0.5847484 0.4317425 0.7919783 -0.5365736  0.1547716 -3.466874 0.0005265495
@@ -678,7 +647,7 @@ Include the following adjustment covariates without screening:
 
 
 -----------------------------------------
- Significance of effect modification variables
+ Significance of effect modification variables 
 -----------------------------------------
                                 PR  Pr(&gt;|z|)
 trNutrition:VTarget child 1.026499 0.9360759</code></pre>
@@ -705,7 +674,7 @@ Include the following adjustment covariates without screening:
 
 
 -----------------------------------------
- Significance of effect modification variables
+ Significance of effect modification variables 
 -----------------------------------------
                                 Coef.  Pr(&gt;|z|)
 trNutrition:VTarget child -0.00816172 0.4778686</code></pre>
@@ -757,17 +726,17 @@ glm.C.N.byChildType<span class="op">$</span>lincom</code></pre></div>
 <p>Below, here is an example of estimating an adjusted difference in LAZ between the nutrition and control arms in the trial:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">adj.LAZ.tmle.C.N &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_tmle.html">washb_tmle</a></span>(<span class="dt">Y=</span>lazd<span class="op">$</span>laz,<span class="dt">tr=</span>lazd<span class="op">$</span>tr,<span class="dt">pair=</span>lazd<span class="op">$</span>block,<span class="dt">id=</span>lazd<span class="op">$</span>block, <span class="dt">W=</span>lazd[Wadj], <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Nutrition"</span>), <span class="dt">family=</span><span class="st">"gaussian"</span>)</code></pre></div>
 <pre><code>
------------------------------------------
+----------------------------------------- 
 By specifying the pair argument,
 you have indicated that this is a matched pair analysis.
 
 Note: the analysis will only include pairs
-that have a contrast in the treatment variable.
+that have a contrast in the treatment variable. 
 -----------------------------------------
 -----------------------------------------
 Total of 10 observations dropped due to missing
 values in one or more variables
-  Final sample size: 1660
+  Final sample size: 1660 
 -----------------------------------------
 
 -----------------------------------------
@@ -838,30 +807,30 @@ Estimation Results:
      Model:
          Y ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
 
-     Coefficients:
-         SL.mean_All    0
-          SL.glm_All    0
-     SL.bayesglm_All    0
-          SL.gam_All    0.2020121
-       SL.glmnet_All    0.7979879
+     Coefficients: 
+         SL.mean_All    0 
+          SL.glm_All    0 
+     SL.bayesglm_All    0 
+          SL.gam_All    0.2020121 
+       SL.glmnet_All    0.7979879 
 
  Estimation of g (treatment mechanism)
-     Procedure: SuperLearner
+     Procedure: SuperLearner 
      Model:
-         A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
+         A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All 
 
-     Coefficients:
-         SL.mean_All    0.7458244
-          SL.glm_All    0
-     SL.bayesglm_All    0.2332932
-          SL.gam_All    0
-       SL.glmnet_All    0.02088241
+     Coefficients: 
+         SL.mean_All    0.7458244 
+          SL.glm_All    0 
+     SL.bayesglm_All    0.2332932 
+          SL.gam_All    0 
+       SL.glmnet_All    0.02088241 
 
  Estimation of g.Z (intermediate variable assignment mechanism)
-     Procedure: No intermediate variable
+     Procedure: No intermediate variable 
 
  Estimation of g.Delta (missingness mechanism)
-     Procedure: No missingness
+     Procedure: No missingness 
 
  Bounds on g: ( 0.025 0.975 )
 
@@ -869,25 +838,25 @@ Estimation Results:
    Parameter Estimate:  0.27493
    Estimated Variance:  0.0022597
               p-value:  0.0000000073148
-    95% Conf Interval: (0.18176, 0.3681)
+    95% Conf Interval: (0.18176, 0.3681) 
 
  Additive Effect among the Treated
    Parameter Estimate:  0.2749
    Estimated Variance:  0.0022761
               p-value:  0.0000000083145
-    95% Conf Interval: (0.18139, 0.3684)
+    95% Conf Interval: (0.18139, 0.3684) 
 
  Additive Effect among the Controls
    Parameter Estimate:  0.27494
    Estimated Variance:  0.0022547
               p-value:  0.0000000070261
-    95% Conf Interval: (0.18188, 0.36801)
+    95% Conf Interval: (0.18188, 0.36801) 
 
 -----------------------------------------</code></pre>
 <p>The default output notifies you if any observations were dropped due to missing values. It also summarizes the weighting of the models or algorithms used to estimate the outcome model (<code>estimation of Q</code>), the treatment mechanism (<code>estimation of g</code>), and the missingness mechanism (<code>estimation of g.Delta</code>).</p>
 <p>The function returns an object of class <code>tmle</code> (you can see the  package for details). The effect estimate results are stored in the list <code>$estimates$ATE</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">unlist</span>(adj.LAZ.tmle.C.N<span class="op">$</span>estimates<span class="op">$</span>ATE)</code></pre></div>
-<pre><code>             psi          var.psi              CI1              CI2           pvalue
+<pre><code>             psi          var.psi              CI1              CI2           pvalue 
 0.27492759828974 0.00225969728879 0.18175650242502 0.36809869415445 0.00000000731479 </code></pre>
 </div>
 <div id="tmle-for-a-binary-outcome" class="section level3">
@@ -896,17 +865,17 @@ Estimation Results:
 <p>For binary outcomes such as diarrhea, the <code>washb_tmle</code> syntax is almost unchanged but the family should be specified as <code>family="binomial"</code>. Unlike GLM, you don’t (and shouldn’t) specify the link function – TMLE is a non-parametric estimation approach, so it by default can estimate any function of the means in the treatment groups. The software currently estimates the difference, ratio, and odds ratio. You can access the different parameter estimates using the <code>estimates$</code> lists:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">adj.Diar.tmle.C.S &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_tmle.html">washb_tmle</a></span>(<span class="dt">Y=</span>dd<span class="op">$</span>diar7d,<span class="dt">tr=</span>dd<span class="op">$</span>tr,<span class="dt">pair=</span>dd<span class="op">$</span>block,<span class="dt">id=</span>dd<span class="op">$</span>block, <span class="dt">W=</span>dd[Wadj], <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Sanitation"</span>), <span class="dt">family=</span><span class="st">"binomial"</span>,<span class="dt">Q.SL.library=</span><span class="kw">c</span>(<span class="st">"SL.mean"</span>,<span class="st">"SL.glm"</span>,<span class="st">"SL.bayesglm"</span>,<span class="st">"SL.gam"</span>,<span class="st">"SL.glmnet"</span>))</code></pre></div>
 <pre><code>
------------------------------------------
+----------------------------------------- 
 By specifying the pair argument,
 you have indicated that this is a matched pair analysis.
 
 Note: the analysis will only include pairs
-that have a contrast in the treatment variable.
+that have a contrast in the treatment variable. 
 -----------------------------------------
 -----------------------------------------
 Total of 67 observations dropped due to missing
 values in one or more variables
-  Final sample size: 5210
+  Final sample size: 5210 
 -----------------------------------------
 
 -----------------------------------------
@@ -968,30 +937,30 @@ Estimation Results:
      Model:
          Y ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
 
-     Coefficients:
-         SL.mean_All    0.1546993
-          SL.glm_All    0
-     SL.bayesglm_All    0.02803079
-          SL.gam_All    0
-       SL.glmnet_All    0.8172699
+     Coefficients: 
+         SL.mean_All    0.1546993 
+          SL.glm_All    0 
+     SL.bayesglm_All    0.02803079 
+          SL.gam_All    0 
+       SL.glmnet_All    0.8172699 
 
  Estimation of g (treatment mechanism)
-     Procedure: SuperLearner
+     Procedure: SuperLearner 
      Model:
-         A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
+         A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All 
 
-     Coefficients:
-         SL.mean_All    1
-          SL.glm_All    0
-     SL.bayesglm_All    0
-          SL.gam_All    0
-       SL.glmnet_All    0
+     Coefficients: 
+         SL.mean_All    1 
+          SL.glm_All    0 
+     SL.bayesglm_All    0 
+          SL.gam_All    0 
+       SL.glmnet_All    0 
 
  Estimation of g.Z (intermediate variable assignment mechanism)
-     Procedure: No intermediate variable
+     Procedure: No intermediate variable 
 
  Estimation of g.Delta (missingness mechanism)
-     Procedure: No missingness
+     Procedure: No missingness 
 
  Bounds on g: ( 0.025 0.975 )
 
@@ -999,48 +968,48 @@ Estimation Results:
    Parameter Estimate:  -0.02291
    Estimated Variance:  0.000038832
               p-value:  0.00023646
-    95% Conf Interval: (-0.035124, -0.010696)
+    95% Conf Interval: (-0.035124, -0.010696) 
 
  Additive Effect among the Treated
    Parameter Estimate:  -0.023031
    Estimated Variance:  0.000039169
               p-value:  0.00023326
-    95% Conf Interval: (-0.035298, -0.010765)
+    95% Conf Interval: (-0.035298, -0.010765) 
 
  Additive Effect among the Controls
    Parameter Estimate:  -0.02291
    Estimated Variance:  0.000038705
               p-value:  0.00023091
-    95% Conf Interval: (-0.035104, -0.010717)
+    95% Conf Interval: (-0.035104, -0.010717) 
 
  Relative Risk
    Parameter Estimate:  0.60134
               p-value:  0.00077277
-    95% Conf Interval: (0.44706, 0.80886)
+    95% Conf Interval: (0.44706, 0.80886) 
 
               log(RR):  -0.50859
-    variance(log(RR)):  0.02288
+    variance(log(RR)):  0.02288 
 
  Odds Ratio
    Parameter Estimate:  0.58707
               p-value:  0.00072193
-    95% Conf Interval: (0.43112, 0.79943)
+    95% Conf Interval: (0.43112, 0.79943) 
 
               log(OR):  -0.53261
-    variance(log(OR)):  0.024814
+    variance(log(OR)):  0.024814 
 
 -----------------------------------------</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># difference</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
-<pre><code>    psi var.psi     CI1     CI2  pvalue
+<pre><code>    psi var.psi     CI1     CI2  pvalue 
 -0.0229  0.0000 -0.0351 -0.0107  0.0002 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># prevalence ratio</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>RR),<span class="dv">4</span>)</code></pre></div>
-<pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi
+<pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi 
      0.6013      0.4471      0.8089      0.0008     -0.5086      0.0229 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># odds ratio</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>OR),<span class="dv">4</span>)</code></pre></div>
-<pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi
+<pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi 
      0.5871      0.4311      0.7994      0.0007     -0.5326      0.0248 </code></pre>
 </div>
 <div id="tmle-with-inverse-probability-of-censoring-weights-ipcw" class="section level3">
@@ -1055,16 +1024,11 @@ Estimation Results:
 
 washb_bd_track&lt;-<span class="ot">NULL</span>
 
-<span class="co"># load the compound-level tracking data and identify compounds with live births</span>
-<span class="kw">try</span>(washb_bd_track &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"~/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-track-compound.csv"</span>))</code></pre></div>
-<pre><code>Warning in file(file, "rt"): cannot open file 'C:/Users/Anna/Documents/dropbox/WASHB-Bangladesh-Data/1-primary-outcome-datasets/washb-bangladesh-track-compound.csv': No such file or directory</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(<span class="kw">is.null</span>(washb_bd_track)){
-  ### Loads locally saved file, if dropbox is not loaded onto user machine
-  washb_bd_track &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"C:/Users/Anna/Dropbox/WASHB Package/PrimaryOutcomeData/washb-bangladesh-track-compound.csv"</span>)
-}
+washb_bd_track &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bangladesh-track-compound.csv"</span>)
+
 <span class="kw">table</span>(washb_bd_track<span class="op">$</span>miss1reason<span class="op">==</span><span class="st">"No live birth"</span>) <span class="co"># total number of unique compounds w/ live birth = 5190</span></code></pre></div>
 <pre><code>
-FALSE  TRUE
+FALSE  TRUE 
  5190   361 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create the full data (i.e., a dataset with rows for every potential measurement)</span>
 dfull &lt;-<span class="st"> </span><span class="kw">subset</span>(washb_bd_track,miss1reason<span class="op">!=</span><span class="st">"No live birth"</span>)
@@ -1090,7 +1054,7 @@ lazdfull<span class="op">$</span>agedays &lt;-<span class="st"> </span>lazdfull<
 lazdfull<span class="op">$</span>Delta &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(lazdfull<span class="op">$</span>laz),<span class="dv">0</span>,<span class="dv">1</span>)
 <span class="kw">table</span>(lazdfull<span class="op">$</span>Delta[lazdfull<span class="op">$</span>tr<span class="op">==</span><span class="st">"Control"</span><span class="op">|</span>lazdfull<span class="op">$</span>tr<span class="op">==</span><span class="st">"Nutrition"</span>])</code></pre></div>
 <pre><code>
-   0    1
+   0    1 
   34 3372 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set missing outcomes to an arbitrary, non-missing value. In this case use 9</span>
 lazdfull<span class="op">$</span>Ydelta &lt;-<span class="st"> </span>lazdfull<span class="op">$</span>laz
@@ -1098,45 +1062,25 @@ lazdfull<span class="op">$</span>Ydelta[lazdfull<span class="op">$</span>Delta<s
 
 <span class="co"># estimate an IPCW-TMLE parameter</span>
 psi_ipcw &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_tmle.html">washb_tmle</a></span>(<span class="dt">Delta=</span>lazdfull<span class="op">$</span>Delta,<span class="dt">tr=</span>lazdfull<span class="op">$</span>tr, <span class="dt">id=</span>lazdfull<span class="op">$</span>block, <span class="dt">pair=</span>lazdfull<span class="op">$</span>block,<span class="dt">Y=</span>lazdfull<span class="op">$</span>Ydelta, <span class="dt">family=</span><span class="st">"gaussian"</span>, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Nutrition"</span>), <span class="dt">W=</span>lazdfull[Wadj], <span class="dt">seed=</span><span class="dv">12345</span>)</code></pre></div>
-<pre><code>Loading required package: tmle</code></pre>
-<pre><code>Warning: package 'tmle' was built under R version 3.4.4</code></pre>
-<pre><code>Loading required package: SuperLearner</code></pre>
-<pre><code>Warning: package 'SuperLearner' was built under R version 3.4.4</code></pre>
-<pre><code>Loading required package: nnls</code></pre>
-<pre><code>Super Learner</code></pre>
-<pre><code>Version: 2.0-24</code></pre>
-<pre><code>Package created on 2018-08-10</code></pre>
-<pre><code>Welcome to the tmle package, version 1.3.0-1
-
-Use tmleNews() to see details on changes and bug fixes</code></pre>
 <pre><code>
------------------------------------------
+----------------------------------------- 
 By specifying the pair argument,
 you have indicated that this is a matched pair analysis.
 
 Note: the analysis will only include pairs
-that have a contrast in the treatment variable.
+that have a contrast in the treatment variable. 
 -----------------------------------------
 -----------------------------------------
 Total of 1724 observations dropped due to missing
 values in one or more variables
-  Final sample size: 1682
+  Final sample size: 1682 
 -----------------------------------------
 
 -----------------------------------------
 Pre-screening the adjustment covariates
 using a univariate liklihood ratio test:
------------------------------------------</code></pre>
-<pre><code>Loading required package: lmtest</code></pre>
-<pre><code>Warning: package 'lmtest' was built under R version 3.4.4</code></pre>
-<pre><code>Loading required package: zoo</code></pre>
-<pre><code>Warning: package 'zoo' was built under R version 3.4.4</code></pre>
-<pre><code>
-Attaching package: 'zoo'</code></pre>
-<pre><code>The following objects are masked from 'package:base':
+-----------------------------------------
 
-    as.Date, as.Date.numeric</code></pre>
-<pre><code>
 Likelihood Ratio Test P-values:
                P-value
 month          0.06760
@@ -1190,17 +1134,8 @@ asset_moto     6.298749e-07
 asset_sewmach  5.775318e-05
 asset_mobile   3.976215e-06
 
------------------------------------------</code></pre>
-<pre><code>Loading required package: arm</code></pre>
-<pre><code>Loading required package: MASS</code></pre>
-<pre><code>Loading required package: Matrix</code></pre>
-<pre><code>Loading required package: lme4</code></pre>
-<pre><code>
-arm (Version 1.10-1, built: 2018-4-12)</code></pre>
-<pre><code>Working directory is C:/Users/Anna/Documents/Colford-Hubbard/WASHB/washb/vignettes</code></pre>
-<pre><code>Loading required package: glmnet</code></pre>
-<pre><code>Loaded glmnet 2.0-16</code></pre>
-<pre><code>
+-----------------------------------------
+
 -----------------------------------------
 Estimation Results:
 -----------------------------------------
@@ -1209,39 +1144,39 @@ Estimation Results:
      Model:
          Y ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
 
-     Coefficients:
-         SL.mean_All    0
-          SL.glm_All    0
-     SL.bayesglm_All    0
-          SL.gam_All    0
-       SL.glmnet_All    1
+     Coefficients: 
+         SL.mean_All    0 
+          SL.glm_All    0 
+     SL.bayesglm_All    0 
+          SL.gam_All    0 
+       SL.glmnet_All    1 
 
  Estimation of g (treatment mechanism)
-     Procedure: SuperLearner
+     Procedure: SuperLearner 
      Model:
-         A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
+         A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All 
 
-     Coefficients:
-         SL.mean_All    0.5907074
-          SL.glm_All    0
-     SL.bayesglm_All    0.03792591
-          SL.gam_All    0
-       SL.glmnet_All    0.3713667
+     Coefficients: 
+         SL.mean_All    0.5907074 
+          SL.glm_All    0 
+     SL.bayesglm_All    0.03792591 
+          SL.gam_All    0 
+       SL.glmnet_All    0.3713667 
 
  Estimation of g.Z (intermediate variable assignment mechanism)
-     Procedure: No intermediate variable
+     Procedure: No intermediate variable 
 
  Estimation of g.Delta (missingness mechanism)
-     Procedure: SuperLearner
+     Procedure: SuperLearner 
      Model:
-         Delta ~ SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
+         Delta ~ SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All 
 
-     Coefficients:
-         SL.mean_All    1
-          SL.glm_All    0
-     SL.bayesglm_All    0
-          SL.gam_All    0
-       SL.glmnet_All    0
+     Coefficients: 
+         SL.mean_All    1 
+          SL.glm_All    0 
+     SL.bayesglm_All    0 
+          SL.gam_All    0 
+       SL.glmnet_All    0 
 
  Bounds on g: ( 0.025 0.975 )
 
@@ -1249,19 +1184,19 @@ Estimation Results:
    Parameter Estimate:  0.2768
    Estimated Variance:  0.0023262
               p-value:  0.0000000095249
-    95% Conf Interval: (0.18226, 0.37133)
+    95% Conf Interval: (0.18226, 0.37133) 
 
  Additive Effect among the Treated
    Parameter Estimate:  0.2768
    Estimated Variance:  0.0025443
               p-value:  0.000000040753
-    95% Conf Interval: (0.17793, 0.37566)
+    95% Conf Interval: (0.17793, 0.37566) 
 
  Additive Effect among the Controls
    Parameter Estimate:  0.2768
    Estimated Variance:  0.0026254
               p-value:  0.000000065866
-    95% Conf Interval: (0.17637, 0.37722)
+    95% Conf Interval: (0.17637, 0.37722) 
 
 -----------------------------------------</code></pre>
 <p>In this particular example, accounting for missing outcomes makes very little difference after adjusting for covariates – adjusted, and adjusted+IPCW estimates are nearly identical.</p>
@@ -1269,10 +1204,10 @@ Estimation Results:
 <span class="co"># compare the estimates</span>
 <span class="co">#---------------------------------------</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.LAZ.tmle.C.N<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
-<pre><code>    psi var.psi     CI1     CI2  pvalue
+<pre><code>    psi var.psi     CI1     CI2  pvalue 
  0.2749  0.0023  0.1818  0.3681  0.0000 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">unlist</span>(psi_ipcw<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
-<pre><code>    psi var.psi     CI1     CI2  pvalue
+<pre><code>    psi var.psi     CI1     CI2  pvalue 
  0.2768  0.0023  0.1823  0.3713  0.0000 </code></pre>
 </div>
 </div>
@@ -1289,7 +1224,7 @@ Estimation Results:
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># t-test</span>
 ttest.C.N &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_ttest.html">washb_ttest</a></span>(<span class="dt">Y=</span>lazd<span class="op">$</span>laz,<span class="dt">tr=</span>lazd<span class="op">$</span>tr,<span class="dt">strat=</span>lazd<span class="op">$</span>block, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Nutrition"</span>))
 <span class="kw">round</span>(ttest.C.N,<span class="dv">4</span>)</code></pre></div>
-<pre><code>  diff  ci.lb  ci.ub t-stat      p
+<pre><code>  diff  ci.lb  ci.ub t-stat      p 
 0.2526 0.1470 0.3581 4.7545 0.0000 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># GLM, unadjusted</span>
 LAZ.glm.C.N &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_glm.html">washb_glm</a></span>(<span class="dt">Y=</span>lazd<span class="op">$</span>laz,<span class="dt">tr=</span>lazd<span class="op">$</span>tr,<span class="dt">pair=</span>lazd<span class="op">$</span>block, <span class="dt">id=</span>lazd<span class="op">$</span>block, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Nutrition"</span>), <span class="dt">family=</span><span class="st">"gaussian"</span>, <span class="dt">print=</span><span class="ot">FALSE</span>)
@@ -1299,15 +1234,15 @@ trNutrition 0.2427 0.1403 0.3451     0.0522  4.6467        0</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># TMLE, unadjusted</span>
 LAZ.tmle.C.N &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_tmle.html">washb_tmle</a></span>(<span class="dt">Y=</span>lazd<span class="op">$</span>laz,<span class="dt">tr=</span>lazd<span class="op">$</span>tr,<span class="dt">pair=</span>lazd<span class="op">$</span>block,<span class="dt">id=</span>lazd<span class="op">$</span>block, <span class="dt">W=</span><span class="ot">NULL</span>, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Nutrition"</span>), <span class="dt">family=</span><span class="st">"gaussian"</span>,<span class="dt">print=</span><span class="ot">FALSE</span>,<span class="dt">seed=</span><span class="dv">12345</span>)</code></pre></div>
 <pre><code>
------------------------------------------
+----------------------------------------- 
 By specifying the pair argument,
 you have indicated that this is a matched pair analysis.
 
 Note: the analysis will only include pairs
-that have a contrast in the treatment variable.
+that have a contrast in the treatment variable. 
 -----------------------------------------</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">unlist</span>(LAZ.tmle.C.N<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
-<pre><code>    psi var.psi     CI1     CI2  pvalue
+<pre><code>    psi var.psi     CI1     CI2  pvalue 
  0.2549  0.0029  0.1495  0.3602  0.0000 </code></pre>
 <p><strong>adjusted analyses</strong></p>
 <p>The GLM and TMLE estimators are also similar in adjusted analyses. Below, we repeat the contrast above, also adjusting for pre-specified covariates by specifying <code>W=lazd[Wadj]</code>. In this particular example, the esitmates and confidence intervals are very similar between the two approaches. We have found over a large number of comparisons that the TMLE estimator is the same or more efficient than the GLM estimator.</p>
@@ -1319,15 +1254,15 @@ trNutrition 0.272 0.18 0.3641      0.047  5.7939        0</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># TMLE, adjusted</span>
 adj.LAZ.tmle.C.N &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_tmle.html">washb_tmle</a></span>(<span class="dt">Y=</span>lazd<span class="op">$</span>laz,<span class="dt">tr=</span>lazd<span class="op">$</span>tr,<span class="dt">pair=</span>lazd<span class="op">$</span>block,<span class="dt">id=</span>lazd<span class="op">$</span>block, <span class="dt">W=</span>lazd[Wadj], <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Nutrition"</span>), <span class="dt">family=</span><span class="st">"gaussian"</span>,<span class="dt">print=</span><span class="ot">FALSE</span>,<span class="dt">seed=</span><span class="dv">12345</span>)</code></pre></div>
 <pre><code>
------------------------------------------
+----------------------------------------- 
 By specifying the pair argument,
 you have indicated that this is a matched pair analysis.
 
 Note: the analysis will only include pairs
-that have a contrast in the treatment variable.
+that have a contrast in the treatment variable. 
 -----------------------------------------</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">unlist</span>(adj.LAZ.tmle.C.N<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
-<pre><code>    psi var.psi     CI1     CI2  pvalue
+<pre><code>    psi var.psi     CI1     CI2  pvalue 
  0.2749  0.0023  0.1814  0.3683  0.0000 </code></pre>
 </div>
 <div id="mantel-haenszel-glm-and-tmle" class="section level3">
@@ -1338,7 +1273,7 @@ that have a contrast in the treatment variable.
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Mantel-Haenszel (estimated above)</span>
 mh.C.S &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_mh.html">washb_mh</a></span>(<span class="dt">Y=</span>dd<span class="op">$</span>diar7d,<span class="dt">tr=</span>dd<span class="op">$</span>tr, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Sanitation"</span>), <span class="dt">strat=</span>dd<span class="op">$</span>block,<span class="dt">measure=</span><span class="st">"RR"</span>)
 <span class="kw">round</span>(mh.C.S,<span class="dv">4</span>)</code></pre></div>
-<pre><code>     PR,    ci.lb    ci.ub    logPR se.logPR        Z        p
+<pre><code>     PR,    ci.lb    ci.ub    logPR se.logPR        Z        p 
   0.6085   0.4569   0.8102  -0.4968   0.1461  -3.4001   0.0007 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># GLM, unadjusted</span>
 Diar.glm.C.S &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_glm.html">washb_glm</a></span>(<span class="dt">Y=</span>dd<span class="op">$</span>diar7d,<span class="dt">tr=</span>dd<span class="op">$</span>tr,<span class="dt">pair=</span>dd<span class="op">$</span>block, <span class="dt">id=</span>dd<span class="op">$</span>block, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Sanitation"</span>), <span class="dt">family=</span><span class="kw">binomial</span>(<span class="dt">link=</span><span class="st">'log'</span>),<span class="dt">print=</span><span class="ot">FALSE</span>)
@@ -1348,15 +1283,15 @@ trSanitation 0.6109 0.451 0.8275  -0.4928     0.1548  -3.183   0.0015</code></pr
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># TMLE, unadjusted</span>
 Diar.tmle.C.S &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_tmle.html">washb_tmle</a></span>(<span class="dt">Y=</span>dd<span class="op">$</span>diar7d,<span class="dt">tr=</span>dd<span class="op">$</span>tr,<span class="dt">pair=</span>dd<span class="op">$</span>block,<span class="dt">id=</span>dd<span class="op">$</span>block, <span class="dt">W=</span><span class="ot">NULL</span>, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Sanitation"</span>), <span class="dt">family=</span><span class="st">"binomial"</span>,<span class="dt">print=</span><span class="ot">FALSE</span>,<span class="dt">seed=</span><span class="dv">12345</span>)</code></pre></div>
 <pre><code>
------------------------------------------
+----------------------------------------- 
 By specifying the pair argument,
 you have indicated that this is a matched pair analysis.
 
 Note: the analysis will only include pairs
-that have a contrast in the treatment variable.
+that have a contrast in the treatment variable. 
 -----------------------------------------</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">unlist</span>(Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>RR),<span class="dv">4</span>)</code></pre></div>
-<pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi
+<pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi 
      0.6096      0.4529      0.8205      0.0011     -0.4950      0.0230 </code></pre>
 <p><strong>adjusted analyses</strong></p>
 <p>The GLM and TMLE estimators are also similar in adjusted analyses. Below, we repeat the contrast above, also adjusting for pre-specified covariates by specifying <code>W=dd[Wadj]</code>. In this particular example, the estimates and confidence intervals are very similar between the two approaches. We have found over a large number of comparisons that the TMLE estimator is the same or more efficient than the GLM estimator.</p>
@@ -1368,15 +1303,15 @@ trSanitation 0.5847 0.4318 0.7919  -0.5366     0.1547 -3.4677   0.0005</code></p
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># TMLE, adjusted</span>
 adj.Diar.tmle.C.S &lt;-<span class="st"> </span><span class="kw"><a href="../reference/washb_tmle.html">washb_tmle</a></span>(<span class="dt">Y=</span>dd<span class="op">$</span>diar7d,<span class="dt">tr=</span>dd<span class="op">$</span>tr,<span class="dt">pair=</span>dd<span class="op">$</span>block,<span class="dt">id=</span>dd<span class="op">$</span>block, <span class="dt">W=</span>dd[Wadj], <span class="dt">contrast=</span><span class="kw">c</span>(<span class="st">"Control"</span>,<span class="st">"Sanitation"</span>), <span class="dt">family=</span><span class="st">"binomial"</span>,<span class="dt">print=</span><span class="ot">FALSE</span>,<span class="dt">seed=</span><span class="dv">12345</span>)</code></pre></div>
 <pre><code>
------------------------------------------
+----------------------------------------- 
 By specifying the pair argument,
 you have indicated that this is a matched pair analysis.
 
 Note: the analysis will only include pairs
-that have a contrast in the treatment variable.
+that have a contrast in the treatment variable. 
 -----------------------------------------</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>RR),<span class="dv">4</span>)</code></pre></div>
-<pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi
+<pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi 
      0.6014      0.4473      0.8087      0.0008     -0.5084      0.0228 </code></pre>
 </div>
 </div>
@@ -1409,7 +1344,7 @@ that have a contrast in the treatment variable.
 <pre><code>
     Approximative Wilcoxon-Pratt Signed-Rank Test
 
-data:  y by x (pos, neg)
+data:  y by x (pos, neg) 
      stratified by block
 Z = 3.551, p-value = 0.00032
 alternative hypothesis: true mu is not equal to 0</code></pre>
@@ -1511,7 +1446,7 @@ SLfit1 &lt;-<span class="st"> </span><span class="kw">SuperLearner</span>(<span 
                        )
 SLfit1</code></pre></div>
 <pre><code>
-Call:  SuperLearner(Y = adjpdata$laz, X = Wselect, family = "gaussian", SL.library = c("SL.mean", "SL.glm", "SL.bayesglm", "SL.gam", "SL.glmnet"), id = adjpdata$block)
+Call:  SuperLearner(Y = adjpdata$laz, X = Wselect, family = "gaussian", SL.library = c("SL.mean", "SL.glm", "SL.bayesglm", "SL.gam", "SL.glmnet"), id = adjpdata$block) 
 
                      Risk      Coef
 SL.mean_All     1.0541483 0.0000000
@@ -1527,7 +1462,7 @@ permute.sl.C.S &lt;-<span class="st"> </span><span class="kw"><a href="../refere
 <pre><code>
     Approximative Wilcoxon-Pratt Signed-Rank Test
 
-data:  y by x (pos, neg)
+data:  y by x (pos, neg) 
      stratified by block
 Z = -0.46071, p-value = 0.648
 alternative hypothesis: true mu is not equal to 0</code></pre>
@@ -1680,7 +1615,7 @@ Linear combination of coefficients:
 
 
       <footer><div class="copyright">
-  <p>Developed by Andrew Mertens, Ben Arnold.</p>
+  <p>Developed by Andrew Mertens, Ben Arnold, Anna Nguyen <anna-nguyen></anna-nguyen></p>
 </div>
 
 <div class="pkgdown">
@@ -1690,7 +1625,7 @@ Linear combination of coefficients:
       </footer>
 </div>
 
-
+  
 
   </body>
 </html>
