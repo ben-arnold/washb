@@ -104,6 +104,7 @@ library(washb)
 ```
 The `library()` command can be used to load any installed package. It is not needed for any of the required packages listed above, but it is for suggested packages. For example, to fit a negative binomial GLM model, the \link[MASS]{MASS} package is required, and can be installed once with `install.packages("MASS")` and loaded each time R is opened with `library("MASS")`.
 
+Suggested packages include: nnlsm, zoo, arm, MASS, Matrix, lme4, gam, splines, foreach, and glmnet.
 
 ### Package documentation
 
@@ -237,7 +238,7 @@ washb_mean(Y,id,print=TRUE)
 ### example
 
 Using the WASH Benefits enrollment survey data and the `washb_mean` function, the means and 95% confidence intervals of several maternal characteristics are calculated below:
-```{r, cache=TRUE, comment=NA}
+```{r, cache=TRUE, comment=NA, results = "hide"}
 MomAge<-washb_mean(Y=washb_bd_enrol$momage,id=washb_bd_enrol$clusterid)
 MomEduY<-washb_mean(Y=washb_bd_enrol$momeduy,id=washb_bd_enrol$clusterid)
 ```
@@ -575,7 +576,7 @@ library(gam)
 library(splines)
 library(foreach)
 library(glmnet)
-```
+``` 
 
 ```{r make full data,eval=TRUE,comment=NA}
 

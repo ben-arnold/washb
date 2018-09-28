@@ -142,6 +142,7 @@
 ## The package's reference manual and vignette are also online:
 ## https://ben-arnold.github.io/washb</code></pre>
 <p>The <code>library()</code> command can be used to load any installed package. It is not needed for any of the required packages listed above, but it is for suggested packages. For example, to fit a negative binomial GLM model, the  package is required, and can be installed once with <code>install.packages("MASS")</code> and loaded each time R is opened with <code>library("MASS")</code>.</p>
+<p>Suggested packages include: nnlsm, zoo, arm, MASS, Matrix, lme4, gam, splines, foreach, and glmnet.</p>
 </div>
 <div id="package-documentation" class="section level3">
 <h3 class="hasAnchor">
@@ -247,18 +248,8 @@ lazd &lt;-<span class="st"> </span>lazd[<span class="kw">order</span>(lazd<span 
 <h3 class="hasAnchor">
 <a href="#example" class="anchor"></a>example</h3>
 <p>Using the WASH Benefits enrollment survey data and the <code>washb_mean</code> function, the means and 95% confidence intervals of several maternal characteristics are calculated below:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomAge&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momage,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
-<pre><code>
------------------------------------------
-Dropping 20 observations
-due to missing values in the outcome
- Final sample size: 5531 
------------------------------------------
-        N     Mean      SD Robust SE Lower 95%CI Upper 95%CI
-[1,] 5531 23.76749 5.24887 0.0756264    23.61926    23.91572</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomEduY&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momeduy,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
-<pre><code>        N     Mean       SD  Robust SE Lower 95%CI Upper 95%CI
-[1,] 5551 5.815889 3.417545 0.05928979    5.699681    5.932097</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomAge&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momage,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)
+MomEduY&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momeduy,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
 <p>The <code>&lt;-</code> command assigns the output of <code>washb_mean</code> to the new objects called <code>MomAge</code> and <code>MomEduY</code> Notice how there are 20 missing observations in the <code>momage</code>, but none in the <code>momeduy</code> variable.</p>
 <p>If you want to compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use <code>washb_ttest</code> (for t-test of unadjusted continuous outcomes), or <code>washb_mh</code> (for Mantel-Haenszel test on unadjusted binary outcomes), <code>washb_glm</code> for unadjusted or adjusted estimates using generalized linear models, or <code>washb_tmle</code> for unadjusted or adjusted estimates using targeted maximum likelihood estimation.</p>
 </div>
@@ -811,8 +802,8 @@ Estimation Results:
          SL.mean_All    0 
           SL.glm_All    0 
      SL.bayesglm_All    0 
-          SL.gam_All    0.2020121 
-       SL.glmnet_All    0.7979879 
+          SL.gam_All    0.0362053 
+       SL.glmnet_All    0.9637947 
 
  Estimation of g (treatment mechanism)
      Procedure: SuperLearner 
@@ -820,11 +811,11 @@ Estimation Results:
          A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All 
 
      Coefficients: 
-         SL.mean_All    0.7458244 
+         SL.mean_All    1 
           SL.glm_All    0 
-     SL.bayesglm_All    0.2332932 
+     SL.bayesglm_All    0 
           SL.gam_All    0 
-       SL.glmnet_All    0.02088241 
+       SL.glmnet_All    0 
 
  Estimation of g.Z (intermediate variable assignment mechanism)
      Procedure: No intermediate variable 
@@ -835,29 +826,29 @@ Estimation Results:
  Bounds on g: ( 0.025 0.975 )
 
  Additive Effect
-   Parameter Estimate:  0.27493
-   Estimated Variance:  0.0022597
-              p-value:  0.0000000073148
-    95% Conf Interval: (0.18176, 0.3681) 
+   Parameter Estimate:  0.27427
+   Estimated Variance:  0.002319
+              p-value:  0.000000012299
+    95% Conf Interval: (0.17989, 0.36866) 
 
  Additive Effect among the Treated
-   Parameter Estimate:  0.2749
-   Estimated Variance:  0.0022761
-              p-value:  0.0000000083145
-    95% Conf Interval: (0.18139, 0.3684) 
+   Parameter Estimate:  0.27427
+   Estimated Variance:  0.0023185
+              p-value:  0.000000012255
+    95% Conf Interval: (0.1799, 0.36865) 
 
  Additive Effect among the Controls
-   Parameter Estimate:  0.27494
-   Estimated Variance:  0.0022547
-              p-value:  0.0000000070261
-    95% Conf Interval: (0.18188, 0.36801) 
+   Parameter Estimate:  0.27427
+   Estimated Variance:  0.0023193
+              p-value:  0.000000012322
+    95% Conf Interval: (0.17988, 0.36867) 
 
 -----------------------------------------</code></pre>
 <p>The default output notifies you if any observations were dropped due to missing values. It also summarizes the weighting of the models or algorithms used to estimate the outcome model (<code>estimation of Q</code>), the treatment mechanism (<code>estimation of g</code>), and the missingness mechanism (<code>estimation of g.Delta</code>).</p>
 <p>The function returns an object of class <code>tmle</code> (you can see the  package for details). The effect estimate results are stored in the list <code>$estimates$ATE</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">unlist</span>(adj.LAZ.tmle.C.N<span class="op">$</span>estimates<span class="op">$</span>ATE)</code></pre></div>
 <pre><code>             psi          var.psi              CI1              CI2           pvalue 
-0.27492759828974 0.00225969728879 0.18175650242502 0.36809869415445 0.00000000731479 </code></pre>
+0.27427406478895 0.00231900076986 0.17988829595975 0.36865983361816 0.00000001229878 </code></pre>
 </div>
 <div id="tmle-for-a-binary-outcome" class="section level3">
 <h3 class="hasAnchor">
@@ -938,11 +929,11 @@ Estimation Results:
          Y ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
 
      Coefficients: 
-         SL.mean_All    0.1546993 
+         SL.mean_All    0.2859223 
           SL.glm_All    0 
-     SL.bayesglm_All    0.02803079 
+     SL.bayesglm_All    0.7140777 
           SL.gam_All    0 
-       SL.glmnet_All    0.8172699 
+       SL.glmnet_All    0 
 
  Estimation of g (treatment mechanism)
      Procedure: SuperLearner 
@@ -950,11 +941,11 @@ Estimation Results:
          A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All 
 
      Coefficients: 
-         SL.mean_All    1 
+         SL.mean_All    0.7541792 
           SL.glm_All    0 
      SL.bayesglm_All    0 
           SL.gam_All    0 
-       SL.glmnet_All    0 
+       SL.glmnet_All    0.2458208 
 
  Estimation of g.Z (intermediate variable assignment mechanism)
      Procedure: No intermediate variable 
@@ -965,52 +956,52 @@ Estimation Results:
  Bounds on g: ( 0.025 0.975 )
 
  Additive Effect
-   Parameter Estimate:  -0.02291
-   Estimated Variance:  0.000038832
-              p-value:  0.00023646
-    95% Conf Interval: (-0.035124, -0.010696) 
+   Parameter Estimate:  -0.02283
+   Estimated Variance:  0.000038619
+              p-value:  0.00023902
+    95% Conf Interval: (-0.035011, -0.01065) 
 
  Additive Effect among the Treated
-   Parameter Estimate:  -0.023031
-   Estimated Variance:  0.000039169
-              p-value:  0.00023326
-    95% Conf Interval: (-0.035298, -0.010765) 
+   Parameter Estimate:  -0.022766
+   Estimated Variance:  0.000038966
+              p-value:  0.00026528
+    95% Conf Interval: (-0.035001, -0.010531) 
 
  Additive Effect among the Controls
-   Parameter Estimate:  -0.02291
-   Estimated Variance:  0.000038705
-              p-value:  0.00023091
-    95% Conf Interval: (-0.035104, -0.010717) 
+   Parameter Estimate:  -0.022832
+   Estimated Variance:  0.000038507
+              p-value:  0.00023375
+    95% Conf Interval: (-0.034995, -0.01067) 
 
  Relative Risk
-   Parameter Estimate:  0.60134
-              p-value:  0.00077277
-    95% Conf Interval: (0.44706, 0.80886) 
+   Parameter Estimate:  0.60219
+              p-value:  0.0007636
+    95% Conf Interval: (0.44818, 0.80911) 
 
-              log(RR):  -0.50859
-    variance(log(RR)):  0.02288 
+              log(RR):  -0.50719
+    variance(log(RR)):  0.022709 
 
  Odds Ratio
-   Parameter Estimate:  0.58707
-              p-value:  0.00072193
-    95% Conf Interval: (0.43112, 0.79943) 
+   Parameter Estimate:  0.58795
+              p-value:  0.00071402
+    95% Conf Interval: (0.43226, 0.79971) 
 
-              log(OR):  -0.53261
-    variance(log(OR)):  0.024814 
+              log(OR):  -0.53112
+    variance(log(OR)):  0.024631 
 
 -----------------------------------------</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># difference</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
 <pre><code>    psi var.psi     CI1     CI2  pvalue 
--0.0229  0.0000 -0.0351 -0.0107  0.0002 </code></pre>
+-0.0228  0.0000 -0.0350 -0.0107  0.0002 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># prevalence ratio</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>RR),<span class="dv">4</span>)</code></pre></div>
 <pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi 
-     0.6013      0.4471      0.8089      0.0008     -0.5086      0.0229 </code></pre>
+     0.6022      0.4482      0.8091      0.0008     -0.5072      0.0227 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># odds ratio</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>OR),<span class="dv">4</span>)</code></pre></div>
 <pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi 
-     0.5871      0.4311      0.7994      0.0007     -0.5326      0.0248 </code></pre>
+     0.5879      0.4323      0.7997      0.0007     -0.5311      0.0246 </code></pre>
 </div>
 <div id="tmle-with-inverse-probability-of-censoring-weights-ipcw" class="section level3">
 <h3 class="hasAnchor">
@@ -1205,7 +1196,7 @@ Estimation Results:
 <span class="co">#---------------------------------------</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.LAZ.tmle.C.N<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
 <pre><code>    psi var.psi     CI1     CI2  pvalue 
- 0.2749  0.0023  0.1818  0.3681  0.0000 </code></pre>
+ 0.2743  0.0023  0.1799  0.3687  0.0000 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">unlist</span>(psi_ipcw<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
 <pre><code>    psi var.psi     CI1     CI2  pvalue 
  0.2768  0.0023  0.1823  0.3713  0.0000 </code></pre>
