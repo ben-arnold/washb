@@ -137,9 +137,9 @@ This is an example of how to load and merge the enrollment and diarrhea data, wi
 # if you do not have access to these data through Dropbox, but need it, please contact UCB
 washb_bd_enrol <- washb_bd_anthro <- NULL
 
-washb_bd_tr    <- read.csv("PrimaryOutcomeData/washb-bang-tr.csv")
-washb_bd_enrol <- read.csv("PrimaryOutcomeData/washb-bangladesh-enrol.csv")
-washb_bd_diar  <- read.csv("PrimaryOutcomeData/washb-bangladesh-diar.csv")
+washb_bd_tr    <- read.csv("data/washb-bang-tr.csv")
+washb_bd_enrol <- read.csv("data/washb-bangladesh-enrol.csv")
+washb_bd_diar  <- read.csv("data/washb-bangladesh-diar.csv")
 
 # drop svydate and month because they are superseded in the child level diarrhea data
 washb_bd_enrol$svydate <- NULL
@@ -189,7 +189,7 @@ This is an example of how to load and merge the anthropometry and enrollment dat
 
 ```{r, eval=TRUE, comment=NA}
 # load the anthropometry dataset
-washb_bd_anthro <- read.csv("PrimaryOutcomeData/washb-bangladesh-anthro.csv")
+washb_bd_anthro <- read.csv("data/washb-bangladesh-anthro.csv")
 
 #  merge to final analysis files, loaded above (keep only compounds with follow-up data)
 lazd <- merge(washb_bd_enrol,washb_bd_tr,by=c("clusterid","block"),all.x=T,all.y=T)
@@ -588,7 +588,7 @@ library(glmnet)
 
 washb_bd_track<-NULL
 
-washb_bd_track <- read.csv("PrimaryOutcomeData/washb-bangladesh-track-compound.csv")
+washb_bd_track <- read.csv("data/washb-bangladesh-track-compound.csv")
 
 table(washb_bd_track$miss1reason=="No live birth") # total number of unique compounds w/ live birth = 5190
 
