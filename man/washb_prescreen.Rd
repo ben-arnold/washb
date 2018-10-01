@@ -73,4 +73,3 @@ prescreened_varnames<-washb_prescreen(Y=ad$diar7d,Ws,family="binomial")
 prescreened_varname2s<-washb_prescreen(Y=ad$diar7d,Ws,family="binomial", pval=0.5)
 
 }
-

@@ -90,4 +90,3 @@ rownames(diff.h1) <- c("Water v C","Sanitation v C","Handwashing v C","WSH v C",
 print(diff.h1)
 
 }
-

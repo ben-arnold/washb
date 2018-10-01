@@ -51,4 +51,3 @@ The arguments \code{Y},\code{tr}, and \code{strat} need to be from the same data
  washb_ttest(Y=laz$laz,tr=laz$tr,strat=laz$block, contrast=c("Control","Water"))
 }
 }
-

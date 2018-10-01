@@ -61,4 +61,3 @@ This function is most useful for calculating variable means and confidence inter
  #Run function:
  washb_mean(Y=WSH$laz,id=WSH$clusterid,print=FALSE)
 }
-

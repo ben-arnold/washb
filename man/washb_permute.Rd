@@ -111,4 +111,3 @@ diar_h1_pval_unadj
 3.	Rosenbaum, P. R. Covariance Adjustment in Randomized Experiments and Observational Studies. Statist. Sci. 17, 286–327 (2002).
 [Link](http://projecteuclid.org/euclid.ss/1042727942)
 }
-

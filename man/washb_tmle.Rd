@@ -6,9 +6,9 @@
 \usage{
 washb_tmle(Y, tr, W = NULL, id = 1:length(Y), pair = NULL,
   Delta = rep(1, length(Y)), family = "gaussian", contrast,
-  Q.SL.library = c("SL.mean", "SL.glm", "SL.bayesglm", "SL.gam", "SL.glmnet"),
-  g.SL.library = Q.SL.library, pval = 0.2, FECR = NULL, seed = NULL,
-  print = TRUE)
+  Q.SL.library = c("SL.mean", "SL.glm", "SL.bayesglm", "SL.gam",
+  "SL.glmnet"), g.SL.library = Q.SL.library, pval = 0.2, FECR = NULL,
+  seed = NULL, print = TRUE)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}
@@ -71,4 +71,3 @@ Gruber S, van der Laan M. tmle: An R Package for Targeted Maximum Likelihood Est
 
 Balzer LB, van der Laan MJ, Petersen ML, SEARCH Collaboration. Adaptive pre-specification in randomized trials with and without pair-matching. Stat Med. 2016; doi:10.1002/sim.7023 (http://onlinelibrary.wiley.com/doi/10.1002/sim.7023/abstract)
 }
-
