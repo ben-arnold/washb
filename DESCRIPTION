@@ -2,7 +2,7 @@ Package: washb
 Title: Internal WASH Benefits Function Package
 Version: 0.2.1
 Date: 2017-02-02
-Authors@R: as.person(c("Andrew Mertens <amertens@berkeley.edu> [aut]","Ben Arnold <benarnold@berkeley.edu> [aut]", "Anna Nguyen <anna-nguyen@berkeley.edu [cre]"))
+Authors@R: as.person(c("Andrew Mertens <amertens@berkeley.edu> [aut]","Ben Arnold <benarnold@berkeley.edu> [aut]", "Anna Nguyen <anna-nguyen@berkeley.edu> [cre]"))
 Description: Internal package for analyses associated with the WASH Benefits trials. Contains several
     useful functions documented in detail in the accompanying vignette.
 LazyData: TRUE
