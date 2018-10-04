@@ -1,0 +1,62 @@
+#' dataset: Bangladesh anthropometry analysis
+#'
+#' Bangladesh anthropometry analysis dataset
+#'
+#' @docType data
+#'
+#' @usage data(washb-bangladesh-anthro)
+#'
+#' @format A data frame with 9,342 observations and 46 variables.
+#' \describe{
+#'  \item{\code{dataid}}{Compound ID}
+#'  \item{\code{childid}}{Child ID}
+#'  \item{\code{motherid}}{Mother ID}
+#'  \item{\code{tchild}}{Target child in birth cohort}
+#'  \item{\code{clusterid}}{Cluster ID)}
+#'  \item{\code{block}}{Randomization block ID}
+#'  \item{\code{tr}}{Treatment assignment}
+#'  \item{\code{svy}}{Survey round (0,1,2)}
+#'  \item{\code{anthrodate}}{Date of anthro measurement}
+#'  \item{\code{month}}{Month of measurement}
+#'  \item{\code{c404}}{Maternal weight meas 1}
+#'  \item{\code{c405}}{Maternal weight meas 2}
+#'  \item{\code{c406}}{Maternal weight meas 3}
+#'  \item{\code{c408}}{Child weight w/ mother meas 1}
+#'  \item{\code{c409}}{Child weight w/ mother meas 2}
+#'  \item{\code{c410}}{Child weight w/ mother meas 3}
+#'  \item{\code{c414}}{Child length meas 1}
+#'  \item{\code{c415}}{Child length meas 2}
+#'  \item{\code{c416}}{Child length meas 3)}
+#'  \item{\code{c418}}{Head circumference meas 1}
+#'  \item{\code{c419}}{Head circumference meas 2}
+#'  \item{\code{c420}}{Head circumference meas 3}
+#'  \item{\code{sex}}{Sex}
+#'  \item{\code{birthord}}{Birth order (target child)}
+#'  \item{\code{aged}}{Age in days (anthro meas)}
+#'  \item{\code{agem}}{Age in months (anthro meas)}
+#'  \item{\code{agey}}{Age in years (anthro meas)}
+#'  \item{\code{weight}}{Child weight (median), kg}
+#'  \item{\code{length}}{Child length (median), cm}
+#'  \item{\code{headcir}}{Child head circumference (median), cm}
+#'  \item{\code{laz}}{Length/height-for-age Z-score}
+#'  \item{\code{laz_x}}{abs(LAZ)>6, set to missing}
+#'  \item{\code{lazminus2}}{Stunted (LAZ<-2)}
+#'  \item{\code{lazminus3}}{Severely Stunted (LAZ<-3)}
+#'  \item{\code{waz}}{Weight-for-age Z-score}
+#'  \item{\code{waz_x}}{WAZ < -6 or WAZ > 5, set to missing}
+#'  \item{\code{wazminus2}}{Underweight (WAZ<-2)}
+#'  \item{\code{wazminus3}}{Severely Underweight (WAZ<-3)}
+#'  \item{\code{whz}}{Weight-for-length/height Z-score}
+#'  \item{\code{whz_x}}{abs(WHZ)>5, set to missing}
+#'  \item{\code{whzminus2}}{Wasted (WHZ<-2)}
+#'  \item{\code{whzminus3}}{Severely Wasted (WHZ<-3)}
+#'  \item{\code{bmiz}}{BMI-for-age Z-score}
+#'  \item{\code{bmiz_x}}{abs(BMIZ)>5, set to missing}
+#'  \item{\code{hcz}}{Head circumference-for-age z-score}
+#'  \item{\code{hcz_x}}{abs(HCZ)>5, set to missing}
+#'  }
+#'
+#' @keywords datasets
+#'
+#'
+"washb-bangladesh-anthro"
