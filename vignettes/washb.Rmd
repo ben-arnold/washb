@@ -19,7 +19,6 @@ vignette: |
   %\VignetteIndexEntry{washb package vignette} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
 ---
 
-
 ```{r set-options, echo=FALSE, cache=FALSE, include = FALSE}
 options(width = 300)
 options(scipen=20)
