@@ -8,9 +8,9 @@
 #'
 #' @format A data frame with 5551 observations and 8 variables.
 #' \describe{
-#'  \item{\code{block}}{Randomization block ID}
-#'  \item{\code{clusterid}}{Cluster ID)}
-#'  \item{\code{tr}}{Treatment assignment}
+#'  \item{block}{Randomization block ID}
+#'  \item{clusterid}{Cluster ID)}
+#'  \item{tr}{Treatment assignment}
 #'  }
 #'
 #' @keywords datasets

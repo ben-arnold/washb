@@ -22,7 +22,6 @@ vignette: |
 ```{r set-options, echo=FALSE, cache=FALSE, include = FALSE}
 options(width = 300)
 options(scipen=20)
-library(here)
 ```
 
 ```{r setup, include=FALSE}
@@ -128,6 +127,12 @@ Below we will use some actual analyses from the Bangladesh trial to illustrate t
 
 This is an example of how to load and merge the enrollment and diarrhea data, with the actual treatment assignments. It creates a final analysis data frame called `dd` (for diarrhea data). At this time, these datasets are not included with the package -- if you need access to them, please email the UCB team.
 
+```{r}
+data(washb_bang_tr)
+
+```
+
+
 ```{r, results="hide", eval=TRUE}
 # load and merge the final analysis files
 # treatment assignments, enrollment characteristics, and diarrhea measurements
@@ -135,9 +140,9 @@ This is an example of how to load and merge the enrollment and diarrhea data, wi
 # if you do not have access to these data through Dropbox, but need it, please contact UCB
 washb_bd_enrol <- washb_bd_anthro <- NULL
 
-washb_bd_tr    <- read.csv("PrimaryOutcomeData/washb-bang-tr.csv")
-washb_bd_enrol <- read.csv("PrimaryOutcomeData/washb-bangladesh-enrol.csv")
-washb_bd_diar  <- read.csv("PrimaryOutcomeData/washb-bangladesh-diar.csv")
+washb_bd_tr    <- data(washb_bang_tr)
+washb_bd_enrol <- data(washb_bangladesh_enrol)
+washb_bd_diar  <- data(washb_bangladesh_diar)
 
 # drop svydate and month because they are superseded in the child level diarrhea data
 washb_bd_enrol$svydate <- NULL
@@ -187,7 +192,7 @@ This is an example of how to load and merge the anthropometry and enrollment dat
 
 ```{r, eval=TRUE, comment=NA}
 # load the anthropometry dataset
-washb_bd_anthro <- read.csv("PrimaryOutcomeData/washb-bangladesh-anthro.csv")
+washb_bd_anthro <- data(washb_bangladesh_anthro)
 
 #  merge to final analysis files, loaded above (keep only compounds with follow-up data)
 lazd <- merge(washb_bd_enrol,washb_bd_tr,by=c("clusterid","block"),all.x=T,all.y=T)
