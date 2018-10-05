@@ -129,7 +129,6 @@ Below we will use some actual analyses from the Bangladesh trial to illustrate t
 
 This is an example of how to load and merge the enrollment and diarrhea data, with the actual treatment assignments. It creates a final analysis data frame called `dd` (for diarrhea data). At this time, these datasets are not included with the package -- if you need access to them, please email the UCB team.
 
-
 ```{r, results="hide", eval=TRUE}
 # load and merge the final analysis files
 # treatment assignments, enrollment characteristics, and diarrhea measurements
