@@ -4,7 +4,7 @@
 #'
 #' @docType data
 #'
-#' @usage data(washb-bangladesh-anthro)
+#' @usage data(washb_bangladesh_anthro)
 #'
 #' @format A data frame with 9,342 observations and 46 variables.
 #' \describe{
@@ -59,4 +59,4 @@
 #' @keywords datasets
 #'
 #'
-"washb-bangladesh-anthro"
+"washb_bangladesh_anthro"

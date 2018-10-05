@@ -4,7 +4,7 @@
 #'
 #' @docType data
 #'
-#' @usage data(washb-bangladesh-diar)
+#' @usage data(washb_bangladesh_diar)
 #'
 #' @format A data frame with 22,596 observations and 29 variables.
 #' \describe{
@@ -42,4 +42,4 @@
 #' @keywords datasets
 #'
 #'
-"washb-bangladesh-diar"
+"washb_bangladesh_diar"

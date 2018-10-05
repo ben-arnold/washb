@@ -4,7 +4,7 @@
 #'
 #' @docType data
 #'
-#' @usage data(washb-bangladesh-uptake)
+#' @usage data(washb_bang_tr)
 #'
 #' @format A data frame with 5551 observations and 8 variables.
 #' \describe{
@@ -16,4 +16,4 @@
 #' @keywords datasets
 #'
 #'
-"washb-bang-tr"
+"washb_bang_tr"

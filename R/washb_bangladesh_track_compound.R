@@ -4,7 +4,7 @@
 #'
 #' @docType data
 #'
-#' @usage data(washb-bangladesh-uptake)
+#' @usage data(washb_bangladesh_track_compound)
 #'
 #' @format A data frame with 5551 observations and 8 variables.
 #' \describe{
@@ -21,4 +21,4 @@
 #' @keywords datasets
 #'
 #'
-"washb-bangladesh-track-compound"
+"washb_bangladesh_track_compound"

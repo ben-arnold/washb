@@ -4,7 +4,7 @@
 #'
 #' @docType data
 #'
-#' @usage data(washb-bangladesh-enrol)
+#' @usage data(washb_bangladesh_enrol)
 #'
 #' @format A data frame with 5,551 observations and 73 variables.
 #' \describe{
@@ -86,4 +86,4 @@
 #' @keywords datasets
 #'
 #'
-"washb-bangladesh-enrol"
+"washb_bangladesh_enrol"
