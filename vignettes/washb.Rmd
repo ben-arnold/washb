@@ -94,7 +94,7 @@ For new users of R, the following sources are helpful learning resources:
 
 The WASH Benefits R package is developed on GitHub: [https://ben-arnold.github.io/washb](https://ben-arnold.github.io/washb). To install the R package from GitHub, you will need the `devtools` package. From within R, you can install `devtools` with the code: `install.packages("devtools")`. This only needs to occur once (per computer). After installation, load the `devtools` package (type `library(devtools)`), and then install the `washb` package by typing:
 ```{r, eval = FALSE, tidy=TRUE}
-devtools::install_github("ben-arnold/washb"")
+devtools::install_github("ben-arnold/washb")
 ```
 
 ```{r package, include = FALSE}
@@ -152,20 +152,16 @@ Below we will use some actual analyses from the Bangladesh trial to illustrate t
 
 This is an example of how to load and merge the enrollment and diarrhea data, with the actual treatment assignments. It creates a final analysis data frame called `dd` (for diarrhea data). At this time, these datasets are not included with the package -- if you need access to them, please email the UCB team.
 
-```{r}
-# Load Data from package
-data(washb_bang_tr)
-data(washb_bangladesh_enrol)
-data(washb_bangladesh_diar)
-
-```
-
-
 ```{r, results="hide", eval=TRUE}
 # load and merge the final analysis files
 # treatment assignments, enrollment characteristics, and diarrhea measurements
 # note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments
 # if you do not have access to these data through Dropbox, but need it, please contact UCB
+# Load data from package
+data(washb_bang_tr)
+data(washb_bangladesh_enrol)
+data(washb_bangladesh_diar)
+
 washb_bd_enrol <- washb_bd_anthro <- NULL
 
 washb_bd_tr    <- washb_bang_tr
@@ -218,13 +214,10 @@ dd <- dd[order(dd$block,dd$clusterid,dd$dataid,dd$childid),]
 ### LAZ data processing  
 This is an example of how to load and merge the anthropometry and enrollment datasets. It pretty much parallels the processing steps of the diarrhea data (above). It creates a final analysis data frame called `lazd`. At this time, the anthropometry dataset is not included with the package -- if you need access to it, please email the UCB team.
 
-```{r}
+```{r, eval=TRUE, comment=NA}
 # Load data from package
 data(washb_bangladesh_anthro)
-```
 
-
-```{r, eval=TRUE, comment=NA}
 # load the anthropometry dataset
 washb_bd_anthro <- washb_bangladesh_anthro
 
@@ -615,11 +608,6 @@ library(foreach)
 library(glmnet)
 ``` 
 
-```{r}
-# Load data from package
-data(washb_bangladesh_track_compound)
-```
-
 
 ```{r make full data,eval=TRUE,comment=NA}
 #---------------------------------------
@@ -627,6 +615,8 @@ data(washb_bangladesh_track_compound)
 # as if every index child with a live birth
 # were measured at year 1 and year 2
 #---------------------------------------
+# Load data from package
+data(washb_bangladesh_track_compound)
 
 washb_bd_track<-NULL
 
