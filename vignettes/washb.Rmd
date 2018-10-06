@@ -162,8 +162,6 @@ data(washb_bang_tr)
 data(washb_bangladesh_enrol)
 data(washb_bangladesh_diar)
 
-washb_bangladesh_enrol <- washb_bangladesh_anthro <- NULL
-
 washb_bang_tr    <- washb_bang_tr
 washb_bangladesh_enrol <- washb_bangladesh_enrol
 washb_bangladesh_diar  <- washb_bangladesh_diar
@@ -617,8 +615,6 @@ library(glmnet)
 #---------------------------------------
 # Load data from package
 data(washb_bangladesh_track_compound)
-
-washb_bangladesh_track_compound<-NULL
 
 washb_bangladesh_track_compound <- washb_bangladesh_track_compound
 
