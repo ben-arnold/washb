@@ -6,7 +6,7 @@
 #'
 #' @usage data(washb_bang_tr)
 #'
-#' @format A data frame with 5551 observations and 8 variables.
+#' @format A data frame with 720 observations and 3 variables.
 #' \describe{
 #'  \item{block}{Randomization block ID}
 #'  \item{clusterid}{Cluster ID)}

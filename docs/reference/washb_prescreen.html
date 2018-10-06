@@ -146,32 +146,145 @@
 
 <span class='co'>#Load diarrhea data:</span>
 <span class='fu'>library</span>(<span class='no'>washb</span>)
-<span class='fu'>data</span>(<span class='no'>washb_bd_diar</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set 'washb_bd_diar' not found</span></div><div class='input'><span class='fu'>data</span>(<span class='no'>washb_bd_enrol</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set 'washb_bd_enrol' not found</span></div><div class='input'>
+<span class='fu'>data</span>(<span class='no'>washb_bd_diar</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘washb_bd_diar’ not found</span></div><div class='input'><span class='fu'>data</span>(<span class='no'>washb_bd_enrol</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘washb_bd_enrol’ not found</span></div><div class='input'>
  <span class='co'># drop svydate and month because they are superceded in the child level diarrhea data</span>
-<span class='no'>washb_bd_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span></div><div class='output co'>#&gt; <span class='error'>Error in washb_bd_enrol$svydate &lt;- NULL: object 'washb_bd_enrol' not found</span></div><div class='input'><span class='no'>washb_bd_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span></div><div class='output co'>#&gt; <span class='error'>Error in washb_bd_enrol$month &lt;- NULL: object 'washb_bd_enrol' not found</span></div><div class='input'>
+<span class='no'>washb_bd_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+<span class='no'>washb_bd_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+
 <span class='co'># merge the baseline dataset to the follow-up dataset</span>
-<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bd_enrol</span>,<span class='no'>washb_bd_diar</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)</div><div class='output co'>#&gt; <span class='error'>Error in merge(washb_bd_enrol, washb_bd_diar, by = c("dataid", "clusterid",     "block", "tr"), all.x = F, all.y = T): object 'washb_bd_enrol' not found</span></div><div class='input'>
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bd_enrol</span>,<span class='no'>washb_bd_diar</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)
+
 <span class='co'># subset to the relevant measurement</span>
 <span class='co'># Year 1 or Year 2</span>
-<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='no'>svy</span><span class='kw'>==</span><span class='fl'>1</span><span class='kw'>|</span><span class='no'>svy</span><span class='kw'>==</span><span class='fl'>2</span>)</div><div class='output co'>#&gt; <span class='error'>Error in subset(ad, svy == 1 | svy == 2): object 'ad' not found</span></div><div class='input'>
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='no'>svy</span><span class='kw'>==</span><span class='fl'>1</span><span class='kw'>|</span><span class='no'>svy</span><span class='kw'>==</span><span class='fl'>2</span>)
+
 <span class='co'>#subset the diarrhea to children &lt;36 mos at enrollment</span>
 <span class='co'>### (exlude new births that are not target children)</span>
-<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='no'>sibnewbirth</span><span class='kw'>==</span><span class='fl'>0</span>)</div><div class='output co'>#&gt; <span class='error'>Error in subset(ad, sibnewbirth == 0): object 'ad' not found</span></div><div class='input'><span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='no'>gt36mos</span><span class='kw'>==</span><span class='fl'>0</span>)</div><div class='output co'>#&gt; <span class='error'>Error in subset(ad, gt36mos == 0): object 'ad' not found</span></div><div class='input'>
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='no'>sibnewbirth</span><span class='kw'>==</span><span class='fl'>0</span>)
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='no'>gt36mos</span><span class='kw'>==</span><span class='fl'>0</span>)
+
 <span class='co'># Exclude children with missing data</span>
-<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,!<span class='fu'>is.na</span>(<span class='no'>ad</span>$<span class='no'>diar7d</span>))</div><div class='output co'>#&gt; <span class='error'>Error in subset(ad, !is.na(ad$diar7d)): object 'ad' not found</span></div><div class='input'>
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,!<span class='fu'>is.na</span>(<span class='no'>ad</span>$<span class='no'>diar7d</span>))
+
 <span class='co'>#Re-order the tr factor for convenience</span>
-<span class='no'>ad</span>$<span class='no'>tr</span> <span class='kw'>&lt;-</span> <span class='fu'>factor</span>(<span class='no'>ad</span>$<span class='no'>tr</span>,<span class='kw'>levels</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"Control"</span>,<span class='st'>"Water"</span>,<span class='st'>"Sanitation"</span>,<span class='st'>"Handwashing"</span>,<span class='st'>"WSH"</span>,<span class='st'>"Nutrition"</span>,<span class='st'>"Nutrition + WSH"</span>))</div><div class='output co'>#&gt; <span class='error'>Error in factor(ad$tr, levels = c("Control", "Water", "Sanitation", "Handwashing",     "WSH", "Nutrition", "Nutrition + WSH")): object 'ad' not found</span></div><div class='input'>
+<span class='no'>ad</span>$<span class='no'>tr</span> <span class='kw'>&lt;-</span> <span class='fu'>factor</span>(<span class='no'>ad</span>$<span class='no'>tr</span>,<span class='kw'>levels</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"Control"</span>,<span class='st'>"Water"</span>,<span class='st'>"Sanitation"</span>,<span class='st'>"Handwashing"</span>,<span class='st'>"WSH"</span>,<span class='st'>"Nutrition"</span>,<span class='st'>"Nutrition + WSH"</span>))
+
 <span class='co'>#Ensure that month is coded as a factor</span>
-<span class='no'>ad</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='fu'>factor</span>(<span class='no'>ad</span>$<span class='no'>month</span>)</div><div class='output co'>#&gt; <span class='error'>Error in factor(ad$month): object 'ad' not found</span></div><div class='input'>
+<span class='no'>ad</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='fu'>factor</span>(<span class='no'>ad</span>$<span class='no'>month</span>)
+
 <span class='co'>#Sort the data for perfect replication when using V-fold cross-validation</span>
-<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='no'>ad</span>[<span class='fu'>order</span>(<span class='no'>ad</span>$<span class='no'>block</span>,<span class='no'>ad</span>$<span class='no'>clusterid</span>,<span class='no'>ad</span>$<span class='no'>dataid</span>,<span class='no'>ad</span>$<span class='no'>childid</span>),]</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'ad' not found</span></div><div class='input'>
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='no'>ad</span>[<span class='fu'>order</span>(<span class='no'>ad</span>$<span class='no'>block</span>,<span class='no'>ad</span>$<span class='no'>clusterid</span>,<span class='no'>ad</span>$<span class='no'>dataid</span>,<span class='no'>ad</span>$<span class='no'>childid</span>),]
+
 
 <span class='co'>###Subset to a new dataframe the variables to be screened:</span>
-<span class='no'>Ws</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='kw'>select</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"fracode"</span>,<span class='st'>"month"</span>,<span class='st'>"agedays"</span>,<span class='st'>"sex"</span>,<span class='st'>"momage"</span>,<span class='st'>"momedu"</span>,<span class='st'>"momheight"</span>,<span class='st'>"hfiacat"</span>,<span class='st'>"Nlt18"</span>,<span class='st'>"Ncomp"</span>,<span class='st'>"watmin"</span>,<span class='st'>"elec"</span>,<span class='st'>"floor"</span>,<span class='st'>"walls"</span>,<span class='st'>"roof"</span>,<span class='st'>"asset_wardrobe"</span>,<span class='st'>"asset_table"</span>,<span class='st'>"asset_chair"</span>,<span class='st'>"asset_khat"</span>,<span class='st'>"asset_chouki"</span>,<span class='st'>"asset_tv"</span>,<span class='st'>"asset_refrig"</span>,<span class='st'>"asset_bike"</span>,<span class='st'>"asset_moto"</span>,<span class='st'>"asset_sewmach"</span>,<span class='st'>"asset_mobile"</span>))</div><div class='output co'>#&gt; <span class='error'>Error in subset(ad, select = c("fracode", "month", "agedays", "sex", "momage",     "momedu", "momheight", "hfiacat", "Nlt18", "Ncomp", "watmin",     "elec", "floor", "walls", "roof", "asset_wardrobe", "asset_table",     "asset_chair", "asset_khat", "asset_chouki", "asset_tv",     "asset_refrig", "asset_bike", "asset_moto", "asset_sewmach",     "asset_mobile")): object 'ad' not found</span></div><div class='input'>
+<span class='no'>Ws</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='kw'>select</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"fracode"</span>,<span class='st'>"month"</span>,<span class='st'>"agedays"</span>,<span class='st'>"sex"</span>,<span class='st'>"momage"</span>,<span class='st'>"momedu"</span>,<span class='st'>"momheight"</span>,<span class='st'>"hfiacat"</span>,<span class='st'>"Nlt18"</span>,<span class='st'>"Ncomp"</span>,<span class='st'>"watmin"</span>,<span class='st'>"elec"</span>,<span class='st'>"floor"</span>,<span class='st'>"walls"</span>,<span class='st'>"roof"</span>,<span class='st'>"asset_wardrobe"</span>,<span class='st'>"asset_table"</span>,<span class='st'>"asset_chair"</span>,<span class='st'>"asset_khat"</span>,<span class='st'>"asset_chouki"</span>,<span class='st'>"asset_tv"</span>,<span class='st'>"asset_refrig"</span>,<span class='st'>"asset_bike"</span>,<span class='st'>"asset_moto"</span>,<span class='st'>"asset_sewmach"</span>,<span class='st'>"asset_mobile"</span>))
+
 <span class='co'>###Run the washb_prescreen function</span>
-<span class='no'>prescreened_varnames</span><span class='kw'>&lt;-</span><span class='fu'>washb_prescreen</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>diar7d</span>,<span class='no'>Ws</span>,<span class='kw'>family</span><span class='kw'>=</span><span class='st'>"binomial"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in as.data.frame(Ws): object 'Ws' not found</span></div><div class='input'>
+<span class='no'>prescreened_varnames</span><span class='kw'>&lt;-</span><span class='fu'>washb_prescreen</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>diar7d</span>,<span class='no'>Ws</span>,<span class='kw'>family</span><span class='kw'>=</span><span class='st'>"binomial"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</span></div><div class='output co'>#&gt; 
+#&gt; Likelihood Ratio Test P-values:
+#&gt;                P-value
+#&gt; fracode        0.12509
+#&gt; month          0.00000
+#&gt; agedays        0.00001
+#&gt; sex            0.15910
+#&gt; momage         0.85834
+#&gt; momedu         0.00113
+#&gt; momheight      0.83709
+#&gt; hfiacat        0.00044
+#&gt; Nlt18          0.14600
+#&gt; Ncomp          0.85845
+#&gt; watmin         0.01749
+#&gt; elec           0.00166
+#&gt; floor          0.00882
+#&gt; walls          0.17286
+#&gt; roof           0.44633
+#&gt; asset_wardrobe 0.00334
+#&gt; asset_table    0.27762
+#&gt; asset_chair    0.26366
+#&gt; asset_khat     0.05397
+#&gt; asset_chouki   0.88290
+#&gt; asset_tv       0.10924
+#&gt; asset_refrig   0.01527
+#&gt; asset_bike     0.00498
+#&gt; asset_moto     0.23256
+#&gt; asset_sewmach  0.00352
+#&gt; asset_mobile   0.71326
+#&gt; 
+#&gt; 
+#&gt; Covariates selected (P&lt;0.2):
+#&gt;                       P-value
+#&gt; fracode        0.125086717080
+#&gt; month          0.000001277665
+#&gt; agedays        0.000008584708
+#&gt; sex            0.159101014584
+#&gt; momedu         0.001131482118
+#&gt; hfiacat        0.000436393481
+#&gt; Nlt18          0.145996390524
+#&gt; watmin         0.017492576342
+#&gt; elec           0.001659255089
+#&gt; floor          0.008816329210
+#&gt; walls          0.172858463464
+#&gt; asset_wardrobe 0.003338351150
+#&gt; asset_khat     0.053968452008
+#&gt; asset_tv       0.109235025959
+#&gt; asset_refrig   0.015267527279
+#&gt; asset_bike     0.004977085684
+#&gt; asset_sewmach  0.003515782703</div><div class='input'>
 <span class='co'>###Rerun the function with a stricter p=value</span>
-<span class='no'>prescreened_varname2s</span><span class='kw'>&lt;-</span><span class='fu'>washb_prescreen</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>diar7d</span>,<span class='no'>Ws</span>,<span class='kw'>family</span><span class='kw'>=</span><span class='st'>"binomial"</span>, <span class='kw'>pval</span><span class='kw'>=</span><span class='fl'>0.5</span>)</div><div class='output co'>#&gt; <span class='error'>Error in as.data.frame(Ws): object 'Ws' not found</span></div><div class='input'>
+<span class='no'>prescreened_varname2s</span><span class='kw'>&lt;-</span><span class='fu'>washb_prescreen</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>diar7d</span>,<span class='no'>Ws</span>,<span class='kw'>family</span><span class='kw'>=</span><span class='st'>"binomial"</span>, <span class='kw'>pval</span><span class='kw'>=</span><span class='fl'>0.5</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</span></div><div class='output co'>#&gt; 
+#&gt; Likelihood Ratio Test P-values:
+#&gt;                P-value
+#&gt; fracode        0.12509
+#&gt; month          0.00000
+#&gt; agedays        0.00001
+#&gt; sex            0.15910
+#&gt; momage         0.85834
+#&gt; momedu         0.00113
+#&gt; momheight      0.83709
+#&gt; hfiacat        0.00044
+#&gt; Nlt18          0.14600
+#&gt; Ncomp          0.85845
+#&gt; watmin         0.01749
+#&gt; elec           0.00166
+#&gt; floor          0.00882
+#&gt; walls          0.17286
+#&gt; roof           0.44633
+#&gt; asset_wardrobe 0.00334
+#&gt; asset_table    0.27762
+#&gt; asset_chair    0.26366
+#&gt; asset_khat     0.05397
+#&gt; asset_chouki   0.88290
+#&gt; asset_tv       0.10924
+#&gt; asset_refrig   0.01527
+#&gt; asset_bike     0.00498
+#&gt; asset_moto     0.23256
+#&gt; asset_sewmach  0.00352
+#&gt; asset_mobile   0.71326
+#&gt; 
+#&gt; 
+#&gt; Covariates selected (P&lt;0.5):
+#&gt;                       P-value
+#&gt; fracode        0.125086717080
+#&gt; month          0.000001277665
+#&gt; agedays        0.000008584708
+#&gt; sex            0.159101014584
+#&gt; momedu         0.001131482118
+#&gt; hfiacat        0.000436393481
+#&gt; Nlt18          0.145996390524
+#&gt; watmin         0.017492576342
+#&gt; elec           0.001659255089
+#&gt; floor          0.008816329210
+#&gt; walls          0.172858463464
+#&gt; roof           0.446334998090
+#&gt; asset_wardrobe 0.003338351150
+#&gt; asset_table    0.277621120615
+#&gt; asset_chair    0.263662641534
+#&gt; asset_khat     0.053968452008
+#&gt; asset_tv       0.109235025959
+#&gt; asset_refrig   0.015267527279
+#&gt; asset_bike     0.004977085684
+#&gt; asset_moto     0.232560670543
+#&gt; asset_sewmach  0.003515782703</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

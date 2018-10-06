@@ -63,7 +63,7 @@
       <h1>washb package vignette</h1>
                         <h4 class="author">Andrew Mertens and Ben Arnold</h4>
             
-            <h4 class="date">2018-09-27</h4>
+            <h4 class="date">2018-10-06</h4>
       
       
       <div class="hidden name"><code>washb.Rmd</code></div>
@@ -87,13 +87,22 @@
 <li><p><code>washb_glm</code> Estimates ITT effects using generalized linear models (GLM) with robust standard errors for unadjusted and adjusted estimates. Includes conversions of coefficients to relative risks (for binary outcomes), calculates confidence intervals, and prescreens possible adjustment covariates using the internal <code>washb_prescreen</code> function. Can be used for subgroup analyses (tests of effect modification).</p></li>
 <li><p><code>washb_tmle</code> Estimates ITT effects using targeted maximum likelihood estimation, which is particularly useful for adjusted analyses. Like <code>washb_glm</code>, this function provides measures of effect on absolute and relative scales (for binary outcomes), and pre-screens possible adjustment covariates using the internal <code>washb_prescreen</code> function. Unlike other estimation approaches in the package, <code>washb_tmle</code> can account for missing outcomes that may be missing systematically by treatment arm or baseline covariates.</p></li>
 <li><p><code>washb_permute</code> Conducts a permutation test of the independence of an outcome by treatment arm, conditional on randomization block using the Wilcoxon rank-sum test statistic.</p></li>
-<li>Internal package functions (only used internally by the main package functions):</li>
-<li>
-<code>washb_prescreen</code> Pre-screens adjustment covariates – restrict to those with a LR test P&lt;0.2 (or user-set p-value). Called internally in the <code>washb_glm</code> and <code>washb_tmle</code> functions, or can be called on its own.</li>
-<li>
-<code>sandwichSE</code> Calculates the Huber Sandwich Estimator for robust standard errors (<a href="http://www.stat.berkeley.edu/~census/mlesan.pdf">Freedman 2006</a>).</li>
+</ul>
+<p>Internal package functions (only used internally by the main package functions): * <code>washb_prescreen</code> Pre-screens adjustment covariates – restrict to those with a LR test P&lt;0.2 (or user-set p-value). Called internally in the <code>washb_glm</code> and <code>washb_tmle</code> functions, or can be called on its own.</p>
+<ul>
+<li><p><code>sandwichSE</code> Calculates the Huber Sandwich Estimator for robust standard errors (<a href="http://www.stat.berkeley.edu/~census/mlesan.pdf">Freedman 2006</a>).</p></li>
 <li><p><code>washb_lincom</code> Estimates SEs, CIs, and P-values for Pr&gt;|Z| from a linear combination of GLM regression coefficients.</p></li>
 </ul>
+<p>In addition to these functions, the package includes data from the wash benefits trials completed in Bangladesh by the UC Berkeley team. These data sets include:</p>
+<ul>
+<li><p><code>washb_bang_tr</code> Bangladesh treatment assignments dataset</p></li>
+<li><p><code>washb_bangladesh_antro</code> Bangladesh anthropometry analysis dataset</p></li>
+<li><p><code>washb_bangladesh_diar</code> Bangladesh diarrhea dataset</p></li>
+<li><p><code>washb_bangladesh_enrol</code> Bangladesh enrollment analysis dataset</p></li>
+<li><p><code>washb_bangladesh_track_compound</code> Bangladesh track compound dataset</p></li>
+<li><p><code>washb_bangladesh_uptake</code> Bangladesh uptake analysis dataset</p></li>
+</ul>
+<p>To load data for analysis, use the command <code>data(washb_bang_tr)</code>, replacing <code>washb_bang_tr</code> with the appropriate dataset name.</p>
 </div>
 </div>
 <div id="getting-started" class="section level1">
@@ -115,7 +124,7 @@
 <h3 class="hasAnchor">
 <a href="#installation-from-github" class="anchor"></a>Installation from GitHub</h3>
 <p>The WASH Benefits R package is developed on GitHub: <a href="https://ben-arnold.github.io/washb" class="uri">https://ben-arnold.github.io/washb</a>. To install the R package from GitHub, you will need the <code>devtools</code> package. From within R, you can install <code>devtools</code> with the code: <code>install.packages("devtools")</code>. This only needs to occur once (per computer). After installation, load the <code>devtools</code> package (type <code>library(devtools)</code>), and then install the <code>washb</code> package by typing:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"ben-arnold/washb"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"ben-arnold/washb"")</span></code></pre></div>
 <p>We will periodically update the <code>washb</code> package with improvements and bug fixes. When a new package version is available, the UCB team will send an email to notify the WASHB community of the update. You can always ensure you have the latest version by re-installing the package. If you encounter a bug, find something frustrating or confusing, or have suggestions for improvements email Andrew and Ben to let them know!</p>
 </div>
 <div id="installing-required-packages" class="section level3">
@@ -132,15 +141,6 @@
 <span class="kw">install.packages</span>(<span class="st">"SuperLearner"</span>)</code></pre></div>
 <p>Once packages are installed for the first time, they will be automatically loaded along with the <code>washb</code> package when you load the package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(washb)</code></pre></div>
-<pre><code>## Welcome to the washb package</code></pre>
-<pre><code>## Version: 0.2.1</code></pre>
-<pre><code>## Created on 2017-02-02</code></pre>
-<pre><code>## 
-## This software was developed with funding from the
-## Bill &amp; Melinda Gates Foundation (grant number OPPGD759).
-## 
-## The package's reference manual and vignette are also online:
-## https://ben-arnold.github.io/washb</code></pre>
 <p>The <code>library()</code> command can be used to load any installed package. It is not needed for any of the required packages listed above, but it is for suggested packages. For example, to fit a negative binomial GLM model, the  package is required, and can be installed once with <code>install.packages("MASS")</code> and loaded each time R is opened with <code>library("MASS")</code>.</p>
 <p>Suggested packages include: nnlsm, zoo, arm, MASS, Matrix, lme4, gam, splines, foreach, and glmnet.</p>
 </div>
@@ -163,15 +163,19 @@
 <a href="#diarrhea-data-processing" class="anchor"></a>Diarrhea data processing</h3>
 <p>Below we will use some actual analyses from the Bangladesh trial to illustrate the different functions. To do that, we also need to read in final analysis datasets, merge them to baseline characteristics, and merge on the actual (unblinded) treatment assignments. We also do a little bit of minimal data processing to help facilitate the analyses.</p>
 <p>This is an example of how to load and merge the enrollment and diarrhea data, with the actual treatment assignments. It creates a final analysis data frame called <code>dd</code> (for diarrhea data). At this time, these datasets are not included with the package – if you need access to them, please email the UCB team.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load Data from package</span>
+<span class="kw">data</span>(washb_bang_tr)
+<span class="kw">data</span>(washb_bangladesh_enrol)
+<span class="kw">data</span>(washb_bangladesh_diar)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load and merge the final analysis files</span>
 <span class="co"># treatment assignments, enrollment characteristics, and diarrhea measurements</span>
 <span class="co"># note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments</span>
 <span class="co"># if you do not have access to these data through Dropbox, but need it, please contact UCB</span>
 washb_bd_enrol &lt;-<span class="st"> </span>washb_bd_anthro &lt;-<span class="st"> </span><span class="ot">NULL</span>
 
-washb_bd_tr    &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bang-tr.csv"</span>)
-washb_bd_enrol &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bangladesh-enrol.csv"</span>)
-washb_bd_diar  &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bangladesh-diar.csv"</span>)
+washb_bd_tr    &lt;-<span class="st"> </span>washb_bang_tr
+washb_bd_enrol &lt;-<span class="st"> </span>washb_bangladesh_enrol
+washb_bd_diar  &lt;-<span class="st"> </span>washb_bangladesh_diar
 
 <span class="co"># drop svydate and month because they are superseded in the child level diarrhea data</span>
 washb_bd_enrol<span class="op">$</span>svydate &lt;-<span class="st"> </span><span class="ot">NULL</span>
@@ -205,8 +209,10 @@ dd &lt;-<span class="st"> </span>dd[<span class="kw">order</span>(dd<span class=
 <h3 class="hasAnchor">
 <a href="#laz-data-processing" class="anchor"></a>LAZ data processing</h3>
 <p>This is an example of how to load and merge the anthropometry and enrollment datasets. It pretty much parallels the processing steps of the diarrhea data (above). It creates a final analysis data frame called <code>lazd</code>. At this time, the anthropometry dataset is not included with the package – if you need access to it, please email the UCB team.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data from package</span>
+<span class="kw">data</span>(washb_bangladesh_anthro)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the anthropometry dataset</span>
-washb_bd_anthro &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bangladesh-anthro.csv"</span>)
+washb_bd_anthro &lt;-<span class="st"> </span>washb_bangladesh_anthro
 
 <span class="co">#  merge to final analysis files, loaded above (keep only compounds with follow-up data)</span>
 lazd &lt;-<span class="st"> </span><span class="kw">merge</span>(washb_bd_enrol,washb_bd_tr,<span class="dt">by=</span><span class="kw">c</span>(<span class="st">"clusterid"</span>,<span class="st">"block"</span>),<span class="dt">all.x=</span>T,<span class="dt">all.y=</span>T)
@@ -248,8 +254,16 @@ lazd &lt;-<span class="st"> </span>lazd[<span class="kw">order</span>(lazd<span 
 <h3 class="hasAnchor">
 <a href="#example" class="anchor"></a>example</h3>
 <p>Using the WASH Benefits enrollment survey data and the <code>washb_mean</code> function, the means and 95% confidence intervals of several maternal characteristics are calculated below:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomAge&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momage,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)
-MomEduY&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momeduy,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomAge&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momage,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
+<pre><code>Warning: package 'sandwich' was built under R version 3.4.4</code></pre>
+<pre><code>Warning: package 'lmtest' was built under R version 3.4.4</code></pre>
+<pre><code>Warning: package 'zoo' was built under R version 3.4.4</code></pre>
+<pre><code>
+Attaching package: 'zoo'</code></pre>
+<pre><code>The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomEduY&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momeduy,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
 <p>The <code>&lt;-</code> command assigns the output of <code>washb_mean</code> to the new objects called <code>MomAge</code> and <code>MomEduY</code> Notice how there are 20 missing observations in the <code>momage</code>, but none in the <code>momeduy</code> variable.</p>
 <p>If you want to compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use <code>washb_ttest</code> (for t-test of unadjusted continuous outcomes), or <code>washb_mh</code> (for Mantel-Haenszel test on unadjusted binary outcomes), <code>washb_glm</code> for unadjusted or adjusted estimates using generalized linear models, or <code>washb_tmle</code> for unadjusted or adjusted estimates using targeted maximum likelihood estimation.</p>
 </div>
@@ -799,11 +813,11 @@ Estimation Results:
          Y ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
 
      Coefficients: 
-         SL.mean_All    0 
+         SL.mean_All    0.02291811 
           SL.glm_All    0 
      SL.bayesglm_All    0 
-          SL.gam_All    0.0362053 
-       SL.glmnet_All    0.9637947 
+          SL.gam_All    0.1276187 
+       SL.glmnet_All    0.8494632 
 
  Estimation of g (treatment mechanism)
      Procedure: SuperLearner 
@@ -826,29 +840,29 @@ Estimation Results:
  Bounds on g: ( 0.025 0.975 )
 
  Additive Effect
-   Parameter Estimate:  0.27427
-   Estimated Variance:  0.002319
-              p-value:  0.000000012299
-    95% Conf Interval: (0.17989, 0.36866) 
+   Parameter Estimate:  0.27377
+   Estimated Variance:  0.002313
+              p-value:  0.00000001252
+    95% Conf Interval: (0.17951, 0.36803) 
 
  Additive Effect among the Treated
-   Parameter Estimate:  0.27427
-   Estimated Variance:  0.0023185
-              p-value:  0.000000012255
-    95% Conf Interval: (0.1799, 0.36865) 
+   Parameter Estimate:  0.27377
+   Estimated Variance:  0.0023124
+              p-value:  0.000000012469
+    95% Conf Interval: (0.17952, 0.36802) 
 
  Additive Effect among the Controls
-   Parameter Estimate:  0.27427
-   Estimated Variance:  0.0023193
-              p-value:  0.000000012322
-    95% Conf Interval: (0.17988, 0.36867) 
+   Parameter Estimate:  0.27377
+   Estimated Variance:  0.0023132
+              p-value:  0.000000012546
+    95% Conf Interval: (0.1795, 0.36804) 
 
 -----------------------------------------</code></pre>
 <p>The default output notifies you if any observations were dropped due to missing values. It also summarizes the weighting of the models or algorithms used to estimate the outcome model (<code>estimation of Q</code>), the treatment mechanism (<code>estimation of g</code>), and the missingness mechanism (<code>estimation of g.Delta</code>).</p>
 <p>The function returns an object of class <code>tmle</code> (you can see the  package for details). The effect estimate results are stored in the list <code>$estimates$ATE</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">unlist</span>(adj.LAZ.tmle.C.N<span class="op">$</span>estimates<span class="op">$</span>ATE)</code></pre></div>
 <pre><code>             psi          var.psi              CI1              CI2           pvalue 
-0.27427406478895 0.00231900076986 0.17988829595975 0.36865983361816 0.00000001229878 </code></pre>
+0.27377026630744 0.00231295492552 0.17950761388421 0.36803291873068 0.00000001251959 </code></pre>
 </div>
 <div id="tmle-for-a-binary-outcome" class="section level3">
 <h3 class="hasAnchor">
@@ -929,9 +943,9 @@ Estimation Results:
          Y ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All
 
      Coefficients: 
-         SL.mean_All    0.2859223 
-          SL.glm_All    0 
-     SL.bayesglm_All    0.7140777 
+         SL.mean_All    0.2733102 
+          SL.glm_All    0.3744479 
+     SL.bayesglm_All    0.3522419 
           SL.gam_All    0 
        SL.glmnet_All    0 
 
@@ -941,11 +955,11 @@ Estimation Results:
          A ~  SL.mean_All + SL.glm_All + SL.bayesglm_All + SL.gam_All + SL.glmnet_All 
 
      Coefficients: 
-         SL.mean_All    0.7541792 
+         SL.mean_All    1 
           SL.glm_All    0 
      SL.bayesglm_All    0 
           SL.gam_All    0 
-       SL.glmnet_All    0.2458208 
+       SL.glmnet_All    0 
 
  Estimation of g.Z (intermediate variable assignment mechanism)
      Procedure: No intermediate variable 
@@ -956,57 +970,59 @@ Estimation Results:
  Bounds on g: ( 0.025 0.975 )
 
  Additive Effect
-   Parameter Estimate:  -0.02283
-   Estimated Variance:  0.000038619
-              p-value:  0.00023902
-    95% Conf Interval: (-0.035011, -0.01065) 
+   Parameter Estimate:  -0.022805
+   Estimated Variance:  0.000038653
+              p-value:  0.00024436
+    95% Conf Interval: (-0.034991, -0.01062) 
 
  Additive Effect among the Treated
-   Parameter Estimate:  -0.022766
-   Estimated Variance:  0.000038966
-              p-value:  0.00026528
-    95% Conf Interval: (-0.035001, -0.010531) 
+   Parameter Estimate:  -0.022866
+   Estimated Variance:  0.000038987
+              p-value:  0.00025022
+    95% Conf Interval: (-0.035104, -0.010627) 
 
  Additive Effect among the Controls
-   Parameter Estimate:  -0.022832
-   Estimated Variance:  0.000038507
-              p-value:  0.00023375
-    95% Conf Interval: (-0.034995, -0.01067) 
+   Parameter Estimate:  -0.022805
+   Estimated Variance:  0.000038541
+              p-value:  0.00023931
+    95% Conf Interval: (-0.034973, -0.010637) 
 
  Relative Risk
-   Parameter Estimate:  0.60219
-              p-value:  0.0007636
-    95% Conf Interval: (0.44818, 0.80911) 
+   Parameter Estimate:  0.60282
+              p-value:  0.00077352
+    95% Conf Interval: (0.44879, 0.80971) 
 
-              log(RR):  -0.50719
-    variance(log(RR)):  0.022709 
+              log(RR):  -0.50614
+    variance(log(RR)):  0.022663 
 
  Odds Ratio
-   Parameter Estimate:  0.58795
-              p-value:  0.00071402
-    95% Conf Interval: (0.43226, 0.79971) 
+   Parameter Estimate:  0.58858
+              p-value:  0.00072346
+    95% Conf Interval: (0.43285, 0.80033) 
 
-              log(OR):  -0.53112
-    variance(log(OR)):  0.024631 
+              log(OR):  -0.53005
+    variance(log(OR)):  0.024584 
 
 -----------------------------------------</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># difference</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
 <pre><code>    psi var.psi     CI1     CI2  pvalue 
--0.0228  0.0000 -0.0350 -0.0107  0.0002 </code></pre>
+-0.0228  0.0000 -0.0350 -0.0106  0.0002 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># prevalence ratio</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>RR),<span class="dv">4</span>)</code></pre></div>
 <pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi 
-     0.6022      0.4482      0.8091      0.0008     -0.5072      0.0227 </code></pre>
+     0.6028      0.4488      0.8097      0.0008     -0.5061      0.0227 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># odds ratio</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.Diar.tmle.C.S<span class="op">$</span>estimates<span class="op">$</span>OR),<span class="dv">4</span>)</code></pre></div>
 <pre><code>        psi         CI1         CI2      pvalue     log.psi var.log.psi 
-     0.5879      0.4323      0.7997      0.0007     -0.5311      0.0246 </code></pre>
+     0.5886      0.4328      0.8003      0.0007     -0.5300      0.0246 </code></pre>
 </div>
 <div id="tmle-with-inverse-probability-of-censoring-weights-ipcw" class="section level3">
 <h3 class="hasAnchor">
 <a href="#tmle-with-inverse-probability-of-censoring-weights-ipcw" class="anchor"></a>TMLE with inverse probability of censoring weights (IPCW)</h3>
 <p>The <code>washb_tmle</code> function enables you to account for missing data in the outcome using inverse probability of censoring weights (IPCW) to the estimator. You can do this using the <code>Delta=</code> argument to specify an indicator of whether the outcome. A key step for conducting an IPCW analysis that differs from other analyses in this vignette is that you need to create the “full” data, where there is an observation for every potential measurement (i.e., including those that were missing in the trial). To do this, you need to use the enrolled study population, limited to live births (since the trial’s inference is limited to live births). Below, we provide an example using the control and nutrition arms in the Bangladesh trial.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data from package</span>
+<span class="kw">data</span>(washb_bangladesh_track_compound)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#---------------------------------------</span>
 <span class="co"># create a shell of the full data (dfull)</span>
 <span class="co"># as if every index child with a live birth</span>
@@ -1015,7 +1031,7 @@ Estimation Results:
 
 washb_bd_track&lt;-<span class="ot">NULL</span>
 
-washb_bd_track &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">"PrimaryOutcomeData/washb-bangladesh-track-compound.csv"</span>)
+washb_bd_track &lt;-<span class="st"> </span>washb_bangladesh_track_compound
 
 <span class="kw">table</span>(washb_bd_track<span class="op">$</span>miss1reason<span class="op">==</span><span class="st">"No live birth"</span>) <span class="co"># total number of unique compounds w/ live birth = 5190</span></code></pre></div>
 <pre><code>
@@ -1030,7 +1046,7 @@ dfull &lt;-<span class="st"> </span><span class="kw">rbind</span>(dfull,dfull2)
 
 <span class="co"># merge treatment and enrollment data onto this shell of the full data</span>
 dfull &lt;-<span class="st"> </span><span class="kw">merge</span>(dfull,washb_bd_tr,<span class="dt">by=</span><span class="kw">c</span>(<span class="st">"clusterid"</span>,<span class="st">"block"</span>, <span class="st">"tr"</span>),<span class="dt">all.x=</span>T,<span class="dt">all.y=</span>F)
-dfull &lt;-<span class="st"> </span><span class="kw">merge</span>(dfull,washb_bd_enrol,<span class="dt">by=</span><span class="kw">c</span>(<span class="st">"dataid"</span>,<span class="st">"clusterid"</span>,<span class="st">"block"</span>),<span class="dt">all.x=</span>T,<span class="dt">all.y=</span>F)
+dfull &lt;-<span class="st"> </span><span class="kw">merge</span>(dfull,washb_bd_enrol,<span class="dt">by=</span><span class="kw">c</span>(<span class="st">"dataid"</span>,<span class="st">"clusterid"</span>,<span class="st">"block"</span>, <span class="st">"tr"</span>),<span class="dt">all.x=</span>T,<span class="dt">all.y=</span>F)
 
 <span class="co"># Since we are only analyzing the primary outcome at year 2 in this example</span>
 <span class="co"># we need to re-subset the full data to year 2,</span>
@@ -1038,7 +1054,7 @@ dfull &lt;-<span class="st"> </span><span class="kw">merge</span>(dfull,washb_bd
 dfull &lt;-<span class="st"> </span><span class="kw">subset</span>(dfull,svy<span class="op">==</span><span class="dv">2</span>)
 
 <span class="co"># now merge the observed anthropometry outcomes (lazd) onto this full dataset</span>
-lazdfull &lt;-<span class="st"> </span><span class="kw">merge</span>(dfull,washb_bd_anthro,<span class="dt">by=</span><span class="kw">c</span>(<span class="st">"dataid"</span>,<span class="st">"clusterid"</span>,<span class="st">"block"</span>,<span class="st">"svy"</span>),<span class="dt">all.x=</span>T,<span class="dt">all.y=</span>T)
+lazdfull &lt;-<span class="st"> </span><span class="kw">merge</span>(dfull,washb_bd_anthro,<span class="dt">by=</span><span class="kw">c</span>(<span class="st">"dataid"</span>,<span class="st">"clusterid"</span>,<span class="st">"block"</span>,<span class="st">"svy"</span>, <span class="st">"tr"</span>),<span class="dt">all.x=</span>T,<span class="dt">all.y=</span>T)
 lazdfull<span class="op">$</span>agedays &lt;-<span class="st"> </span>lazdfull<span class="op">$</span>aged <span class="co"># naming consisetncy across files</span>
 
 <span class="co"># create an indicator equal to 1 if the outcome is observed, 0 otherwise</span>
@@ -1046,7 +1062,7 @@ lazdfull<span class="op">$</span>Delta &lt;-<span class="st"> </span><span class
 <span class="kw">table</span>(lazdfull<span class="op">$</span>Delta[lazdfull<span class="op">$</span>tr<span class="op">==</span><span class="st">"Control"</span><span class="op">|</span>lazdfull<span class="op">$</span>tr<span class="op">==</span><span class="st">"Nutrition"</span>])</code></pre></div>
 <pre><code>
    0    1 
-  34 3372 </code></pre>
+ 295 3372 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set missing outcomes to an arbitrary, non-missing value. In this case use 9</span>
 lazdfull<span class="op">$</span>Ydelta &lt;-<span class="st"> </span>lazdfull<span class="op">$</span>laz
 lazdfull<span class="op">$</span>Ydelta[lazdfull<span class="op">$</span>Delta<span class="op">==</span><span class="dv">0</span>] &lt;-<span class="st"> </span><span class="dv">9</span>
@@ -1062,7 +1078,7 @@ Note: the analysis will only include pairs
 that have a contrast in the treatment variable. 
 -----------------------------------------
 -----------------------------------------
-Total of 1724 observations dropped due to missing
+Total of 1985 observations dropped due to missing
 values in one or more variables
   Final sample size: 1682 
 -----------------------------------------
@@ -1196,7 +1212,7 @@ Estimation Results:
 <span class="co">#---------------------------------------</span>
 <span class="kw">round</span>(<span class="kw">unlist</span>(adj.LAZ.tmle.C.N<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
 <pre><code>    psi var.psi     CI1     CI2  pvalue 
- 0.2743  0.0023  0.1799  0.3687  0.0000 </code></pre>
+ 0.2738  0.0023  0.1795  0.3680  0.0000 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">unlist</span>(psi_ipcw<span class="op">$</span>estimates<span class="op">$</span>ATE),<span class="dv">4</span>)</code></pre></div>
 <pre><code>    psi var.psi     CI1     CI2  pvalue 
  0.2768  0.0023  0.1823  0.3713  0.0000 </code></pre>
@@ -1606,7 +1622,7 @@ Linear combination of coefficients:
 
 
       <footer><div class="copyright">
-  <p>Developed by Andrew Mertens, Ben Arnold, Anna Nguyen <anna-nguyen></anna-nguyen></p>
+  <p>Developed by Andrew Mertens, Ben Arnold.</p>
 </div>
 
 <div class="pkgdown">

@@ -1,6 +1,6 @@
 #' dataset: Bangladesh enrollment analysis
 #'
-#'Bangladesh enrollment analysis dataset
+#' Bangladesh enrollment analysis dataset
 #'
 #' @docType data
 #'
