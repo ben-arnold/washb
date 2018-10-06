@@ -16,7 +16,15 @@ Imports:
     metafor,
     SuperLearner,
     tmle,
-    lme4
+    lme4,
+    arm,
+    zoo,
+    nnlsm,
+    Matrix,
+    gam,
+    splines,
+    foreach,
+    glmnet
 Suggests:
     MASS,
     knitr,
