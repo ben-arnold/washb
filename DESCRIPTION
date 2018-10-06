@@ -20,3 +20,4 @@ Suggests:
     MASS,
     knitr,
     rmarkdown,
+License: GPL-3
