@@ -30,11 +30,6 @@ options(scipen=20)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r load-package, include = FALSE}
-library(washb)
-```
-
-
 # Vignette overview  
 
 The `washb` R package was developed to help standardize and facilitate intention-to-treat analyses in the WASH Benefits trial. This vignette provides an overview of the main functions included in package. As an illustrative example, the vignette uses the Bangladesh trial primary outcomes (diarrhea, length-for-age Z-scores) to calculate several unadjusted and adjusted estimates of intervention effects. It illustrates a range of different estimators from unadjusted approaches such as the paired t-test (see `washb_ttest`) to targeted maximum likelihood estimation with ensemble machine learning (see `washb_tmle`).
@@ -101,6 +96,11 @@ The WASH Benefits R package is developed on GitHub: [https://ben-arnold.github.i
 ```{r, eval = FALSE, tidy=TRUE}
 devtools::install_github("ben-arnold/washb"")
 ```
+
+```{r load-package, include = FALSE}
+library(washb)
+```
+
 We will periodically update the `washb` package with improvements and bug fixes. When a new package version is available, the UCB team will send an email to notify the WASHB community of the update. You can always ensure you have the latest version by re-installing the package.  If you encounter a bug, find something frustrating or confusing, or have suggestions for improvements email Andrew and Ben to let them know!
 
 ### Installing required packages
