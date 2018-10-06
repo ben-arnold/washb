@@ -15,8 +15,10 @@ output:
     toc_float:
       collapsed: yes
       smooth_scroll: yes
-vignette: |
-  %\VignetteIndexEntry{washb package vignette} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
+vignette: >
+  %\VignetteIndexEntry{washb package vignette}
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r set-options, echo=FALSE, cache=FALSE, include = FALSE}
