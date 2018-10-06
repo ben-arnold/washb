@@ -97,7 +97,7 @@ The WASH Benefits R package is developed on GitHub: [https://ben-arnold.github.i
 devtools::install_github("ben-arnold/washb"")
 ```
 
-```{r load-package, include = FALSE}
+```{r package, include = FALSE}
 library(washb)
 ```
 
