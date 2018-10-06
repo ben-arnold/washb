@@ -15,9 +15,11 @@ Imports:
     plyr,
     metafor,
     SuperLearner,
-    tmle
+    tmle,
+    lme4
 Suggests:
     MASS,
     knitr,
     rmarkdown,
+    formatR
 License: GPL-3
