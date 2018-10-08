@@ -184,6 +184,7 @@ Inference in Statistics, Social, and Biomedical Sciences. Cambridge University P
 <span class='co'>#######################</span>
 <span class='fu'>data</span>(<span class='no'>washb_bangladesh_diar</span>)
 <span class='no'>washb_bangladesh_diar</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_diar</span>
+
 <span class='fu'>data</span>(<span class='no'>washb_bangladesh_enrol</span>)
 <span class='no'>washb_bangladesh_enrol</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_enrol</span>
 
@@ -219,7 +220,7 @@ Inference in Statistics, Social, and Biomedical Sciences. Cambridge University P
 
 <span class='co'># Hypothesis 1 permutation tests (Intervention arms vs. control arms)</span>
 <span class='fu'>set.seed</span>(<span class='fl'>242524</span>)
-<span class='no'>permute.C.W</span> <span class='kw'>&lt;-</span> <span class='fu'>washb_permute</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>diar7d</span>,<span class='kw'>tr</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>tr</span>,<span class='kw'>pair</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>block</span>,<span class='kw'>contrast</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"Control"</span>,<span class='st'>"Water"</span>),<span class='kw'>nreps</span><span class='kw'>=</span><span class='fl'>100000</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: coin</span></div><div class='output co'>#&gt; <span class='warning'>Warning: package ‘coin’ was built under R version 3.4.4</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: survival</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: plyr</span></div><div class='output co'>#&gt; <span class='warning'>Warning: package ‘plyr’ was built under R version 3.4.4</span></div><div class='output co'>#&gt; 
+<span class='no'>permute.C.W</span> <span class='kw'>&lt;-</span> <span class='fu'>washb_permute</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>diar7d</span>,<span class='kw'>tr</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>tr</span>,<span class='kw'>pair</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>block</span>,<span class='kw'>contrast</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"Control"</span>,<span class='st'>"Water"</span>),<span class='kw'>nreps</span><span class='kw'>=</span><span class='fl'>100000</span>)</div><div class='output co'>#&gt; 
 #&gt; 	Approximative Wilcoxon-Pratt Signed-Rank Test
 #&gt; 
 #&gt; data:  y by x (pos, neg) 

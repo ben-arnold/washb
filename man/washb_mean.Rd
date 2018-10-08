@@ -38,7 +38,7 @@ This function is most useful for calculating variable means and confidence inter
  # drop svydate and month because they are superceded in the child level diarrhea data
  washb_bangladesh_enrol$svydate <- NULL
  washb_bangladesh_enrol$month <- NULL
- ad <- merge(washb_bangladesh_enrol,washb_bangladesh_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+ ad <- merge(washb_bangladesh_enrol,washb_bangladesh_anthro,by=c("dataid","clusterid","block","tr"),all.x=FALSE,all.y=TRUE)
  ad <- subset(ad,svy==2)
  ad <- subset(ad,tchild=="Target child")
 

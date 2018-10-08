@@ -39,7 +39,7 @@ The arguments \code{Y},\code{tr}, and \code{strat} need to be from the same data
  washb_bangladesh_enrol$svydate <- NULL
  washb_bangladesh_enrol$month <- NULL
 
- laz <- merge(washb_bangladesh_enrol,washb_bangladesh_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+ laz <- merge(washb_bangladesh_enrol,washb_bangladesh_anthro,by=c("dataid","clusterid","block","tr"),all.x=FALSE,all.y=TRUE)
 
  # subset to the endline target children
  laz <- subset(laz,svy==2)

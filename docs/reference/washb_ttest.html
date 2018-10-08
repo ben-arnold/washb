@@ -146,11 +146,13 @@ The arguments <code>Y</code>,<code>tr</code>, and <code>strat</code> need to be 
  <span class='co'>#Load in Bangladesh anthropometry data.</span>
  <span class='fu'>data</span>(<span class='no'>washb_bangladesh_anthro</span>)
  <span class='no'>washb_bangladesh_anthro</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_anthro</span>
+
  <span class='fu'>data</span>(<span class='no'>washb_bangladesh_enrol</span>)
  <span class='no'>washb_bangladesh_enrol</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_enrol</span>
 
  <span class='no'>washb_bangladesh_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
  <span class='no'>washb_bangladesh_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+
  <span class='no'>laz</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bangladesh_enrol</span>,<span class='no'>washb_bangladesh_anthro</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)
 
  <span class='co'># subset to the endline target children</span>
