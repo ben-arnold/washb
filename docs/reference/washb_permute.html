@@ -182,13 +182,17 @@ Inference in Statistics, Social, and Biomedical Sciences. Cambridge University P
 <span class='co'>#######################</span>
 <span class='co'>#Load and clean data</span>
 <span class='co'>#######################</span>
-<span class='fu'>data</span>(<span class='no'>washb_bd_diar</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘washb_bd_diar’ not found</span></div><div class='input'><span class='fu'>data</span>(<span class='no'>washb_bd_enrol</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘washb_bd_enrol’ not found</span></div><div class='input'>
+<span class='fu'>data</span>(<span class='no'>washb_bangladesh_diar</span>)
+<span class='no'>washb_bangladesh_diar</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_diar</span>
+<span class='fu'>data</span>(<span class='no'>washb_bangladesh_enrol</span>)
+<span class='no'>washb_bangladesh_enrol</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_enrol</span>
+
  <span class='co'># drop svydate and month because they are superceded in the child level diarrhea data</span>
-<span class='no'>washb_bd_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
-<span class='no'>washb_bd_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+<span class='no'>washb_bangladesh_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+<span class='no'>washb_bangladesh_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
 
 <span class='co'># merge the baseline dataset to the follow-up dataset</span>
-<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bd_enrol</span>,<span class='no'>washb_bd_diar</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bangladesh_enrol</span>,<span class='no'>washb_bangladesh_diar</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)
 
 <span class='co'># subset to the relevant measurement</span>
 <span class='co'># Year 1 or Year 2</span>
@@ -215,7 +219,7 @@ Inference in Statistics, Social, and Biomedical Sciences. Cambridge University P
 
 <span class='co'># Hypothesis 1 permutation tests (Intervention arms vs. control arms)</span>
 <span class='fu'>set.seed</span>(<span class='fl'>242524</span>)
-<span class='no'>permute.C.W</span> <span class='kw'>&lt;-</span> <span class='fu'>washb_permute</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>diar7d</span>,<span class='kw'>tr</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>tr</span>,<span class='kw'>pair</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>block</span>,<span class='kw'>contrast</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"Control"</span>,<span class='st'>"Water"</span>),<span class='kw'>nreps</span><span class='kw'>=</span><span class='fl'>100000</span>)</div><div class='output co'>#&gt; 
+<span class='no'>permute.C.W</span> <span class='kw'>&lt;-</span> <span class='fu'>washb_permute</span>(<span class='kw'>Y</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>diar7d</span>,<span class='kw'>tr</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>tr</span>,<span class='kw'>pair</span><span class='kw'>=</span><span class='no'>ad</span>$<span class='no'>block</span>,<span class='kw'>contrast</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"Control"</span>,<span class='st'>"Water"</span>),<span class='kw'>nreps</span><span class='kw'>=</span><span class='fl'>100000</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: coin</span></div><div class='output co'>#&gt; <span class='warning'>Warning: package ‘coin’ was built under R version 3.4.4</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: survival</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: plyr</span></div><div class='output co'>#&gt; <span class='warning'>Warning: package ‘plyr’ was built under R version 3.4.4</span></div><div class='output co'>#&gt; 
 #&gt; 	Approximative Wilcoxon-Pratt Signed-Rank Test
 #&gt; 
 #&gt; data:  y by x (pos, neg) 

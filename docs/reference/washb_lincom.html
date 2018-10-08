@@ -141,13 +141,19 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>washb</span>)
-<span class='fu'>data</span>(<span class='no'>washb_anthro</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘washb_anthro’ not found</span></div><div class='input'><span class='fu'>data</span>(<span class='no'>washb_bd_enrol</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘washb_bd_enrol’ not found</span></div><div class='input'>
+
+<span class='fu'>data</span>(<span class='no'>washb_bangladesh_diar</span>)
+<span class='no'>washb_bangladesh_diar</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_diar</span>
+
+<span class='fu'>data</span>(<span class='no'>washb_bangladesh_enrol</span>)
+<span class='no'>washb_bangladesh_enrol</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_enrol</span>
+
  <span class='co'># drop svydate and month because they are superceded in the child level diarrhea data</span>
-<span class='no'>washb_bd_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
-<span class='no'>washb_bd_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+<span class='no'>washb_bangladesh_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+<span class='no'>washb_bangladesh_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
 
 <span class='co'># merge the baseline dataset to the follow-up dataset</span>
-<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bd_enrol</span>,<span class='no'>washb_bd_diar</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bangladesh_enrol</span>,<span class='no'>washb_bangladesh_diar</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)
 
 <span class='co'># subset to the relevant measurement</span>
 <span class='co'># Year 1 or Year 2</span>
@@ -178,40 +184,20 @@
 
 
 <span class='co'>#Examine the treatment effect across subgroups with `objectname'$lincom</span>
-<span class='no'>glm.C.N.byChildType</span>$<span class='no'>lincom</span></div><div class='output co'>#&gt;   Tr vs. C by Subgroup     est se.est  est.lb  est.ub       Z      P
-#&gt; 1              Sibling -0.0144 0.0103 -0.0346  0.0058 -1.3978 0.1622
-#&gt; 2         Target child -0.0226 0.0080 -0.0383 -0.0068 -2.8116 0.0049</div><div class='input'>
+<span class='no'>glm.C.N.byChildType</span>$<span class='no'>lincom</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'glm.C.N.byChildType' not found</span></div><div class='input'>
 <span class='co'>#Below is an example of using the `lincom()` function to externally replicate the target child/sibling subgroup analysis of the diarrheal disease outcome. First, recall the glm model contrasting diarrheal disease prevalence ratio between target child and sibling fitted to diarrheal disease:</span>
 <span class='co'>#Use the lincom function to verify the subgroup analysis calculated within the `washb_glm()` function. `washb_lincom()` takes as argements the fit and variance-covariance matrix returned by the glm function, and an index vector `lc`.</span>
 <span class='co'>#`lc`= vector indexing coefficients to be linearly combined. If a single coefficient is chosen, it will return the same coefficient and confidence interval as the glm coefficient. Example:</span>
 <span class='co'>#Create lc vector of 0's equal in length to the number of coefficients from the glm model.</span>
-<span class='no'>lc</span><span class='kw'>=</span><span class='fu'>rep</span>(<span class='fl'>0</span>,<span class='fu'>nrow</span>(<span class='no'>glm.C.N.byChildType</span>$<span class='no'>fit</span>))
-<span class='co'>#Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.</span>
-<span class='no'>glm.C.N.byChildType</span>$<span class='no'>fit</span>[<span class='fl'>1</span>:<span class='fl'>6</span>,]</div><div class='output co'>#&gt;                     Coef.        2.5%      97.5%   Std. Error     z value
-#&gt; (Intercept)    0.00644170 -0.00641030 0.01929369 0.0065571402   0.9823943
-#&gt; trNutrition   -0.01440157 -0.03459600 0.00579286 0.0103032800  -1.3977654
-#&gt; VTarget child  0.02491546  0.00632508 0.04350584 0.0094848879   2.6268585
-#&gt; pair2          0.07757925  0.07517599 0.07998251 0.0012261518  63.2705083
-#&gt; pair3          0.01871094  0.01528728 0.02213460 0.0017467670  10.7117547
-#&gt; pair4          0.09317360  0.09179550 0.09455170 0.0007031115 132.5161107
-#&gt;                   Pr(&gt;|z|)
-#&gt; (Intercept)   3.259056e-01
-#&gt; trNutrition   1.621835e-01
-#&gt; VTarget child 8.617717e-03
-#&gt; pair2         0.000000e+00
-#&gt; pair3         8.964628e-27
-#&gt; pair4         0.000000e+00</div><div class='input'><span class='co'>#Replace the second and fourth position in the vector with 1 (the positions of the treatment coefficient and interaction term in the model)</span>
-<span class='no'>lc</span>[<span class='fu'>c</span>(<span class='fl'>2</span>,<span class='fl'>4</span>)]<span class='kw'>&lt;-</span><span class='fl'>1</span>
-
+<span class='no'>lc</span><span class='kw'>=</span><span class='fu'>rep</span>(<span class='fl'>0</span>,<span class='fu'>nrow</span>(<span class='no'>glm.C.N.byChildType</span>$<span class='no'>fit</span>))</div><div class='output co'>#&gt; <span class='error'>Error in nrow(glm.C.N.byChildType$fit): object 'glm.C.N.byChildType' not found</span></div><div class='input'><span class='co'>#Examine model coefficients (minus the pair-matched block estimates) to determine the position of coefficients to combine.</span>
+<span class='no'>glm.C.N.byChildType</span>$<span class='no'>fit</span>[<span class='fl'>1</span>:<span class='fl'>6</span>,]</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'glm.C.N.byChildType' not found</span></div><div class='input'><span class='co'>#Replace the second and fourth position in the vector with 1 (the positions of the treatment coefficient and interaction term in the model)</span>
+<span class='no'>lc</span>[<span class='fu'>c</span>(<span class='fl'>2</span>,<span class='fl'>4</span>)]<span class='kw'>&lt;-</span><span class='fl'>1</span></div><div class='output co'>#&gt; <span class='error'>Error in lc[c(2, 4)] &lt;- 1: object 'lc' not found</span></div><div class='input'>
 <span class='co'>#Run the lincom function and compare output to the $lincom output from the GLM model.</span>
-<span class='fu'>washb_lincom</span>(<span class='kw'>lc</span><span class='kw'>=</span><span class='no'>lc</span>,<span class='kw'>fit</span><span class='kw'>=</span><span class='no'>glm.C.N.byChildType</span>$<span class='no'>fit</span>,<span class='kw'>vcv</span><span class='kw'>=</span><span class='no'>glm.C.N.byChildType</span>$<span class='no'>vcv</span>, <span class='kw'>measure</span><span class='kw'>=</span><span class='st'>"RR"</span>)</div><div class='output co'>#&gt; 
-#&gt; Linear combination of coefficients:
-#&gt; [1] "trNutrition + pair2"</div><div class='output co'>#&gt;          RR  se.RR  RR.lb  RR.ub      Z      P
-#&gt; [1,] 1.0116 0.0091 0.9936 1.0299 1.2624 0.2068</div><div class='input'>
+<span class='fu'>washb_lincom</span>(<span class='kw'>lc</span><span class='kw'>=</span><span class='no'>lc</span>,<span class='kw'>fit</span><span class='kw'>=</span><span class='no'>glm.C.N.byChildType</span>$<span class='no'>fit</span>,<span class='kw'>vcv</span><span class='kw'>=</span><span class='no'>glm.C.N.byChildType</span>$<span class='no'>vcv</span>, <span class='kw'>measure</span><span class='kw'>=</span><span class='st'>"RR"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in washb_lincom(lc = lc, fit = glm.C.N.byChildType$fit, vcv = glm.C.N.byChildType$vcv,     measure = "RR"): object 'glm.C.N.byChildType' not found</span></div><div class='input'>
 <span class='co'># The `lincom()` function can also be used to calculate risk difference</span>
 <span class='co'>#Calculate risk difference using the risk difference output from the washb_glm function:</span>
-<span class='fu'>washb_lincom</span>(<span class='kw'>lc</span><span class='kw'>=</span><span class='no'>lc</span>,<span class='kw'>fit</span><span class='kw'>=</span><span class='no'>glm.C.N.byChildType</span>$<span class='no'>RDfit</span>,<span class='kw'>vcv</span><span class='kw'>=</span><span class='no'>glm.C.N.byChildType</span>$<span class='no'>vcvRD</span>, <span class='kw'>measure</span><span class='kw'>=</span><span class='st'>"RD"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in t(lc) %*% x[, 1]: requires numeric/complex matrix/vector arguments</span></div><div class='input'><span class='co'>#Compare to RD by subgroup from the washb_glm function:</span>
-<span class='no'>glm.C.N.byChildType</span>$<span class='no'>lincomRD</span></div><div class='output co'>#&gt; NULL</div></pre>
+<span class='fu'>washb_lincom</span>(<span class='kw'>lc</span><span class='kw'>=</span><span class='no'>lc</span>,<span class='kw'>fit</span><span class='kw'>=</span><span class='no'>glm.C.N.byChildType</span>$<span class='no'>RDfit</span>,<span class='kw'>vcv</span><span class='kw'>=</span><span class='no'>glm.C.N.byChildType</span>$<span class='no'>vcvRD</span>, <span class='kw'>measure</span><span class='kw'>=</span><span class='st'>"RD"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in washb_lincom(lc = lc, fit = glm.C.N.byChildType$RDfit, vcv = glm.C.N.byChildType$vcvRD,     measure = "RD"): object 'glm.C.N.byChildType' not found</span></div><div class='input'><span class='co'>#Compare to RD by subgroup from the washb_glm function:</span>
+<span class='no'>glm.C.N.byChildType</span>$<span class='no'>lincomRD</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'glm.C.N.byChildType' not found</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

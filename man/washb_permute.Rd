@@ -53,15 +53,18 @@ Inference in Statistics, Social, and Biomedical Sciences. Cambridge University P
 #######################
 #Load and clean data
 #######################
-data(washb_bd_diar)
-data(washb_bd_enrol)
+data(washb_bangladesh_diar)
+washb_bangladesh_diar <- washb_bangladesh_diar
+
+data(washb_bangladesh_enrol)
+washb_bangladesh_enrol <- washb_bangladesh_enrol
 
  # drop svydate and month because they are superceded in the child level diarrhea data
-washb_bd_enrol$svydate <- NULL
-washb_bd_enrol$month <- NULL
+washb_bangladesh_enrol$svydate <- NULL
+washb_bangladesh_enrol$month <- NULL
 
 # merge the baseline dataset to the follow-up dataset
-ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+ad <- merge(washb_bangladesh_enrol,washb_bangladesh_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
 
 # subset to the relevant measurement
 # Year 1 or Year 2
