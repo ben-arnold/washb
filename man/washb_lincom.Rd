@@ -57,6 +57,9 @@ ad$month <- factor(ad$month)
 #Sort the data for perfect replication when using V-fold cross-validation
 ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 
+#Create one column dataframe holding the subgroup variable
+W_tchild <- subset(ad, select=tchild)
+
 #Estimate subgroup analysis glm with washb_glm
 glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild, V="tchild", id=ad$clusterid, contrast=c("Control","Nutrition"), family=binomial(link='log'), print=FALSE)
 
@@ -81,10 +84,5 @@ lc[c(2,4)]<-1
 #Run the lincom function and compare output to the $lincom output from the GLM model.
 washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR")
 
-# The `lincom()` function can also be used to calculate risk difference
-#Calculate risk difference using the risk difference output from the washb_glm function:
-washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, measure="RD")
-#Compare to RD by subgroup from the washb_glm function:
-glm.C.N.byChildType$lincomRD
 }
 \keyword{internal}
