@@ -88,10 +88,5 @@ lc[c(2,4)]<-1
 #Run the lincom function and compare output to the $lincom output from the GLM model.
 washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR")
 
-# The `lincom()` function can also be used to calculate risk difference
-#Calculate risk difference using the risk difference output from the washb_glm function:
-washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, measure="RD")
-#Compare to RD by subgroup from the washb_glm function:
-glm.C.N.byChildType$lincomRD
 }
 \keyword{internal}
