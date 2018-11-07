@@ -30,12 +30,16 @@ The arguments \code{Y},\code{tr}, and \code{strat} need to be from the same data
 #The washb_ttest function
 
  #Load in Bangladesh anthropometry data.
- data(washb_bd_anthro)
- data(washb_bd_enrol)
+ data(washb_bangladesh_anthro)
+ washb_bangladesh_anthro <- washb_bangladesh_anthro
 
- washb_bd_enrol$svydate <- NULL
- washb_bd_enrol$month <- NULL
- laz <- merge(washb_bd_enrol,washb_bd_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+ data(washb_bangladesh_enrol)
+ washb_bangladesh_enrol <- washb_bangladesh_enrol
+
+ washb_bangladesh_enrol$svydate <- NULL
+ washb_bangladesh_enrol$month <- NULL
+
+ laz <- merge(washb_bangladesh_enrol,washb_bangladesh_anthro,by=c("dataid","clusterid","block","tr"),all.x=FALSE,all.y=TRUE)
 
  # subset to the endline target children
  laz <- subset(laz,svy==2)

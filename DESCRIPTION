@@ -15,8 +15,18 @@ Imports:
     plyr,
     metafor,
     SuperLearner,
-    tmle
+    tmle,
+    lme4,
+    arm,
+    zoo,
+    Matrix,
+    gam,
+    splines,
+    foreach,
+    glmnet
 Suggests:
     MASS,
     knitr,
     rmarkdown,
+    formatR
+License: GPL-3

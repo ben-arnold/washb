@@ -1,3 +1,22 @@
-language: r
-rvm:
- - 3.4.3
+language: R
+
+warnings_are_errors: false
+
+r_build_args: "--no-build-vignettes --no-manual"
+
+sudo: required
+
+os:
+  # - linux
+  - osx
+
+r_binary_packages:
+  - knitr
+
+r_packages:
+  - tmle
+  - SuperLearner
+
+env:
+ global:
+   - CRAN: http://cran.rstudio.com
