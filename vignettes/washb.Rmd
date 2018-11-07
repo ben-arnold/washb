@@ -155,9 +155,7 @@ This is an example of how to load and merge the enrollment and diarrhea data, wi
 ```{r, results="hide", eval=TRUE}
 # load and merge the final analysis files
 # treatment assignments, enrollment characteristics, and diarrhea measurements
-# note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments
-# if you do not have access to these data through Dropbox, but need it, please contact UCB
-# Load data from package
+# Load data from package (also available through OSF: https://osf.io/pqzj5/)
 data(washb_bang_tr)
 data(washb_bangladesh_enrol)
 data(washb_bangladesh_diar)
@@ -196,18 +194,6 @@ dd <- dd[order(dd$block,dd$clusterid,dd$dataid,dd$childid),]
 
 ```
 
-```{r, eval=FALSE, include=FALSE}
-# defunct code that Andrew used to load data -- deprecated with the generalized work flow, above
-# but retained in this script in case we need it for anything
-#Load unblinded data into the "dd" object from sysdata
-#dd<-loadUnblindedData("washb_bangladesh_diarCleanUnblinded")
-# setwd("C:/Users/andre/Documents/washb package data/data")
-#
-# load("washb_bangladesh_diarCleanUnblinded.RData")
-# dd<-washb_bangladesh_diarCleanUnblinded
-# load("washb_bangladesh_anthroCleanUnblinded.Rdata")
-# lazd<-washb_bangladesh_anthroCleanUnblinded
-```
 
 ### LAZ data processing  
 This is an example of how to load and merge the anthropometry and enrollment datasets. It pretty much parallels the processing steps of the diarrhea data (above). It creates a final analysis data frame called `lazd`. At this time, the anthropometry dataset is not included with the package -- if you need access to it, please email the UCB team.
