@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ben-arnold/washb.svg)](https://travis-ci.org/ben-arnold/washb)
+[![Build Status](https://travis-ci.com/ben-arnold/washb.svg)](https://travis-ci.com/ben-arnold/washb)
 ![CRAN](http://www.r-pkg.org/badges/version/washb)
 
 # washb  
