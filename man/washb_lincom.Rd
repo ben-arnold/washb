@@ -61,8 +61,11 @@ ad$month <- factor(ad$month)
 #Sort the data for perfect replication when using V-fold cross-validation
 ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
 
+#Create one column dataframe holding the subgroup variable
+W_tchild <- subset(ad, select=tchild)
+
 #Estimate subgroup analysis glm with washb_glm
-glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, V="tchild", id=ad$clusterid, contrast=c("Control","Nutrition"), family=binomial(link='log'), print=FALSE)
+glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild, V="tchild", id=ad$clusterid, contrast=c("Control","Nutrition"), family=binomial(link='log'), print=FALSE)
 
 
 #The lincom function is called within washb_glm, so for standard subgroup analysis, there is no need to use the lincom()
