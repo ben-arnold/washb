@@ -15,8 +15,10 @@ output:
     toc_float:
       collapsed: yes
       smooth_scroll: yes
-vignette: |
-  %\VignetteIndexEntry{washb package vignette} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
+vignette: >
+  %\VignetteIndexEntry{washb package vignette}
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r set-options, echo=FALSE, cache=FALSE, include = FALSE}
@@ -27,11 +29,6 @@ options(scipen=20)
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-```{r load-package, include = FALSE}
-library(washb)
-```
-
 
 # Vignette overview  
 
@@ -97,8 +94,13 @@ For new users of R, the following sources are helpful learning resources:
 
 The WASH Benefits R package is developed on GitHub: [https://ben-arnold.github.io/washb](https://ben-arnold.github.io/washb). To install the R package from GitHub, you will need the `devtools` package. From within R, you can install `devtools` with the code: `install.packages("devtools")`. This only needs to occur once (per computer). After installation, load the `devtools` package (type `library(devtools)`), and then install the `washb` package by typing:
 ```{r, eval = FALSE, tidy=TRUE}
-devtools::install_github("ben-arnold/washb"")
+devtools::install_github("ben-arnold/washb")
 ```
+
+```{r package, include = FALSE}
+library(washb)
+```
+
 We will periodically update the `washb` package with improvements and bug fixes. When a new package version is available, the UCB team will send an email to notify the WASHB community of the update. You can always ensure you have the latest version by re-installing the package.  If you encounter a bug, find something frustrating or confusing, or have suggestions for improvements email Andrew and Ben to let them know!
 
 ### Installing required packages
@@ -150,35 +152,27 @@ Below we will use some actual analyses from the Bangladesh trial to illustrate t
 
 This is an example of how to load and merge the enrollment and diarrhea data, with the actual treatment assignments. It creates a final analysis data frame called `dd` (for diarrhea data). At this time, these datasets are not included with the package -- if you need access to them, please email the UCB team.
 
-```{r}
-# Load Data from package
+```{r, results="hide", eval=TRUE}
+# load and merge the final analysis files
+# treatment assignments, enrollment characteristics, and diarrhea measurements
+# Load data from package (also available through OSF: https://osf.io/pqzj5/)
 data(washb_bang_tr)
 data(washb_bangladesh_enrol)
 data(washb_bangladesh_diar)
 
-```
-
-
-```{r, results="hide", eval=TRUE}
-# load and merge the final analysis files
-# treatment assignments, enrollment characteristics, and diarrhea measurements
-# note: these are unblinded treatment assignments in the encrypted volume 0-treatment-assignments
-# if you do not have access to these data through Dropbox, but need it, please contact UCB
-washb_bd_enrol <- washb_bd_anthro <- NULL
-
-washb_bd_tr    <- washb_bang_tr
-washb_bd_enrol <- washb_bangladesh_enrol
-washb_bd_diar  <- washb_bangladesh_diar
+washb_bang_tr    <- washb_bang_tr
+washb_bangladesh_enrol <- washb_bangladesh_enrol
+washb_bangladesh_diar  <- washb_bangladesh_diar
 
 # drop svydate and month because they are superseded in the child level diarrhea data
-washb_bd_enrol$svydate <- NULL
-washb_bd_enrol$month <- NULL
+washb_bangladesh_enrol$svydate <- NULL
+washb_bangladesh_enrol$month <- NULL
 
 # merge the treatment assignments to the baseline dataset
-dd <- merge(washb_bd_enrol,washb_bd_tr,by=c("clusterid","block"),all.x=T,all.y=T)
+dd <- merge(washb_bangladesh_enrol,washb_bang_tr,by=c("clusterid","block"),all.x=T,all.y=T)
 
 # merge the baseline data with diarrhea measurements (keep only compounds with follow-up data)
-dd <- merge(dd,washb_bd_diar,by=c("dataid","clusterid","block"),all.x=F,all.y=T)
+dd <- merge(dd,washb_bangladesh_diar,by=c("dataid","clusterid","block"),all.x=F,all.y=T)
 
 # subset to post-intervention measurements: Year 1 or Year 2
 dd <- subset(dd,svy==1|svy==2)
@@ -200,35 +194,20 @@ dd <- dd[order(dd$block,dd$clusterid,dd$dataid,dd$childid),]
 
 ```
 
-```{r, eval=FALSE, include=FALSE}
-# defunct code that Andrew used to load data -- deprecated with the generalized work flow, above
-# but retained in this script in case we need it for anything
-#Load unblinded data into the "dd" object from sysdata
-#dd<-loadUnblindedData("washb_bd_diarCleanUnblinded")
-# setwd("C:/Users/andre/Documents/washb package data/data")
-#
-# load("washb_bd_diarCleanUnblinded.RData")
-# dd<-washb_bd_diarCleanUnblinded
-# load("washb_bd_anthroCleanUnblinded.Rdata")
-# lazd<-washb_bd_anthroCleanUnblinded
-```
 
 ### LAZ data processing  
 This is an example of how to load and merge the anthropometry and enrollment datasets. It pretty much parallels the processing steps of the diarrhea data (above). It creates a final analysis data frame called `lazd`. At this time, the anthropometry dataset is not included with the package -- if you need access to it, please email the UCB team.
 
-```{r}
+```{r, eval=TRUE, comment=NA}
 # Load data from package
 data(washb_bangladesh_anthro)
-```
 
-
-```{r, eval=TRUE, comment=NA}
 # load the anthropometry dataset
-washb_bd_anthro <- washb_bangladesh_anthro
+washb_bangladesh_anthro <- washb_bangladesh_anthro
 
 #  merge to final analysis files, loaded above (keep only compounds with follow-up data)
-lazd <- merge(washb_bd_enrol,washb_bd_tr,by=c("clusterid","block"),all.x=T,all.y=T)
-lazd <- merge(lazd,washb_bd_anthro,by=c("dataid","clusterid","block"),all.x=F,all.y=T)
+lazd <- merge(washb_bangladesh_enrol,washb_bang_tr,by=c("clusterid","block"),all.x=T,all.y=T)
+lazd <- merge(lazd,washb_bangladesh_anthro,by=c("dataid","clusterid","block"),all.x=F,all.y=T)
 
 # subset to the index (target) children measured in Year 2 (primary outcome)
 lazd <- subset(lazd,svy==2)
@@ -275,8 +254,8 @@ washb_mean(Y,id,print=TRUE)
 Using the WASH Benefits enrollment survey data and the `washb_mean` function, the means and 95% confidence intervals of several maternal characteristics are calculated below:
 
 ```{r, cache=TRUE, comment=NA, results = "hide"}
-MomAge<-washb_mean(Y=washb_bd_enrol$momage,id=washb_bd_enrol$clusterid)
-MomEduY<-washb_mean(Y=washb_bd_enrol$momeduy,id=washb_bd_enrol$clusterid)
+MomAge<-washb_mean(Y=washb_bangladesh_enrol$momage,id=washb_bangladesh_enrol$clusterid)
+MomEduY<-washb_mean(Y=washb_bangladesh_enrol$momeduy,id=washb_bangladesh_enrol$clusterid)
 ```
 The `<-` command assigns the output of `washb_mean` to the new objects called `MomAge` and `MomEduY`  Notice how there are 20 missing observations in the `momage`, but none in the `momeduy` variable.  
 
@@ -614,11 +593,6 @@ library(foreach)
 library(glmnet)
 ``` 
 
-```{r}
-# Load data from package
-data(washb_bangladesh_track_compound)
-```
-
 
 ```{r make full data,eval=TRUE,comment=NA}
 #---------------------------------------
@@ -626,23 +600,23 @@ data(washb_bangladesh_track_compound)
 # as if every index child with a live birth
 # were measured at year 1 and year 2
 #---------------------------------------
+# Load data from package
+data(washb_bangladesh_track_compound)
 
-washb_bd_track<-NULL
+washb_bangladesh_track_compound <- washb_bangladesh_track_compound
 
-washb_bd_track <- washb_bangladesh_track_compound
-
-table(washb_bd_track$miss1reason=="No live birth") # total number of unique compounds w/ live birth = 5190
+table(washb_bangladesh_track_compound$miss1reason=="No live birth") # total number of unique compounds w/ live birth = 5190
 
 # create the full data (i.e., a dataset with rows for every potential measurement)
-dfull <- subset(washb_bd_track,miss1reason!="No live birth")
+dfull <- subset(washb_bangladesh_track_compound,miss1reason!="No live birth")
 dfull$svy <- 1
 dfull2 <- dfull
 dfull2$svy <- 2
 dfull <- rbind(dfull,dfull2)
 
 # merge treatment and enrollment data onto this shell of the full data
-dfull <- merge(dfull,washb_bd_tr,by=c("clusterid","block", "tr"),all.x=T,all.y=F)
-dfull <- merge(dfull,washb_bd_enrol,by=c("dataid","clusterid","block", "tr"),all.x=T,all.y=F)
+dfull <- merge(dfull,washb_bang_tr,by=c("clusterid","block", "tr"),all.x=T,all.y=F)
+dfull <- merge(dfull,washb_bangladesh_enrol,by=c("dataid","clusterid","block", "tr"),all.x=T,all.y=F)
 
 # Since we are only analyzing the primary outcome at year 2 in this example
 # we need to re-subset the full data to year 2,
@@ -650,7 +624,7 @@ dfull <- merge(dfull,washb_bd_enrol,by=c("dataid","clusterid","block", "tr"),all
 dfull <- subset(dfull,svy==2)
 
 # now merge the observed anthropometry outcomes (lazd) onto this full dataset
-lazdfull <- merge(dfull,washb_bd_anthro,by=c("dataid","clusterid","block","svy", "tr"),all.x=T,all.y=T)
+lazdfull <- merge(dfull,washb_bangladesh_anthro,by=c("dataid","clusterid","block","svy", "tr"),all.x=T,all.y=T)
 lazdfull$agedays <- lazdfull$aged # naming consisetncy across files
 
 # create an indicator equal to 1 if the outcome is observed, 0 otherwise
