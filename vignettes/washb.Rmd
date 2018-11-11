@@ -273,6 +273,7 @@ washb_mean(Y,id,print=TRUE)
 ### example
 
 Using the WASH Benefits enrollment survey data and the `washb_mean` function, the means and 95% confidence intervals of several maternal characteristics are calculated below:
+
 ```{r, cache=TRUE, comment=NA, results = "hide"}
 MomAge<-washb_mean(Y=washb_bd_enrol$momage,id=washb_bd_enrol$clusterid)
 MomEduY<-washb_mean(Y=washb_bd_enrol$momeduy,id=washb_bd_enrol$clusterid)

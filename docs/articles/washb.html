@@ -63,7 +63,7 @@
       <h1>washb package vignette</h1>
                         <h4 class="author">Andrew Mertens and Ben Arnold</h4>
             
-            <h4 class="date">2018-10-06</h4>
+            <h4 class="date">2018-11-10</h4>
       
       
       <div class="hidden name"><code>washb.Rmd</code></div>
@@ -254,16 +254,8 @@ lazd &lt;-<span class="st"> </span>lazd[<span class="kw">order</span>(lazd<span 
 <h3 class="hasAnchor">
 <a href="#example" class="anchor"></a>example</h3>
 <p>Using the WASH Benefits enrollment survey data and the <code>washb_mean</code> function, the means and 95% confidence intervals of several maternal characteristics are calculated below:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomAge&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momage,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
-<pre><code>Warning: package 'sandwich' was built under R version 3.4.4</code></pre>
-<pre><code>Warning: package 'lmtest' was built under R version 3.4.4</code></pre>
-<pre><code>Warning: package 'zoo' was built under R version 3.4.4</code></pre>
-<pre><code>
-Attaching package: 'zoo'</code></pre>
-<pre><code>The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomEduY&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momeduy,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">MomAge&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momage,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)
+MomEduY&lt;-<span class="kw"><a href="../reference/washb_mean.html">washb_mean</a></span>(<span class="dt">Y=</span>washb_bd_enrol<span class="op">$</span>momeduy,<span class="dt">id=</span>washb_bd_enrol<span class="op">$</span>clusterid)</code></pre></div>
 <p>The <code>&lt;-</code> command assigns the output of <code>washb_mean</code> to the new objects called <code>MomAge</code> and <code>MomEduY</code> Notice how there are 20 missing observations in the <code>momage</code>, but none in the <code>momeduy</code> variable.</p>
 <p>If you want to compare means between groups using a difference, prevalence ratio, or incidence ratio (depending on the outcome), use <code>washb_ttest</code> (for t-test of unadjusted continuous outcomes), or <code>washb_mh</code> (for Mantel-Haenszel test on unadjusted binary outcomes), <code>washb_glm</code> for unadjusted or adjusted estimates using generalized linear models, or <code>washb_tmle</code> for unadjusted or adjusted estimates using targeted maximum likelihood estimation.</p>
 </div>
