@@ -143,12 +143,12 @@ washb_permute <- function(Y,tr,pair,contrast,nreps=100000,seed=NULL, print=TRUE)
     pd$pair<-factor(pd$pair)
 
   if(!is.null(seed)) set.seed(seed)
-  W <- wilcoxsign_test(Y~tr|pair,data=pd,distribution = approximate(B=nreps),zero.method="Pratt" )
+  W <- wilcoxsign_test(Y~tr|pair,data=pd,distribution = approximate(nresample=nreps),zero.method="Pratt" )
   show(W)
 
   # now pull out some of the useful information, for convenience since coin() uses S4
   Ho <- qperm(W,seq(0,1,by=0.01))
-  p.value <- pvalue(W)[1]
+  p.value <- coin::pvalue(W)[1]
   Z <- statistic(W)
 
   list(p.value=p.value,Z=Z,Ho=Ho,W=W)
