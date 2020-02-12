@@ -140,13 +140,16 @@
  <span class='co'>#Example using the washb_mean function on child LAZ score</span>
 
  <span class='co'>#Load in Bandladesh anthropometry data and enrollment data</span>
- <span class='co'>#data(washb_bd_anthro)</span>
- <span class='co'>#data(washb_bd_enrol)</span>
+ <span class='fu'>data</span>(<span class='no'>washb_bangladesh_anthro</span>)
+ <span class='no'>washb_bangladesh_anthro</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_anthro</span>
+
+ <span class='fu'>data</span>(<span class='no'>washb_bangladesh_enrol</span>)
+ <span class='no'>washb_bangladesh_enrol</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_enrol</span>
 
  <span class='co'># drop svydate and month because they are superceded in the child level diarrhea data</span>
- <span class='no'>washb_bd_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
- <span class='no'>washb_bd_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
- <span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bd_enrol</span>,<span class='no'>washb_bd_anthro</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)
+ <span class='no'>washb_bangladesh_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+ <span class='no'>washb_bangladesh_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+ <span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bangladesh_enrol</span>,<span class='no'>washb_bangladesh_anthro</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='fl'>FALSE</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
  <span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='no'>svy</span><span class='kw'>==</span><span class='fl'>2</span>)
  <span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>subset</span>(<span class='no'>ad</span>,<span class='no'>tchild</span><span class='kw'>==</span><span class='st'>"Target child"</span>)
 

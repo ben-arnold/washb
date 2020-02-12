@@ -59,15 +59,19 @@ Note that for binary outcomes such as diarrhea, the glm model is fit with a log 
 
 #Cleans and merge the enrollment and diarrhea data:
 library(washb)
-data(washb_bd_enrol)
-data(washb_bd_diar)
+
+data(washb_bangladesh_enrol)
+washb_bangladesh_enrol <- washb_bangladesh_enrol
+
+data(washb_bangladesh_diar)
+washb_bangladesh_diar <- washb_bangladesh_diar
 
 # drop svydate and month because they are superceded in the child level diarrhea data
-#washb_bd_enrol$svydate <- NULL
-#washb_bd_enrol$month <- NULL
+#washb_bangladesh_enrol <- NULL
+#washb_bangladesh_enrol <- NULL
 
 # merge the baseline dataset to the follow-up dataset
-ad <- merge(washb_bd_enrol,washb_bd_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
+ad <- merge(washb_bangladesh_enrol,washb_bangladesh_diar,by=c("dataid","clusterid","block","tr"),all.x=FALSE,all.y=TRUE)
 
 # subset to the relevant measurement
 # Year 1 or Year 2

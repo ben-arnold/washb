@@ -146,13 +146,19 @@
 
 <span class='co'>#Load diarrhea data:</span>
 <span class='fu'>library</span>(<span class='no'>washb</span>)
-<span class='fu'>data</span>(<span class='no'>washb_bd_diar</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘washb_bd_diar’ not found</span></div><div class='input'><span class='fu'>data</span>(<span class='no'>washb_bd_enrol</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘washb_bd_enrol’ not found</span></div><div class='input'>
+
+<span class='fu'>data</span>(<span class='no'>washb_bangladesh_diar</span>)
+<span class='no'>washb_bangladesh_diar</span> <span class='kw'>&lt;-</span> <span class='no'>washb_bangladesh_diar</span>
+
+<span class='fu'>data</span>(<span class='no'>washb_bangladesh_enrol</span>)
+<span class='no'>washb_bangladesh_enrol</span> <span class='kw'>&lt;-</span><span class='no'>washb_bangladesh_enrol</span>
+
  <span class='co'># drop svydate and month because they are superceded in the child level diarrhea data</span>
-<span class='no'>washb_bd_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
-<span class='no'>washb_bd_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+<span class='no'>washb_bangladesh_enrol</span>$<span class='no'>svydate</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+<span class='no'>washb_bangladesh_enrol</span>$<span class='no'>month</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
 
 <span class='co'># merge the baseline dataset to the follow-up dataset</span>
-<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bd_enrol</span>,<span class='no'>washb_bd_diar</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='no'>F</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='no'>T</span>)
+<span class='no'>ad</span> <span class='kw'>&lt;-</span> <span class='fu'>merge</span>(<span class='no'>washb_bangladesh_enrol</span>,<span class='no'>washb_bangladesh_diar</span>,<span class='kw'>by</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"dataid"</span>,<span class='st'>"clusterid"</span>,<span class='st'>"block"</span>,<span class='st'>"tr"</span>),<span class='kw'>all.x</span><span class='kw'>=</span><span class='fl'>FALSE</span>,<span class='kw'>all.y</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
 <span class='co'># subset to the relevant measurement</span>
 <span class='co'># Year 1 or Year 2</span>
