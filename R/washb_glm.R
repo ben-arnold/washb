@@ -29,7 +29,7 @@
 #' @param id ID variable for independent units (cluster ID)
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
 #' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use "binonial(link='log')" to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.
-#' @param pval The p-value threshold: any variables with a p-value from the lielihood ratio test below this threshold will be returned. Defaults to 0.2
+#' @param pval The p-value threshold: any variables with a p-value from the likelihood ratio test below this threshold will be returned. Defaults to 0.2
 #' @param print Logical for whether to print function output, defaults to TRUE.
 #' @param verbose Logical for whether to print names and descriptions of returned list objects
 #'

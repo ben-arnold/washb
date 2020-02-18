@@ -75,7 +75,7 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
   }
 
   #Check pvalue
-  if(pval>0.99|pval<0){
+  if(pval>1|pval<0){
     stop("P-value threshold not set between 0 and 1.")
   }
 
