@@ -59,6 +59,7 @@ tmleRES <- washb_tmle(Y=df$Y, tr=df$tr,W=df %>% select(x, sex),id= df$id, family
 glmRES <- washb_glm(Y=df$Y, tr=df$tr,W=df %>% select(x, sex), id=df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"), FECR="arithmetic",  print=TRUE)
 tmleRES <- washb_tmle(Y=df$Y, tr=df$tr,W=NULL,id= df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"),  Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="arithmetic", seed=123, print=TRUE)
 glmRES <- washb_glm(Y=df$Y, tr=df$tr,W=NULL, id=df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"), FECR="arithmetic",  print=TRUE)
+glmRES <- washb_glm(Y=df$Y, tr=df$tr,W=NULL, id=df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"), FECR="arithmetic",  print=TRUE)
 
 
 
