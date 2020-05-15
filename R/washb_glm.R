@@ -258,7 +258,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         cat(paste("\n-----------------------------------------\nEstimating the fecal egg count reduction\n(FECR) proportion = (EY1/EY0) - 1\nfrom GLM results using",FECR,"means\nand the delta method (for a ratio of means)\n-----------------------------------------\n"))
       }
 
-        suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
+        suppressWarnings(fit <- glm(Y~tr+.,family=family,data=dmat))
 
         df1 <- df0 <- glmdat
         df1$tr <- 1
