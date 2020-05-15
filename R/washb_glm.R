@@ -258,11 +258,11 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         cat(paste("\n-----------------------------------------\nEstimating the fecal egg count reduction\n(FECR) proportion = (EY1/EY0) - 1\nfrom GLM results using",FECR,"means\nand the delta method (for a ratio of means)\n-----------------------------------------\n"))
       }
 
-        suppressWarnings(fit <- glm(Y~tr+.,family=family,data=dmat))
+        suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
 
         df1 <- df0 <- glmdat
-        df1$tr <- 1
-        df0$tr <- 0
+        df1$tr <- contrast[2]
+        df0$tr <- contrast[1]
         Qst1<-predict(glm.fit, type="response", newdata = df1)
         Qst0<-predict(glm.fit, type="response", newdata = df0)
 
@@ -273,13 +273,16 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         # where FECR = (EY0-EY1)/EY0 = (EY1/EY0)-1 on the arithmetic mean scale
         # and   FECR = exp(EY1)/exp(EY0)-1 on the geometric mean scale
         if(FECR=='arithmetic') {
-          fecr    <- (Ey1/Ey0) - 1
-          fderiv  <- c(-Ey1/(Ey0^2),1/Ey0)
-          fecr_se <- deltamethod(g = ~x2-1, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
+          n_coef <- length(fit$coefficients)
+
+          fecr <- (Ey1/Ey0) - 1
+
+          #Need to dynamically get all x's listed on top, and all minus x2 on the bottom
+          #delta_formula=paste0("x",1:3)
+          fecr_se <- deltamethod(g = ~(x1+x2)/x1-1, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
         }
         if(FECR=='geometric') {
           fecr    <- (exp(Ey1)/exp(Ey0)) - 1
-          fderiv  <- c(-exp(Ey1)/exp(Ey0),exp(Ey1)/exp(Ey0))
           fecr_se <- deltamethod(g = ~exp(x2)-1, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
 
         }

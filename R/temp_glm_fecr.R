@@ -57,6 +57,9 @@ df$Y <-   df$x + df$clust_mean + 10*as.numeric(factor(df$tr)) + 2*as.numeric(fac
 
 tmleRES <- washb_tmle(Y=df$Y, tr=df$tr,W=df %>% select(x, sex),id= df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"),  Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="arithmetic", seed=123, print=TRUE)
 glmRES <- washb_glm(Y=df$Y, tr=df$tr,W=df %>% select(x, sex), id=df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"), FECR="arithmetic",  print=TRUE)
+tmleRES <- washb_tmle(Y=df$Y, tr=df$tr,W=NULL,id= df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"),  Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="arithmetic", seed=123, print=TRUE)
+glmRES <- washb_glm(Y=df$Y, tr=df$tr,W=NULL, id=df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"), FECR="arithmetic",  print=TRUE)
+
 
 
 df$Y <-  log(2*df$x^2 - 5*df$x + df$clust_mean + 10*as.numeric(factor(df$tr)) + 2*as.numeric(factor(df$sex))  + rnorm(1000, 0, 10))
