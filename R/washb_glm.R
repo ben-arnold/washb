@@ -29,6 +29,7 @@
 #' @param id ID variable for independent units (cluster ID)
 #' @param contrast Vector of length 2 that includes the groups to contrast, e.g., c("Control","Water")
 #' @param family GLM model family (gaussian, binomial, poisson, and negative binomial). Use \code{family=binonial(link='log')} (no quotes) to return prevalence ratios instead of odds ratios when the outcome is binary.  Use "neg.binom" for a Negative binomial model.
+#' @param FECR (default is \code{NULL}). Estimate the fecal egg count reduction (FECR) proportion by specifying either \code{FECR='arithmetic'} to estimate it on the artithmetic mean scale or \code{FECR='geometric'} on the geometric mean scale. If \code{FECR='geometric'} ensure that you use log-transformed eggs per gram. When estimating the FECR, also ensure that you specify \code{family='gaussian'} (see details).
 #' @param pval The p-value threshold: any variables with a p-value from the likelihood ratio test below this threshold will be returned. Defaults to 0.2
 #' @param print Logical for whether to print function output, defaults to TRUE.
 #' @param verbose Logical for whether to print names and descriptions of returned list objects
@@ -107,12 +108,25 @@
 #' #'objectname$lincom` to return subgroup-specific conditional relative risk estimates if a subgroup V is specified.
 
 
-washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE, verbose=FALSE) {
+washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,family="gaussian", pval=0.2, print=TRUE, verbose=FALSE,FECR=NULL) {
   require(sandwich)
   require(lmtest)
   options(scipen=20)
   #Create empty variable used in subgroup analysis
   Subgroups=NULL
+
+
+  # ensure that family is gaussian if estimating the FECR
+  if(!is.null(FECR)){
+    if(FECR!='arithmetic' & FECR!='geometric') {
+      stop(paste("You specified FECR=",fnargs$FECR[[length(fnargs$FECR)]],"to estimate the fecal egg count reduction %\nYou need to supply either 'arithmetic' or 'geometric' as an argument to the FECR option."))
+    }
+
+    if((FECR=='arithmetic'|FECR=='geometric') & family!="gaussian"){
+      stop(paste("You specified FECR=",fnargs$FECR[[length(fnargs$FECR)]],"to estimate the fecal egg count reduction %\nThis parameter is a ratio of means: FECR=(EY1/EY0)-1\nso you need to specify family='gaussian' to estimate it properly."))
+    }
+  }
+
 
   #Make sure W is a dataframe
   if(!is.null(W)){W<-data.frame(W)}
@@ -239,6 +253,55 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
 
   if(family[1]=="binomial"|family[1]=="poisson"|family[1]=="gaussian"){
 
+    if(!is.null(FECR)){
+      if(print==TRUE){
+        cat(paste("\n-----------------------------------------\nEstimating the fecal egg count reduction\n(FECR) proportion = (EY1/EY0) - 1\nfrom TMLE results using",FECR,"means\nand the delta method (for a ratio of means)\n-----------------------------------------\n"))
+      }
+
+        suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
+
+        df1 <- df0 <- glmdat
+        df1$tr <- 1
+        df0$tr <- 0
+        Qst1<-predict(glm.fit, type="response", newdata = df1)
+        Qst0<-predict(glm.fit, type="response", newdata = df0)
+
+        Ey1  <- mean(Qst1, na.rm=T)
+        Ey0  <- mean(Qst0, na.rm=T)
+
+        # use the delta method to get the SE & 95% CI for the FECR
+        # where FECR = (EY0-EY1)/EY0 = (EY1/EY0)-1 on the arithmetic mean scale
+        # and   FECR = exp(EY1)/exp(EY0)-1 on the geometric mean scale
+        if(FECR=='arithmetic') {
+          fecr    <- (Ey1/Ey0) - 1
+          fderiv  <- c(-Ey1/(Ey0^2),1/Ey0)
+          fecr_se <- deltamethod(g = ~x2-1, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
+        }
+        if(FECR=='geometric') {
+          fecr    <- (exp(Ey1)/exp(Ey0)) - 1
+          fderiv  <- c(-exp(Ey1)/exp(Ey0),exp(Ey1)/exp(Ey0))
+          fecr_se <- deltamethod(g = ~exp(x2)-1, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
+
+        }
+        #fecr_se <- as.vector(sqrt(t(fderiv)%*%vc%*%fderiv))
+        fecr_lb <- fecr-1.96*fecr_se
+        fecr_ub <- fecr+1.96*fecr_se
+        fecr_p  <- 2*(1-pnorm(abs(fecr/fecr_se)))
+
+        # print results
+        if(print==TRUE){
+          cat(paste("\n-----------------------------------------\nFecal egg count reduction (EY1/EY0)-1,\nestimated using ",FECR," means","\n-----------------------------------------\n",sep=""))
+          cat(paste("FECR (95% CI) : ",sprintf("%1.3f",fecr)," (",sprintf("%1.3f",fecr_lb),", ",sprintf("%1.3f",fecr_ub),")",sep=""))
+          cat("\n     SE(FECR) :",sprintf("%1.4f",fecr_se))
+          cat("\n      p-value :",sprintf("%1.4f",fecr_p))
+          cat("\n-----------------------------------------\n")
+        }
+
+        return(data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, cu.ub= fecr_ub,pvalue=fecr_p,method=FECR))
+
+
+      }else{
+
     if(!is.null(V)){
       colnames(dmat)[which(colnames(dmat)==V)]<-"V"
       if( class(dmat$V)=="factor") Subgroups<-levels(dmat$tr:dmat$V)
@@ -254,6 +317,8 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
 
     modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
     return(modelfit)
+
+      }
     }else{
         if(family[1]=="neg.binom"){
           require(MASS)
@@ -299,6 +364,5 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         stop('Error in family specified. Must choose Gaussian, Poisson, Binomial, Binomial(link-log), or neg.binom.')
       }
     }
-  }
-
+}
 
