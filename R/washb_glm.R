@@ -260,7 +260,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
 
         suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
 
-        df1 <- df0 <- glmdat
+        df1 <- df0 <- dmat
         df1$tr <- contrast[2]
         df0$tr <- contrast[1]
         Qst1<-predict(glm.fit, type="response", newdata = df1)
