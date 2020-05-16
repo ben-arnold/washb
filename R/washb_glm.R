@@ -257,14 +257,22 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
       if(print==TRUE){
         cat(paste("\n-----------------------------------------\nEstimating the fecal egg count reduction\n(FECR) proportion = (EY1/EY0) - 1\nfrom GLM results using",FECR,"means\nand the delta method (for a ratio of means)\n-----------------------------------------\n"))
       }
+      require(msm)
 
+      if(!is.null(V)){
+        colnames(dmat)[which(colnames(dmat)==V)]<-"V"
+        if( class(dmat$V)=="factor") Subgroups<-levels(dmat$tr:dmat$V)
+        if( class(dmat$V)!="factor") warning('V is not a factor variable within the W covariate data frame. An interaction term will be added to the model but not linear combination of coefficients will be calculated.')
+        suppressWarnings(fit <- glm(Y~tr*V+. ,family=family,data=dmat))
+      }else{
         suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
+      }
 
         df1 <- df0 <- dmat
         df1$tr <- contrast[2]
         df0$tr <- contrast[1]
-        Qst1<-predict(glm.fit, type="response", newdata = df1)
-        Qst0<-predict(glm.fit, type="response", newdata = df0)
+        Qst1<-predict(fit, type="response", newdata = df1)
+        Qst0<-predict(fit, type="response", newdata = df0)
 
         Ey1  <- mean(Qst1, na.rm=T)
         Ey0  <- mean(Qst0, na.rm=T)
@@ -279,7 +287,13 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
 
           #Need to dynamically get all x's listed on top, and all minus x2 on the bottom
           #delta_formula=paste0("x",1:3)
-          fecr_se <- deltamethod(g = ~(x1+x2)/x1-1, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
+
+          vars <- paste0("x",1:n_coef)
+          numerator <- paste(vars, collapse="+")
+          denominator <- gsub("\\+x2","",numerator)
+          delta_formula <- as.formula(paste0("~(",numerator,")/(",denominator,")-1"))
+
+          fecr_se <- deltamethod(g = delta_formula, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
         }
         if(FECR=='geometric') {
           fecr    <- (exp(Ey1)/exp(Ey0)) - 1
@@ -300,7 +314,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
           cat("\n-----------------------------------------\n")
         }
 
-        return(data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, cu.ub= fecr_ub,pvalue=fecr_p,method=FECR))
+        return(list(res=data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, cu.ub= fecr_ub,pvalue=fecr_p,method=FECR), fit=fit))
 
 
       }else{
