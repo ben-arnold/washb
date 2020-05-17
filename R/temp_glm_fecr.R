@@ -44,17 +44,51 @@
 # pval=0.2
 # verbose=FALSE
 # V=NULL
-#
-# df$treatment <- df$tr
-# yname<-"ttepg"
+# contrast=c("Unimproved floor","Improved floor")
+# df<- df %>% rename(treatment=tr)
 # Wset <-c( "month",         "birthord",      "momedu",        "momheight",     "Nlt18",
 # "Ncomp",         "hfiacat",       "elec",          "asset_wardrobe","asset_table",
 #  "asset_chair",   "asset_khat",    "asset_chouki",  "asset_tv",      "asset_refrig",
-#  "asset_bike",    "asset_moto",    "asset_sewmach", "asset_mobile",  "tr" )
+#  "asset_bike",    "asset_moto",    "asset_sewmach", "asset_mobile",  "treatment" )
+# yname<-"ttepg"
 #
 # fit_adj <- washb_glm(Y=df[,yname], tr=df$floor, W=df[Wset], id=df$clusterid,
 #                      family = "gaussian", FECR="arithmetic",
 #                      contrast=c("Unimproved floor","Improved floor"))
+#
+#
+# yname<-"ttepg"
+# Wset <-c( "month",         "birthord",      "momedu",        "momheight",     "Nlt18",
+#           "Ncomp",         "hfiacat",       "elec",          "asset_wardrobe","asset_table",
+#           "asset_chair",   "asset_khat",    "asset_chouki",  "asset_tv",      "asset_refrig",
+#           "asset_bike",    "asset_moto",    "asset_sewmach", "asset_mobile",  "treatment" )
+# df$tr <- df$floor
+# fit <- glm(Y~.,family=family,data=df[c(yname,"tr", Wset)])
+# rfit <- coeftest(fit, vcovCL)
+#
+# df1 <- df0 <- df
+# df1$tr <- contrast[2]
+# df0$tr <- contrast[1]
+# Qst1<-predict(fit, type="response", newdata = df1)
+# Qst0<-predict(fit, type="response", newdata = df0)
+#
+# Ey1  <- mean(Qst1, na.rm=T)
+# Ey0  <- mean(Qst0, na.rm=T)
+#
+# modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
+# n_coef <- length(fit$coefficients)
+#
+# fecr <- (Ey1/Ey0) - 1
+#
+# #Need to dynamically get all x's listed on top, and all minus x2 on the bottom
+# #delta_formula=paste0("x",1:3)
+#
+# vars <- paste0("x",1:n_coef)
+# numerator <- paste(vars, collapse="+")
+# denominator <- gsub("\\+x2\\+","+",numerator)
+# delta_formula <- as.formula(paste0("~(",numerator,")/(",denominator,")-1"))
+#
+# fecr_se <- deltamethod(g = delta_formula, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
 #
 #
 # Y=df[,yname]

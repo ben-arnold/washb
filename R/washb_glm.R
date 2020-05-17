@@ -301,7 +301,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
 
           vars <- paste0("x",1:n_coef)
           numerator <- paste(vars, collapse="+")
-          denominator <- gsub("\\+x2","",numerator)
+          denominator <- gsub("\\+x2\\+","+",numerator)
           delta_formula <- as.formula(paste0("~(",numerator,")/(",denominator,")-1"))
 
           fecr_se <- deltamethod(g = delta_formula, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
