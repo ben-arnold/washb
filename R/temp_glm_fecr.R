@@ -29,7 +29,7 @@
 #
 #
 # Y=df$CTmean.Al
-# tr=df$tr
+# tr=df$floor
 # W=df %>% select(sex)
 # id=df$clusterid
 # family="gaussian"
@@ -41,7 +41,7 @@
 # W=df %>% select(sex, momage, momheight)
 # forcedW=NULL
 # # V="sex"
-# pval=0.2
+# pval=0.99
 # verbose=FALSE
 # V=NULL
 # contrast=c("Unimproved floor","Improved floor")
@@ -51,8 +51,10 @@
 #  "asset_chair",   "asset_khat",    "asset_chouki",  "asset_tv",      "asset_refrig",
 #  "asset_bike",    "asset_moto",    "asset_sewmach", "asset_mobile",  "treatment" )
 # yname<-"ttepg"
+# Y=df[,yname]
+# W=df[Wset]
 #
-# fit_adj <- washb_glm(Y=df[,yname], tr=df$floor, W=df[Wset], id=df$clusterid,
+# fit_adj <- washb_glm(Y=df[,yname], tr=df$floor, W=df[Wset], id=df$clusterid, pval=0.99,
 #                      family = "gaussian", FECR="arithmetic",
 #                      contrast=c("Unimproved floor","Improved floor"))
 #
