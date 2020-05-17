@@ -319,7 +319,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         }
 
 
-        modelfit$tr <- data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, cu.ub= fecr_ub,pvalue=fecr_p,method=FECR)
+        modelfit$TR <- data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, cu.ub= fecr_ub,pvalue=fecr_p,method=FECR)
 
         return(modelfit)
 
