@@ -128,8 +128,15 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
   }
 
 
-  #Make sure W is a dataframe
-  if(!is.null(W)){W<-data.frame(W)}
+  #Make sure W is a dataframe and "tr" is not a covariate
+  if(!is.null(W)){
+    W<-data.frame(W)
+      if(sum("tr" %in% colnames(W))>0){
+        colnames(W)[which(colnames(W)=="tr")] <- "trW"
+      }
+    }
+
+
 
     # Make a data.frame, then restrict to the 2 arms in the contrast
   if(!is.null(pair)){

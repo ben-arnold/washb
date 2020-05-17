@@ -40,9 +40,33 @@
 # pair=NULL
 # W=df %>% select(sex, momage, momheight)
 # forcedW=NULL
-# V="sex"
+# # V="sex"
 # pval=0.2
 # verbose=FALSE
+# V=NULL
+#
+# df$treatment <- df$tr
+# yname<-"ttepg"
+# Wset <-c( "month",         "birthord",      "momedu",        "momheight",     "Nlt18",
+# "Ncomp",         "hfiacat",       "elec",          "asset_wardrobe","asset_table",
+#  "asset_chair",   "asset_khat",    "asset_chouki",  "asset_tv",      "asset_refrig",
+#  "asset_bike",    "asset_moto",    "asset_sewmach", "asset_mobile",  "tr" )
+#
+# fit_adj <- washb_glm(Y=df[,yname], tr=df$floor, W=df[Wset], id=df$clusterid,
+#                      family = "gaussian", FECR="arithmetic",
+#                      contrast=c("Unimproved floor","Improved floor"))
+#
+#
+# Y=df[,yname]
+# tr=df$floor
+# W=df[Wset]
+# id=df$clusterid
+#
+# family = "gaussian"
+# FECR="arithmetic"
+# contrast=c("Unimproved floor","Improved floor")
+#
+#
 #
 #
 # tmleRES <- washb_tmle(Y=df$CTmean.Al, tr=df$tr,W=df %>% select(sex, momage, momheight), family="gaussian",contrast=c("Control", "WSH"),  Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="arithmetic", seed=123, print=TRUE)
