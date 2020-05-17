@@ -267,6 +267,8 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
       }else{
         suppressWarnings(fit <- glm(Y~.,family=family,data=dmat))
       }
+      vcovCL <- sandwichSE(dmat,fm=fit,cluster=glmdat$id)
+      rfit <- coeftest(fit, vcovCL)
 
         df1 <- df0 <- dmat
         df1$tr <- contrast[2]
@@ -276,6 +278,8 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
 
         Ey1  <- mean(Qst1, na.rm=T)
         Ey0  <- mean(Qst0, na.rm=T)
+
+        modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
 
         # use the delta method to get the SE & 95% CI for the FECR
         # where FECR = (EY0-EY1)/EY0 = (EY1/EY0)-1 on the arithmetic mean scale
@@ -314,7 +318,10 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
           cat("\n-----------------------------------------\n")
         }
 
-        return(list(res=data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, cu.ub= fecr_ub,pvalue=fecr_p,method=FECR), fit=fit))
+
+        modelfit$tr <- data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, cu.ub= fecr_ub,pvalue=fecr_p,method=FECR)
+
+        return(modelfit)
 
 
       }else{

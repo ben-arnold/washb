@@ -47,7 +47,8 @@
 # tmleRES <- washb_tmle(Y=df$CTmean.Al, tr=df$tr,W=df %>% select(sex, momage, momheight), family="gaussian",contrast=c("Control", "WSH"),  Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="arithmetic", seed=123, print=TRUE)
 # glmRES <- washb_glm(Y=df$CTmean.Al, tr=df$tr,W=df %>% select(sex, momage, momheight), id=df$clusterid, family="gaussian",contrast=c("Control", "WSH"), FECR="arithmetic",  print=TRUE)
 #
-#
+# test_V <- washb_glm(Y=df$CTmean.Al, tr=df$tr,W=df %>% select(sex, momage, momheight), V="sex", id=df$clusterid, family="gaussian",contrast=c("Control", "WSH"), FECR=NULL,  print=TRUE)
+# test_V$lincom
 #
 #
 # tmleRES.g <- washb_tmle(Y=df$CTmean.Ac, tr=df$tr,W=df %>% select(sex), id=df$clusterid, family="gaussian",contrast=c("Control", "WSH"),  Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="geometric", seed=123, print=TRUE)
