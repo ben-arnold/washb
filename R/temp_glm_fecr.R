@@ -57,6 +57,17 @@
 # fit_adj <- washb_glm(Y=df[,yname], tr=df$floor, W=df[Wset], id=df$clusterid, pval=0.99,
 #                      family = "gaussian", FECR="arithmetic",
 #                      contrast=c("Unimproved floor","Improved floor"))
+# fit_adj_tmle <- washb_tmle(Y=df[,yname], tr=df$floor, W=df[Wset], id=df$clusterid, pval=0.99,
+#                      family = "gaussian", Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="arithmetic", seed=123,
+#                      contrast=c("Unimproved floor","Improved floor"))
+#
+# fit_unadj <- washb_glm(Y=df[,yname], tr=df$floor, W=NULL, id=df$clusterid, pval=0.99,
+#                      family = "gaussian", FECR="arithmetic",
+#                      contrast=c("Unimproved floor","Improved floor"))
+# fit_unadj_tmle <- washb_tmle(Y=df[,yname], tr=df$floor, W=NULL, id=df$clusterid, pval=0.99,
+#                            family = "gaussian", Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="arithmetic", seed=123,
+#                            contrast=c("Unimproved floor","Improved floor"))
+#
 #
 #
 # yname<-"ttepg"
@@ -146,8 +157,8 @@
 #
 # df$Y <-  log(2*df$x^2 - 5*df$x + df$clust_mean + 10*as.numeric(factor(df$tr)) + 2*as.numeric(factor(df$sex))  + rnorm(1000, 0, 10))
 #
-# tmleRES.g <- washb_tmle(Y=df$Y, tr=df$tr,W=df %>% select(x, sex), id=df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"),  Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="geometric", seed=123, print=TRUE)
-# glmRES.g <- washb_glm(Y=df$Y, tr=df$tr,W=df %>% select(x, sex), id=df$id, family="gaussian",contrast=c("Control", "Nutrition + WSH"), FECR="geometric",  print=TRUE)
+# tmleRES.g <- washb_tmle(Y=df$ttepg, tr=df$tr,W=df %>% select(sex), id=df$clusterid, family="gaussian",contrast=c("Control", "Nutrition + WSH"),  Q.SL.library = c("SL.glm"), g.SL.library = "SL.mean", FECR="geometric", seed=123, print=TRUE)
+# glmRES.g <- washb_glm(Y=df$ttepg, tr=df$tr,W=df %>% select(sex), id=df$clusterid, family="gaussian",contrast=c("Control", "Nutrition + WSH"), FECR="geometric",  print=TRUE)
 #
 #
 #

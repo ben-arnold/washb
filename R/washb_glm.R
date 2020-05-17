@@ -286,7 +286,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         Ey1  <- mean(Qst1, na.rm=T)
         Ey0  <- mean(Qst0, na.rm=T)
 
-        modelfit<-washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
+        modelfit <- washb_glmFormat(glmModel=fit, rfit=rfit, dmat=dmat, rowdropped=rowdropped, contrast=contrast, pair=pair, vcovCL=vcovCL, family=family, V=V, Subgroups=Subgroups, print=print,verbose=verbose)
 
         # use the delta method to get the SE & 95% CI for the FECR
         # where FECR = (EY0-EY1)/EY0 = (EY1/EY0)-1 on the arithmetic mean scale
@@ -302,6 +302,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
           vars <- paste0("x",1:n_coef)
           numerator <- paste(vars, collapse="+")
           denominator <- gsub("\\+x2\\+","+",numerator)
+          denominator <- gsub("x1\\+x2","x1",denominator)
           delta_formula <- as.formula(paste0("~(",numerator,")/(",denominator,")-1"))
 
           fecr_se <- deltamethod(g = delta_formula, mean = coef(fit), cov = vcovCL(fit, glmdat$id), ses=TRUE)
@@ -326,7 +327,7 @@ washb_glm <- function(Y,tr,pair=NULL,W=NULL, forcedW=NULL, V=NULL, id,contrast,f
         }
 
 
-        modelfit$TR <- data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, cu.ub= fecr_ub,pvalue=fecr_p,method=FECR)
+        modelfit$TR <- data.frame(psi=fecr,var.psi=fecr_se^2,ci.lb=fecr_lb, ci.ub= fecr_ub,pvalue=fecr_p,method=FECR)
 
         return(modelfit)
 
