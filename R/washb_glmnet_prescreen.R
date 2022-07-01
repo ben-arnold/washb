@@ -84,9 +84,13 @@ washb_glmnet_prescreen <- function(Y,Ws,family="gaussian", print=TRUE) {
     whichVariable <- (as.numeric(coef(fitCV$glmnet.fit, s = fitCV$lambda.min))[-1] !=0)
 
     selected_vars <- colnames(X)[whichVariable]
-
+    cat(selected_vars,"\n")
     #Right now, the variables are indicator variables... select the original variable names for regression analysis so all factor levels are included
-    selected_vars <- unique(stringr::str_split(selected_vars,"_lev", simplify = T)[,1])
+    if(length(selected_vars)>0){
+     try(selected_vars <- unique(stringr::str_split(selected_vars,"_lev", simplify = T)[,1]))
+    }else{
+      selected_vars <-NULL
+    }
 
 
   }else{
