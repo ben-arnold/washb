@@ -68,7 +68,7 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
 
   #fit full and prescreened model
   bfull <- paste(c("tr",Ws, forcedW,pair), collapse="+")
-  prescreened_Ws<-washb_glmnet_prescreen(Y=Y,W,family=family)
+  prescreened_Ws<-washb_glmnet_prescreen(Y=Y,data %>% select(!!(Ws)),family=family)
   b <- paste(c("tr",prescreened_Ws, forcedW,pair), collapse="+")
   full_model <-as.formula(paste("Y ~ ",bfull,sep = ""))
   model <-as.formula(paste("Y ~ ",b,sep = ""))
