@@ -4,7 +4,8 @@
 \name{washb_bangladesh_uptake}
 \alias{washb_bangladesh_uptake}
 \title{dataset: Bangladesh uptake analysis}
-\format{A data frame with 14,908 observations and 18 variables.
+\format{
+A data frame with 14,908 observations and 18 variables.
 \describe{
  \item{\code{dataid}}{Compound ID}
  \item{\code{clusterid}}{Cluster ID)}
@@ -24,7 +25,8 @@
  \item{\code{lnsp}}{Percent of expected LNS sachets consumed}
  \item{\code{rlnsn}}{LNS sachets consumed per week (reported)}
  \item{\code{rlnsp}}{Percent of expected LNS sachets consumed (reported)}
- }}
+ }
+}
 \usage{
 data(washb_bangladesh_uptake)
 }

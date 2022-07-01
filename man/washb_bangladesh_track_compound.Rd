@@ -4,7 +4,8 @@
 \name{washb_bangladesh_track_compound}
 \alias{washb_bangladesh_track_compound}
 \title{dataset: Bangladesh track compound analysis}
-\format{A data frame with 5551 observations and 8 variables.
+\format{
+A data frame with 5551 observations and 8 variables.
 \describe{
  \item{\code{dataid}}{Compound ID}
  \item{\code{clusterid}}{Cluster ID)}
@@ -14,7 +15,8 @@
  \item{\code{miss1reason}}{Miss 1 Reason}
  \item{\code{miss2}}{Miss 2}
  \item{\code{miss2reason}}{Miss 2 Reason}
- }}
+ }
+}
 \usage{
 data(washb_bangladesh_track_compound)
 }

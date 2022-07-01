@@ -4,7 +4,8 @@
 \name{washb_bangladesh_anthro}
 \alias{washb_bangladesh_anthro}
 \title{dataset: Bangladesh anthropometry analysis}
-\format{A data frame with 9,342 observations and 46 variables.
+\format{
+A data frame with 9,342 observations and 46 variables.
 \describe{
  \item{\code{dataid}}{Compound ID}
  \item{\code{childid}}{Child ID}
@@ -52,7 +53,8 @@
  \item{\code{bmiz_x}}{abs(BMIZ)>5, set to missing}
  \item{\code{hcz}}{Head circumference-for-age z-score}
  \item{\code{hcz_x}}{abs(HCZ)>5, set to missing}
- }}
+ }
+}
 \usage{
 data(washb_bangladesh_anthro)
 }

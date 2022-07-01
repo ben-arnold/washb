@@ -26,19 +26,17 @@ Function to get Estimates, SEs, CIs, and P-values for Pr>|Z| from a linear combi
 }
 \examples{
 library(washb)
-
-data(washb_bangladesh_diar)
-washb_bangladesh_diar <- washb_bangladesh_diar
-
 data(washb_bangladesh_enrol)
 washb_bangladesh_enrol <- washb_bangladesh_enrol
+data(washb_bangladesh_anthro)
+washb_bangladesh_anthro <- washb_bangladesh_anthro
 
  # drop svydate and month because they are superceded in the child level diarrhea data
 washb_bangladesh_enrol$svydate <- NULL
 washb_bangladesh_enrol$month <- NULL
 
 # merge the baseline dataset to the follow-up dataset
-ad <- merge(washb_bangladesh_enrol,washb_bangladesh_diar,by=c("dataid","clusterid","block","tr"),all.x=FALSE,all.y=TRUE)
+ad <- merge(washb_bangladesh_enrol,washb_bangladesh_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
 
 # subset to the relevant measurement
 # Year 1 or Year 2
@@ -60,9 +58,6 @@ ad$month <- factor(ad$month)
 
 #Sort the data for perfect replication when using V-fold cross-validation
 ad <- ad[order(ad$block,ad$clusterid,ad$dataid,ad$childid),]
-
-#Create one column dataframe holding the subgroup variable
-W_tchild <- subset(ad, select=tchild)
 
 #Estimate subgroup analysis glm with washb_glm
 glm.C.N.byChildType <- washb_glm(Y=ad$diar7d,tr=ad$tr,pair=ad$block, W=W_tchild, V="tchild", id=ad$clusterid, contrast=c("Control","Nutrition"), family=binomial(link='log'), print=FALSE)
@@ -88,5 +83,10 @@ lc[c(2,4)]<-1
 #Run the lincom function and compare output to the $lincom output from the GLM model.
 washb_lincom(lc=lc,fit=glm.C.N.byChildType$fit,vcv=glm.C.N.byChildType$vcv, measure="RR")
 
+# The `lincom()` function can also be used to calculate risk difference
+#Calculate risk difference using the risk difference output from the washb_glm function:
+washb_lincom(lc=lc,fit=glm.C.N.byChildType$RDfit,vcv=glm.C.N.byChildType$vcvRD, measure="RD")
+#Compare to RD by subgroup from the washb_glm function:
+glm.C.N.byChildType$lincomRD
 }
 \keyword{internal}

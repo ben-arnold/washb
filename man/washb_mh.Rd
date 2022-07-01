@@ -40,19 +40,17 @@ The arguments Y,tr,strat, below need to be from the same dataset.
 
 #Load  diarrhea data
 library(washb)
-
-data(washb_bangladesh_diar)
-washb_bangladesh_diar <- washb_bangladesh_diar
-
 data(washb_bangladesh_enrol)
 washb_bangladesh_enrol <- washb_bangladesh_enrol
+data(washb_bangladesh_diar)
+washb_bangladesh_diar <- washb_bangladesh_diar
 
  # drop svydate and month because they are superceded in the child level diarrhea data
 washb_bangladesh_enrol$svydate <- NULL
 washb_bangladesh_enrol$month <- NULL
 
 # merge the baseline dataset to the follow-up dataset
-ad <- merge(washb_bangladesh_enrol,washb_bangladesh_diar,by=c("dataid","clusterid","block","tr"),all.x=FALSE,all.y=TRUE)
+ad <- merge(washb_bangladesh_enrol,washb_bangladesh_diar,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
 
 # subset to the relevant measurement
 # Year 1 or Year 2

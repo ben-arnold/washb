@@ -4,11 +4,22 @@
 \alias{washb_tmle}
 \title{Target maximum likelihood estimation of intention-to-treat effects in the WASH Benefits trials}
 \usage{
-washb_tmle(Y, tr, W = NULL, id = 1:length(Y), pair = NULL,
-  Delta = rep(1, length(Y)), family = "gaussian", contrast,
-  Q.SL.library = c("SL.mean", "SL.glm", "SL.bayesglm", "SL.gam",
-  "SL.glmnet"), g.SL.library = Q.SL.library, pval = 0.2, FECR = NULL,
-  seed = NULL, print = TRUE)
+washb_tmle(
+  Y,
+  tr,
+  W = NULL,
+  id = 1:length(Y),
+  pair = NULL,
+  Delta = rep(1, length(Y)),
+  family = "gaussian",
+  contrast,
+  Q.SL.library = c("SL.mean", "SL.glm", "SL.bayesglm", "SL.gam", "SL.glmnet"),
+  g.SL.library = Q.SL.library,
+  pval = 0.2,
+  FECR = NULL,
+  seed = NULL,
+  print = TRUE
+)
 }
 \arguments{
 \item{Y}{Outcome variable (continuous, such as LAZ, or binary, such as diarrhea)}

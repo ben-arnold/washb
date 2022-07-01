@@ -29,16 +29,15 @@ This function is most useful for calculating variable means and confidence inter
  #Example using the washb_mean function on child LAZ score
 
  #Load in Bandladesh anthropometry data and enrollment data
- data(washb_bangladesh_anthro)
- washb_bangladesh_anthro <- washb_bangladesh_anthro
-
  data(washb_bangladesh_enrol)
  washb_bangladesh_enrol <- washb_bangladesh_enrol
+ data(washb_bangladesh_anthro)
+ washb_bangladesh_anthro <- washb_bangladesh_anthro
 
  # drop svydate and month because they are superceded in the child level diarrhea data
  washb_bangladesh_enrol$svydate <- NULL
  washb_bangladesh_enrol$month <- NULL
- ad <- merge(washb_bangladesh_enrol,washb_bangladesh_anthro,by=c("dataid","clusterid","block","tr"),all.x=FALSE,all.y=TRUE)
+ ad <- merge(washb_bangladesh_enrol,washb_bangladesh_anthro,by=c("dataid","clusterid","block","tr"),all.x=F,all.y=T)
  ad <- subset(ad,svy==2)
  ad <- subset(ad,tchild=="Target child")
 

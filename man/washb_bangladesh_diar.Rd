@@ -4,7 +4,8 @@
 \name{washb_bangladesh_diar}
 \alias{washb_bangladesh_diar}
 \title{dataset: Bangladesh diarrhea analysis}
-\format{A data frame with 22,596 observations and 29 variables.
+\format{
+A data frame with 22,596 observations and 29 variables.
 \describe{
  \item{\code{dataid}}{Compound ID}
  \item{\code{childid}}{Child ID}
@@ -35,7 +36,8 @@
  \item{\code{bruise7d}}{Bruising, 7d recall}
  \item{\code{tooth2d}}{Toothache, 2d recall}
  \item{\code{tooth7d}}{Toothache, 7d recall}
- }}
+ }
+}
 \usage{
 data(washb_bangladesh_diar)
 }

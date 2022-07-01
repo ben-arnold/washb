@@ -4,12 +4,14 @@
 \name{washb_bang_tr}
 \alias{washb_bang_tr}
 \title{dataset: Bangladesh treatment assignments}
-\format{A data frame with 5551 observations and 8 variables.
+\format{
+A data frame with 720 observations and 3 variables.
 \describe{
  \item{block}{Randomization block ID}
  \item{clusterid}{Cluster ID)}
  \item{tr}{Treatment assignment}
- }}
+ }
+}
 \usage{
 data(washb_bang_tr)
 }

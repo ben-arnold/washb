@@ -4,7 +4,8 @@
 \name{washb_bangladesh_enrol}
 \alias{washb_bangladesh_enrol}
 \title{dataset: Bangladesh enrollment analysis}
-\format{A data frame with 5,551 observations and 73 variables.
+\format{
+A data frame with 5,551 observations and 73 variables.
 \describe{
  \item{\code{dataid}}{Compound ID}
  \item{\code{clusterid}}{Cluster ID)}
@@ -79,7 +80,8 @@
  \item{\code{n_asset_khat}}{number of Khat}
  \item{\code{n_asset_chouki}}{number of chouki}
  \item{\code{n_asset_mobile}}{number of mobile phone}
- }}
+ }
+}
 \usage{
 data(washb_bangladesh_enrol)
 }

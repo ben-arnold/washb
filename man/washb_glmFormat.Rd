@@ -4,9 +4,20 @@
 \alias{washb_glmFormat}
 \title{An internal formatting function for results output in glm objects}
 \usage{
-washb_glmFormat(glmModel = glmModel, rfit, dmat, rowdropped, contrast,
-  pair, vcovCL, family = family, V = NULL, Subgroups = NULL,
-  print = print, verbose = verbose)
+washb_glmFormat(
+  glmModel = glmModel,
+  rfit,
+  dmat,
+  rowdropped,
+  contrast,
+  pair,
+  vcovCL,
+  family = family,
+  V = NULL,
+  Subgroups = NULL,
+  print = print,
+  verbose = verbose
+)
 }
 \arguments{
 \item{glmModel}{glm model fit passed through the function and added to the output list}
