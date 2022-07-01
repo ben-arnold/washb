@@ -237,7 +237,7 @@ washb_glm_lasso_boot <- function(Y,tr,pair=NULL,W, forcedW=NULL, V=NULL, id,cont
          # clusterid="id"
 
 
-        suppressWarnings(fit <- cowboy_glm(data=dmat, clusterid="id", Ws=colnames(W), forcedW=NULL, pair=NULL,
+        suppressWarnings(fit <- cowboy_glm(data=dmat, clusterid="id", Ws=colnamesW, forcedW=forcedW, pair=pair,
                                           family = family,
                                           #temp!
                                           B = 200,
