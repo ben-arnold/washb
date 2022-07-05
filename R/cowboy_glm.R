@@ -84,7 +84,7 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
   #arguments <- as.list(match.call())
   #clusterid <- eval(arguments$clusterid, data)
   clusterid <- data %>% select(!!(clusterid))
-  cluster <- as.character(clusterid)
+  cluster <- as.character(clusterid$id)
   clusters <- unique(cluster)
   Obsno <- split(1:n, cluster)
   f = matrix(clusters, length(clusters), B)
@@ -95,13 +95,13 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
   #   if (n.cores == 1) {
 
   #temp
-  i=1
       for(i in 1:B){
         set.seed(i)
         j <- f[, i]
         obs <- unlist(Obsno[j])
 
         dboot=data[obs, ]
+        table(dboot$Y)
 
         prescreened_Ws<-washb_glmnet_prescreen(Y=dboot$Y, dboot %>% select(!!(Ws)),family=family)
         b <- paste(c("tr",prescreened_Ws, forcedW,pair), collapse="+")

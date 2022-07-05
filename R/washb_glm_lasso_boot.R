@@ -232,10 +232,14 @@ washb_glm_lasso_boot <- function(Y,tr,pair=NULL,W, forcedW=NULL, V=NULL, id,cont
          stop("Interaction/subgroup variable V not yet supported")
        }else{
 
-         # family=family
-         # data=dmat
-         # clusterid="id"
 
+#
+#          data=dmat
+#          clusterid="id"
+#          Ws=colnamesW
+#          B = 200
+#          confint.level = 0.95
+#          n.cores = 1
 
         suppressWarnings(fit <- cowboy_glm(data=dmat, clusterid="id", Ws=colnamesW, forcedW=forcedW, pair=pair,
                                           family = family,
