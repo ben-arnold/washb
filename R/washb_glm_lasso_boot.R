@@ -263,7 +263,7 @@ washb_glm_lasso_boot <- function(Y,tr,pair=NULL,W, forcedW=NULL, V=NULL, id,cont
 
       }
 
-      return(modelfit)
+      return(list(TR=modelfit, fit=fit))
 
 }
 
