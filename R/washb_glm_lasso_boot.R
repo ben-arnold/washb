@@ -242,12 +242,24 @@ washb_glm_lasso_boot <- function(Y,tr,pair=NULL,W, forcedW=NULL, V=NULL, id,cont
                                           #temp!
                                           B = 200,
                                           confint.level = 0.95, n.cores = 1))
-         modelfit <- data.frame(
-           est=fit$boot.coefs[2],
-           ci.lb =fit$percentile.interval[2,1],
-           ci.ub =fit$percentile.interval[2,2],
-           se = fit$boot.sds[2]
-         )
+
+         if(family=="gaussian"){
+           modelfit <- data.frame(
+             est=fit$boot.coefs[2],
+             ci.lb =fit$percentile.interval[2,1],
+             ci.ub =fit$percentile.interval[2,2],
+             se = fit$boot.sds[2]
+           )
+         }else{
+           modelfit <- data.frame(
+             RR=exp(fit$boot.coefs[2]),
+             est=fit$boot.coefs[2],
+             ci.lb =exp(fit$percentile.interval[2,1]),
+             ci.ub =exp(fit$percentile.interval[2,2]),
+             se = fit$boot.sds[2]
+           )
+         }
+
 
       }
 
