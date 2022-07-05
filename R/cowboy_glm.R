@@ -55,7 +55,7 @@
 
 
 cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
-                        family = "gaussian", B = 200, confint.level = 0.95, n.cores = 1){
+                        family = "gaussian", B = 200, confint.level = 0.95, n.cores = 8){
   require(ClusterBootstrap)
 
   tt_cores <- detectCores()
