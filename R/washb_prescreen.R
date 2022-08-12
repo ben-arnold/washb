@@ -109,10 +109,10 @@ washb_prescreen <- function(Y,Ws,family="gaussian", pval=0.2, print=TRUE) {
         dat$W <- dat[,i]
         if(class(dat$W)=="factor" & dim(table(dat$W))==1){
         #skip factors with a single level to avoid error
-        fit1 <- fit0 <- glm(Y~1,data=dat,family=family)
+        fit1 <- fit0 <- glm.nb(Y~1,data=dat)
       }else{
-        fit1 <- glm.nb(Y~W,data=dat,family=family)
-        fit0 <- glm.nb(Y~1,data=dat,family=family)
+        fit1 <- glm.nb(Y~W,data=dat)
+        fit0 <- glm.nb(Y~1,data=dat)
       }
           LRp[i] <- lrtest(fit1,fit0)[2,5]
         }
