@@ -109,7 +109,7 @@
 
 
 washb_glm_lasso_boot <- function(Y,tr,pair=NULL,W, forcedW=NULL, V=NULL, id,contrast,
-                                 family="gaussian", pval=0.2, print=TRUE, verbose=FALSE){
+                                 family="gaussian", pval=0.2, print=TRUE, verbose=FALSE, B=200){
   #options(scipen=20)
   require(tidyverse)
 
@@ -244,7 +244,7 @@ washb_glm_lasso_boot <- function(Y,tr,pair=NULL,W, forcedW=NULL, V=NULL, id,cont
         suppressWarnings(fit <- cowboy_glm(data=dmat, clusterid="id", Ws=colnamesW, forcedW=forcedW, pair=pair,
                                           family = family,
                                           #temp!
-                                          B = 200,
+                                          B = B,
                                           confint.level = 0.95, n.cores = 1))
 
          if(family=="gaussian"){
