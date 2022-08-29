@@ -68,7 +68,11 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
 
   #fit full and prescreened model
   bfull <- paste(c("tr",Ws, forcedW,pair), collapse="+")
-  prescreened_Ws<-washb_glmnet_prescreen(Y=data$Y,data %>% select(!!(Ws)),family=family)
+  if(!is.null(Ws)){
+    prescreened_Ws<-washb_glmnet_prescreen(Y=data$Y,data %>% select(!!(Ws)),family=family)
+  }else{
+    prescreened_Ws=NULL
+  }
   b <- paste(c("tr",prescreened_Ws, forcedW,pair), collapse="+")
   full_model <-as.formula(paste("Y ~ ",bfull,sep = ""))
   model <-as.formula(paste("Y ~ ",b,sep = ""))
@@ -83,9 +87,8 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
 
   #arguments <- as.list(match.call())
   #clusterid <- eval(arguments$clusterid, data)
-  clusterid <- data %>% select(!!(clusterid))
-  cluster <- as.character(clusterid$id)
-  clusters <- unique(cluster)
+  cluster <- as.character(data[[clusterid]])
+  clusters <- unique(data[[clusterid]])
   Obsno <- split(1:n, cluster)
   f = matrix(clusters, length(clusters), B)
   ff = matrix(f, prod(dim(f)), 1)
@@ -102,8 +105,11 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
 
         dboot=data[obs, ]
         table(dboot$Y)
-
-        prescreened_Ws<-washb_glmnet_prescreen(Y=dboot$Y, dboot %>% select(!!(Ws)),family=family)
+        if(!is.null(Ws)){
+          prescreened_Ws<-washb_glmnet_prescreen(Y=dboot$Y, dboot %>% select(!!(Ws)),family=family)
+        }else{
+          prescreened_Ws=NULL
+        }
         b <- paste(c("tr",prescreened_Ws, forcedW,pair), collapse="+")
         model <-as.formula(paste("Y ~ ",b,sep = ""))
         bootcoef <- tryCatch(coef(glm(model, family = family,data = dboot)), error = function(x) rep(as.numeric(NA),p))
