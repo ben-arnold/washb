@@ -57,11 +57,11 @@
 cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
                         family = "gaussian", B = 200, confint.level = 0.95, n.cores = 8){
 
-  tt_cores <- detectCores()
-  if (n.cores > tt_cores) {
-    message(sprintf("Note: \"n.cores\" was set to %d, but only %d are available. Using all cores.",
-                    n.cores, tt_cores))
-  }
+  # tt_cores <- detectCores()
+  # if (n.cores > tt_cores) {
+  #   message(sprintf("Note: \"n.cores\" was set to %d, but only %d are available. Using all cores.",
+  #                   n.cores, tt_cores))
+  # }
 
   set.seed(12345)
 
@@ -141,7 +141,7 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
   samples.with.NA.coef <- which(is.na(rowSums(coefs)))
   sdcoefs <- apply(coefs, 2, sd, na.rm = TRUE)
   ci_percentile <- t(apply(coefs, 2, quantile, probs = confint.pboundaries, na.rm = TRUE))
-  ci_parametric <- cbind(res.or.coef + confint.Zboundaries[1] * sdcoefs, res.or$coef + confint.Zboundaries[2] * sdcoefs)
+  ci_parametric <- cbind(res.or$coef + confint.Zboundaries[1] * sdcoefs, res.or$coef + confint.Zboundaries[2] * sdcoefs)
   #get error with bias correction and acceleration interval (for skewed data)
   #ci_BCa <- ClusterBootstrap:::confint_BCa(B, invalid.samples, model, data, clusterid, family, coefs, res.or$coef, p, confint.Zboundaries)
   ci_BCa <- matrix(NA,1,1)
