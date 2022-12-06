@@ -54,8 +54,10 @@
 # n.cores = 1
 
 
-cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
+cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL, with.replacement=T,
                         family = "gaussian", B = 200, confint.level = 0.95, n.cores = 8){
+
+  require(rsample)
 
   # tt_cores <- detectCores()
   # if (n.cores > tt_cores) {
@@ -83,6 +85,29 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
   p <- length(res.or$coef)
 
   coefs <- matrix(NA, nrow = B, ncol = p)
+
+  if(with.replacement){
+    D <- data %>% as_tibble() %>% nest(-id)
+    set.seed(i)
+    bs <- bootstraps(D, times = B)
+
+    for(i in 1:B){
+      set.seed(i)
+      dboot <- as.tibble(bs$splits[[i]]) %>% arrange(id) %>% unnest(cols = c(data))
+
+      if(!is.null(Ws)){
+        prescreened_Ws<-washb_glmnet_prescreen(Y=dboot$Y, dboot %>% select(!!(Ws)),family=family)
+      }else{
+        prescreened_Ws=NULL
+      }
+      b <- paste(c("tr",prescreened_Ws, forcedW,pair), collapse="+")
+      model <-as.formula(paste("Y ~ ",b,sep = ""))
+      bootcoef <- tryCatch(coef(glm(model, family = family,data = dboot)), error = function(x) rep(as.numeric(NA),p))
+
+      coefs[i, which(names(res.or$coef) %in% names(bootcoef))] <- bootcoef
+    }
+
+  }else{
 
   #arguments <- as.list(match.call())
   #clusterid <- eval(arguments$clusterid, data)
@@ -134,6 +159,7 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL,
   #   }
   # }
 
+  }
 
   #XXXXXX  Check if this is needed:
   invalid.samples <- colSums(is.na(coefs))
