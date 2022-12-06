@@ -87,6 +87,7 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL, with.
   coefs <- matrix(NA, nrow = B, ncol = p)
 
   if(with.replacement){
+    f=NA
     D <- data %>% as_tibble() %>% nest(-id)
     bs <- bootstraps(D, times = B)
 
