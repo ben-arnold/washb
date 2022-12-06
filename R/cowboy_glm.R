@@ -88,7 +88,6 @@ cowboy_glm <- function (data, clusterid="id", Ws, forcedW=NULL, pair=NULL, with.
 
   if(with.replacement){
     D <- data %>% as_tibble() %>% nest(-id)
-    set.seed(i)
     bs <- bootstraps(D, times = B)
 
     for(i in 1:B){
