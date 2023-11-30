@@ -197,7 +197,8 @@ washb_tmle <- function(Y,tr,W=NULL,id = 1:length(Y), pair=NULL, Delta = rep(1,le
                    id=tmle_id,
                    family=family,
                    Q.SL.library=Q.SL.library,
-                   g.SL.library=g.SL.library
+                   g.SL.library=g.SL.library,
+                   g.Delta.SL.library=g.SL.library
   )
   if(print==TRUE){
     cat("\n-----------------------------------------\nEstimation Results:\n-----------------------------------------\n")
